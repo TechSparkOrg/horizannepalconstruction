@@ -17,6 +17,11 @@ export interface SectionData {
   title: string;
   titleNp: string;
   content: { en: string; np: string }[];
+  customTopics?: {
+    title: string;
+    titleNp: string;
+    items: { en: string; np: string }[];
+  }[];
 }
 
 export const rooms: Record<string, RoomVastu> = {
@@ -460,6 +465,25 @@ export const sections: Record<string, SectionData> = {
         np: "वास्तु पाँच आधारभूत तत्वहरू (पञ्चभूत) मा आधारित छ: पृथ्वी (Earth), जल (Water), अग्नि (Fire), वायु (Air), र आकाश (Space)। यी तत्वहरू कोठा, ढोका, झ्याल र फर्नीचरको उचित अभिमुखीकरण, अनुपात र स्थानको माध्यमबाट सन्तुलित हुन्छन्।",
       },
     ],
+    customTopics: [
+      {
+        title: "How to Use Vastu in a Modern Home",
+        titleNp: "आधुनिक घरमा वास्तु कसरी प्रयोग गर्ने",
+        items: [
+          { en: "Start with correct zoning: place quiet, heavy, and private rooms toward South-West; keep light, open, and sacred spaces toward North-East.", np: "सही जोनिङबाट सुरु गर्नुहोस्: शान्त, भारी र निजी कोठा दक्षिण-पश्चिमतिर; हल्का, खुला र पवित्र ठाउँ उत्तर-पूर्वतिर राख्नुहोस्।" },
+          { en: "Use Vastu as a planning guide alongside structure, climate, natural light, ventilation, and municipal rules.", np: "वास्तुलाई संरचना, हावापानी, प्राकृतिक प्रकाश, भेन्टिलेसन र नगरपालिकाको नियमसँगै योजना मार्गदर्शनको रूपमा प्रयोग गर्नुहोस्।" },
+          { en: "If a layout is already built, improve energy through cleanliness, lighting, furniture placement, colors, and clutter control.", np: "लेआउट पहिले नै बनेको छ भने सफाइ, प्रकाश, फर्निचर स्थान, रङ र अव्यवस्था नियन्त्रणबाट उर्जा सुधार गर्नुहोस्।" },
+        ],
+      },
+      {
+        title: "Common Vastu Priorities",
+        titleNp: "मुख्य वास्तु प्राथमिकता",
+        items: [
+          { en: "Main entrance direction, kitchen location, master bedroom location, pooja space, and the center of the house have the highest impact.", np: "मुख्य ढोका, भान्साको स्थान, मास्टर बेडरूम, पूजा स्थान र घरको केन्द्र सबैभन्दा प्रभावकारी पक्ष हुन्।" },
+          { en: "Do not over-correct minor issues; fix the major conflicts first, especially toilets, heavy loads, fire, and water placement.", np: "साना कुरा धेरै सच्याउन नलाग्नुहोस्; पहिले शौचालय, भारी भार, आगो र पानीको स्थान जस्ता ठूला द्वन्द्व समाधान गर्नुहोस्।" },
+        ],
+      },
+    ],
   },
   elements: {
     title: "Five Elements & Principles",
@@ -490,6 +514,26 @@ export const sections: Record<string, SectionData> = {
         np: "आकाश (Akash - केन्द्र/ब्रह्मस्थान): ब्रह्माण्डीय शून्यता र आध्यात्मिक उर्जाको प्रतिनिधित्व गर्दछ। घरको केन्द्र (ब्रह्मस्थान) खुला र कुनै पनि निर्माण, स्तम्भ वा भारी वस्तुहरूबाट मुक्त राख्नुपर्छ। यसले सकारात्मक ब्रह्माण्डीय उर्जा घरभरि स्वतन्त्र रूपमा प्रवाह गर्न अनुमति दिन्छ।",
       },
     ],
+    customTopics: [
+      {
+        title: "Element Placement Checklist",
+        titleNp: "तत्व स्थान जाँचसूची",
+        items: [
+          { en: "Water: place tanks, fountains, drinking water, or meditation openness toward North or North-East where possible.", np: "जल: सम्भव भए पानी ट्याङ्की, फाउन्टेन, पिउने पानी वा ध्यानको खुलापन उत्तर वा उत्तर-पूर्वतिर राख्नुहोस्।" },
+          { en: "Fire: place stove, oven, inverter, and major electrical appliances toward South-East.", np: "अग्नि: चुल्हो, ओभन, इन्भर्टर र प्रमुख विद्युतीय उपकरण दक्षिण-पूर्वतिर राख्नुहोस्।" },
+          { en: "Earth: place heavy furniture, safes, wardrobes, and master bedroom functions toward South-West.", np: "पृथ्वी: भारी फर्निचर, सेफ, दराज र मास्टर बेडरूमका कार्य दक्षिण-पश्चिमतिर राख्नुहोस्।" },
+          { en: "Air: keep North-West light, ventilated, and suitable for movement-based spaces like guest room or parking.", np: "वायु: उत्तर-पश्चिमलाई हल्का, हावादार र पाहुना कोठा वा पार्किङ जस्ता आवागमनयुक्त ठाउँका लागि उपयुक्त राख्नुहोस्।" },
+        ],
+      },
+      {
+        title: "Balancing Tips",
+        titleNp: "सन्तुलन सुझाव",
+        items: [
+          { en: "Balance does not mean equal quantity; it means each element is placed where its energy works naturally.", np: "सन्तुलनको अर्थ बराबर मात्रा होइन; प्रत्येक तत्वलाई उसको उर्जा स्वाभाविक रूपमा काम गर्ने ठाउँमा राख्नु हो।" },
+          { en: "Avoid mixing direct fire and water, such as stove and sink touching each other.", np: "चुल्हो र सिंक सँगै टाँसिने जस्ता आगो र पानीको प्रत्यक्ष मिश्रणबाट बच्नुहोस्।" },
+        ],
+      },
+    ],
   },
   land: {
     title: "Land Selection & Preparation",
@@ -516,6 +560,25 @@ export const sections: Record<string, SectionData> = {
         np: "वरपरको वातावरण: श्मशान घाट, अस्पताल, मन्दिर (सीधा विपरीत), विद्युत उपकेन्द्र वा ढल प्रशोधन प्लान्ट नजिकको प्लटहरूबाट बच्नुहोस्। उत्तर वा पूर्व तर्फ सडक भएको प्लटहरू अनुकूल हुन्छन्।",
       },
     ],
+    customTopics: [
+      {
+        title: "Before Buying Land",
+        titleNp: "जग्गा किन्नु अघि",
+        items: [
+          { en: "Check road approach, plot shape, slope, drainage, soil stability, sunlight, and neighboring structures before finalizing.", np: "अन्तिम गर्नु अघि बाटो, जग्गाको आकार, ढलान, निकास, माटोको स्थिरता, घाम र छिमेकी संरचना जाँच गर्नुहोस्।" },
+          { en: "Prefer plots with open North or East sides, proper drainage, and no major obstruction directly in front of the entrance side.", np: "उत्तर वा पूर्वतिर खुला, राम्रो निकास भएको र प्रवेशतर्फ सीधा ठूलो अवरोध नभएको जग्गा प्राथमिकता दिनुहोस्।" },
+          { en: "Confirm legal access, setback, by-laws, and buildable area; Vastu planning should fit real construction permissions.", np: "कानुनी पहुँच, सेटब्याक, नियम र निर्माणयोग्य क्षेत्र पुष्टि गर्नुहोस्; वास्तु योजना वास्तविक निर्माण अनुमतिसँग मिल्नुपर्छ।" },
+        ],
+      },
+      {
+        title: "Plot Correction Ideas",
+        titleNp: "प्लट सुधार उपाय",
+        items: [
+          { en: "Irregular plots can often be corrected through compound wall alignment, landscape buffers, or functional zoning.", np: "अनियमित प्लटलाई कम्पाउन्ड वाल मिलान, ल्याण्डस्केप बफर वा कार्यात्मक जोनिङबाट धेरै हदसम्म सुधार गर्न सकिन्छ।" },
+          { en: "If the South-West is low or open, make it heavier through landscape, storage, or built mass where structurally possible.", np: "दक्षिण-पश्चिम होचो वा खुला छ भने संरचनागत रूपमा सम्भव ठाउँमा ल्याण्डस्केप, भण्डारण वा भवन भारबाट भारी बनाउनुहोस्।" },
+        ],
+      },
+    ],
   },
   entrance: {
     title: "Doors & Main Entrance",
@@ -536,6 +599,25 @@ export const sections: Record<string, SectionData> = {
       {
         en: "Additional Doors: Windows and doors in the Northeast should be larger than those in the Southwest. The number of doors and windows should be even (2, 4, 6, etc.). Avoid doors that creak or make noise. The threshold (door step) should be slightly elevated.",
         np: "अतिरिक्त ढोकाहरू: उत्तर-पूर्वमा झ्याल र ढोकाहरू दक्षिण-पश्चिम भन्दा ठूला हुनुपर्छ। ढोका र झ्यालहरूको संख्या जोर (२, ४, ६, आदि) हुनुपर्छ। चिच्याउने वा आवाज गर्ने ढोकाहरूबाट बच्नुहोस्। ढलान (ढोकाको पाइला) थोरै उच्च हुनुपर्छ।",
+      },
+    ],
+    customTopics: [
+      {
+        title: "Main Door Planning",
+        titleNp: "मुख्य ढोका योजना",
+        items: [
+          { en: "Keep the entrance bright, clean, easy to identify, and slightly more prominent than internal doors.", np: "प्रवेशद्वार उज्यालो, सफा, सजिलै चिनिने र भित्री ढोकाभन्दा अलि प्रमुख राख्नुहोस्।" },
+          { en: "Avoid direct alignment from the main door to toilet doors, back doors, or sharp corners.", np: "मुख्य ढोकाबाट शौचालय ढोका, पछाडिको ढोका वा तीखा कुनातिर सिधा लाइन नबनाउनुहोस्।" },
+          { en: "Use a solid threshold, good lighting, and a clutter-free foyer to slow and settle incoming energy.", np: "आउँदो उर्जा स्थिर बनाउन बलियो थ्रेसहोल्ड, राम्रो प्रकाश र अव्यवस्था रहित फोयर प्रयोग गर्नुहोस्।" },
+        ],
+      },
+      {
+        title: "Entrance Corrections",
+        titleNp: "प्रवेश सुधार",
+        items: [
+          { en: "For less favorable entrance directions, improve lighting, cleanliness, door quality, nameplate placement, and entry landscaping.", np: "कम अनुकूल दिशाका ढोकामा प्रकाश, सफाइ, ढोकाको गुणस्तर, नेमप्लेट र प्रवेश ल्याण्डस्केप सुधार गर्नुहोस्।" },
+          { en: "Place shoes, bins, and broken objects away from the main door zone.", np: "जुत्ता, फोहोर डब्बा र टुटेका वस्तु मुख्य ढोकाको क्षेत्रबाट टाढा राख्नुहोस्।" },
+        ],
       },
     ],
   },
@@ -584,6 +666,25 @@ export const sections: Record<string, SectionData> = {
         np: "सीढी: घरको दक्षिण, पश्चिम वा दक्षिण-पश्चिम। सीढी केन्द्र (ब्रह्मस्थान) वा उत्तर-पूर्वमा हुनु हुँदैन। सीढीको दिशा पूर्वदेखि पश्चिम वा उत्तरदेखि दक्षिण हुनुपर्छ।",
       },
     ],
+    customTopics: [
+      {
+        title: "Planning Sequence",
+        titleNp: "योजना क्रम",
+        items: [
+          { en: "First fix the center, entrance, kitchen, master bedroom, toilets, and staircase; then arrange secondary rooms.", np: "पहिले केन्द्र, प्रवेश, भान्सा, मास्टर बेडरूम, शौचालय र सिँढी मिलाउनुहोस्; त्यसपछि सहायक कोठा मिलाउनुहोस्।" },
+          { en: "Keep public spaces closer to the entrance and private spaces deeper inside the plan.", np: "सार्वजनिक ठाउँ प्रवेश नजिक र निजी ठाउँ योजना भित्र गहिरो भागमा राख्नुहोस्।" },
+          { en: "Use furniture weight to support Vastu zones: heavier storage South/West, lighter seating North/East.", np: "फर्निचरको भारबाट वास्तु जोनलाई समर्थन गर्नुहोस्: भारी भण्डारण दक्षिण/पश्चिम, हल्का बसाइ उत्तर/पूर्व।" },
+        ],
+      },
+      {
+        title: "Apartment & Small Plot Guidance",
+        titleNp: "अपार्टमेन्ट र सानो प्लट मार्गदर्शन",
+        items: [
+          { en: "When exact placement is impossible, prioritize direction of use: sleeping head, cooking face, study face, and prayer face.", np: "ठ्याक्कै स्थान सम्भव नभए प्रयोगको दिशा प्राथमिकता दिनुहोस्: सुत्ने टाउको, पकाउने मुख, पढ्ने मुख र पूजा मुख।" },
+          { en: "Avoid placing heavy storage in North-East and avoid keeping the center congested.", np: "उत्तर-पूर्वमा भारी भण्डारण नराख्नुहोस् र केन्द्रलाई भिडभाडयुक्त नबनाउनुहोस्।" },
+        ],
+      },
+    ],
   },
   "kitchen-dining": {
     title: "Kitchen & Dining",
@@ -612,6 +713,25 @@ export const sections: Record<string, SectionData> = {
       {
         en: "COLORS: Recommended colors for dining area: light blue, yellow, saffron, and light green. These colors stimulate appetite and create a warm, inviting atmosphere for family meals.",
         np: "रङहरू: खाना क्षेत्रको लागि सिफारिस गरिएका रङहरू: हल्का निलो, पहेंलो, केसरी र हल्का हरियो। यी रङहरूले भोक बढाउँछन् र पारिवारिक खानाको लागि न्यानो, आकर्षक वातावरण सिर्जना गर्छन्।",
+      },
+    ],
+    customTopics: [
+      {
+        title: "Kitchen Work Triangle",
+        titleNp: "भान्साको कार्य त्रिकोण",
+        items: [
+          { en: "Keep stove, sink, and refrigerator convenient but separated enough to avoid fire-water conflict.", np: "चुल्हो, सिंक र फ्रिजलाई सुविधाजनक तर आगो-पानी द्वन्द्व नहुने गरी पर्याप्त दूरीमा राख्नुहोस्।" },
+          { en: "Use the South and West sides for tall units, storage, and heavier appliances.", np: "अग्ला युनिट, भण्डारण र भारी उपकरणका लागि दक्षिण र पश्चिम भाग प्रयोग गर्नुहोस्।" },
+          { en: "Keep the North-East of the kitchen light, clean, and suitable for water or washing where possible.", np: "भान्साको उत्तर-पूर्व भाग हल्का, सफा र सम्भव भए पानी वा धुने कामका लागि उपयुक्त राख्नुहोस्।" },
+        ],
+      },
+      {
+        title: "Dining Experience",
+        titleNp: "खाना खाने वातावरण",
+        items: [
+          { en: "Dining should feel warm, settled, and connected to the kitchen without exposing waste or clutter.", np: "खाना क्षेत्र न्यानो, स्थिर र भान्सासँग जोडिएको हुनुपर्छ तर फोहोर वा अव्यवस्था देखिने गरी होइन।" },
+          { en: "Use balanced lighting and calm wall colors to support family conversation and digestion.", np: "पारिवारिक संवाद र पाचनलाई सहयोग गर्न सन्तुलित प्रकाश र शान्त भित्ते रङ प्रयोग गर्नुहोस्।" },
+        ],
       },
     ],
   },

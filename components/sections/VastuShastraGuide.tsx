@@ -81,6 +81,28 @@ export default function VastuShastraGuide() {
               </div>
             ))}
           </div>
+
+          {section.customTopics && (
+            <div className="mt-8 grid md:grid-cols-2 gap-4">
+              {section.customTopics.map((topic) => (
+                <div key={topic.title} className="rounded-xl border border-light-gray/50 bg-off-white p-4">
+                  <h4 className="font-display font-bold text-base text-brand-dark">{topic.title}</h4>
+                  <p className="mt-0.5 text-xs text-mid-gray/70">{topic.titleNp}</p>
+                  <div className="mt-4 space-y-3">
+                    {topic.items.map((item, i) => (
+                      <div key={i} className="flex gap-2 text-sm">
+                        <span className="mt-1 size-1.5 rounded-full bg-brand-primary shrink-0" />
+                        <div>
+                          <p className="text-mid-gray leading-relaxed">{item.en}</p>
+                          <p className="text-xs text-mid-gray/60 leading-relaxed">{item.np}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -134,7 +156,7 @@ export default function VastuShastraGuide() {
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-2 flex items-center gap-1">
-                    <span>✓</span> Tips (Do's)
+                    <span>✓</span> Tips (Do&apos;s)
                   </p>
                   <div className="space-y-1.5">
                     {rooms[selectedRoom].tips.map((t, i) => (
@@ -150,7 +172,7 @@ export default function VastuShastraGuide() {
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-2 flex items-center gap-1">
-                    <span>✗</span> Avoid (Don'ts)
+                    <span>✗</span> Avoid (Don&apos;ts)
                   </p>
                   <div className="space-y-1.5">
                     {rooms[selectedRoom].avoid.map((a, i) => (
@@ -208,7 +230,7 @@ export default function VastuShastraGuide() {
 
                 <div>
                   <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-2 flex items-center gap-1">
-                    <span>✓</span> Recommended (Do's)
+                    <span>✓</span> Recommended (Do&apos;s)
                   </p>
                   <div className="space-y-1.5">
                     {directions[selectedDirection].recommended.map((r, i) => (
@@ -224,7 +246,7 @@ export default function VastuShastraGuide() {
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-2 flex items-center gap-1">
-                    <span>✗</span> Avoid (Don'ts)
+                    <span>✗</span> Avoid (Don&apos;ts)
                   </p>
                   <div className="space-y-1.5">
                     {directions[selectedDirection].avoid.map((a, i) => (
