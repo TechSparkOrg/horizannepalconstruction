@@ -1,0 +1,88 @@
+"use client";
+
+import { useState } from "react";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { SectionLabel } from "@/components/ui/SectionLabel";
+
+const testimonials = [
+  { name: "Rajesh Maharjan", role: "Homeowner · Lalitpur", quote: "Horizon Nepal delivered our family home on time and 4% under budget. The weekly updates made everything feel under control.", initials: "RM" },
+  { name: "Sita Gurung", role: "MD · Annapurna Retail", quote: "We've now done three commercial fit-outs with this team. The attention to structural detail is genuinely unmatched in the valley.", initials: "SG" },
+  { name: "Bibek Karki", role: "Director · Public Works", quote: "Their road maintenance crew is the rare contractor that finishes ahead of schedule and still passes every inspection.", initials: "BK" },
+  { name: "Anita Sharma", role: "Hotelier · Thamel", quote: "The interior renovation was handled with respect for our heritage building. Craftsmanship at a level we hadn't seen before.", initials: "AS" },
+];
+
+export function TestimonialsSection() {
+  const [i, setI] = useState(0);
+  const perView = 3;
+  const max = Math.max(0, testimonials.length - perView);
+  const prev = () => setI((v) => Math.max(0, v - 1));
+  const next = () => setI((v) => Math.min(max, v + 1));
+
+  return (
+    <section className="bg-off-white py-16 sm:py-28" aria-label="Customer testimonials">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <SectionLabel>Testimonials</SectionLabel>
+            <h2 className="mt-3 font-display font-bold text-brand-secondary text-3xl sm:text-4xl lg:text-5xl">
+              What Our Clients Say
+            </h2>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={prev}
+              aria-label="Previous"
+              className="size-11 rounded-full border border-light-gray bg-white grid place-items-center hover:border-brand-primary hover:text-brand-primary transition"
+            >
+              <ChevronLeft className="size-5" />
+            </button>
+            <button
+              onClick={next}
+              aria-label="Next"
+              className="size-11 rounded-full border border-light-gray bg-white grid place-items-center hover:border-brand-primary hover:text-brand-primary transition"
+            >
+              <ChevronRight className="size-5" />
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-10 overflow-hidden">
+          <div
+            className="flex gap-6 transition-transform duration-500"
+            style={{
+              transform: `translateX(calc(-${i} * (100% / 3) - ${i} * 1.5rem / 3))`,
+            }}
+            aria-live="polite"
+          >
+            {testimonials.map((t) => (
+              <article
+                key={t.name}
+                className="shrink-0 w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] bg-white rounded-2xl p-6 border border-light-gray/40 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] transition-shadow duration-300"
+              >
+                <div className="flex gap-1 text-amber-400 mb-3">
+                  {[...Array(5)].map((_, k) => (
+                    <Star key={k} className="size-4 fill-current" />
+                  ))}
+                </div>
+                <p className="text-brand-dark italic leading-relaxed">
+                  <span className="text-brand-primary font-display text-xl">&ldquo;</span>
+                  {t.quote}
+                  <span className="text-brand-primary font-display text-xl">&rdquo;</span>
+                </p>
+                <div className="mt-5 flex items-center gap-3">
+                  <div className="size-11 rounded-full bg-brand-secondary text-white grid place-items-center font-semibold text-sm">
+                    {t.initials}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-brand-secondary">{t.name}</p>
+                    <p className="text-sm text-mid-gray">{t.role}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
