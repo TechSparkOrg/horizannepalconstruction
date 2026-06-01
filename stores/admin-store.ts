@@ -3,8 +3,7 @@ import { persist } from "zustand/middleware";
 import { defaultVastuConfig } from "./vastu-defaults";
 import { defaultPermitConfig } from "./permit-defaults";
 import { defaultReviews } from "./review-defaults";
-
-export type AdminPermission = "read" | "write" | "admin";
+import type { AdminAuthState } from "@/api/types/auth.types";
 
 export interface SiteSettings {
   socialLinks: { platform: string; url: string; label: string }[];
@@ -270,10 +269,7 @@ export interface VastuConfig {
   directionOptions: { id: string; label: string; subtitle: string }[];
 }
 
-interface AdminState {
-  isAuthenticated: boolean;
-  username: string | null;
-  permissions: AdminPermission[];
+type AdminState = AdminAuthState & {
   settings: SiteSettings;
   projects: AdminProject[];
   categories: AdminCategory[];
@@ -301,7 +297,6 @@ interface AdminState {
   addTeamMember: (m: TeamMember) => void;
   updateTeamMember: (id: string, m: Partial<TeamMember>) => void;
   deleteTeamMember: (id: string) => void;
-  login: (username: string, password: string) => boolean;
   logout: () => void;
   updateSettings: (s: Partial<SiteSettings>) => void;
   addProject: (p: AdminProject) => void;
@@ -330,11 +325,6 @@ interface AdminState {
   addPage: (p: AdminPagePolicy) => void;
   updatePage: (id: string, p: Partial<AdminPagePolicy>) => void;
   deletePage: (id: string) => void;
-}
-
-const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "admin123";
-const PERMISSIONS: Record<string, AdminPermission[]> = {
-  admin: ["read", "write", "admin"],
 };
 
 const defaultSettings: SiteSettings = {
@@ -363,8 +353,7 @@ export const useAdminStore = create<AdminState>()(
   persist(
     (set) => ({
       isAuthenticated: false,
-      username: null,
-      permissions: [],
+      user: null,
       settings: defaultSettings,
       projects: [],
       categories: [],
@@ -397,16 +386,10 @@ export const useAdminStore = create<AdminState>()(
         successMessage: "We'll reach out within 24 hours to schedule your free consultation.",
       },
       submissions: [],
-      login: (username, password) => {
-        if (password !== ADMIN_PASSWORD) return false;
-        set({ isAuthenticated: true, username, permissions: PERMISSIONS.admin });
-        return true;
-      },
       logout: () => {
         set({
           isAuthenticated: false,
-          username: null,
-          permissions: [],
+          user: null,
           settings: defaultSettings,
           projects: [],
           categories: [],

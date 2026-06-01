@@ -12,7 +12,7 @@ export default function AdminProtectedLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { isAuthenticated, username, logout } = useAdminStore();
+  const { isAuthenticated, user, logout } = useAdminStore();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -92,7 +92,7 @@ export default function AdminProtectedLayout({
           </Link>
         </nav>
         <div className="p-4 border-t border-white/10">
-          <p className="text-xs text-white/50 mb-2">Signed in as {username}</p>
+          <p className="text-xs text-white/50 mb-2">Signed in as {user?.username || user?.email}</p>
           <button
             onClick={() => { logout(); router.push("/admin/login"); }}
             className="flex items-center gap-2 text-sm text-red-300 hover:text-red-200 transition w-full"

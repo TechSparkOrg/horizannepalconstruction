@@ -21,7 +21,9 @@ package-lock.json
 
 # production
 /build
-
+graphify-out/*
+graphify-out
+backend
 # misc
 .DS_Store
 *.pem

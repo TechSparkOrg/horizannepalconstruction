@@ -4,23 +4,34 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Lock, Eye, EyeOff } from "lucide-react";
 import { useAdminStore } from "@/stores/admin-store";
+import { AuthService } from "@/api/services/auth.service";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const login = useAdminStore((s) => s.login);
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    const ok = login(username, password);
-    if (ok) {
+    setIsSubmitting(true);
+
+    try {
+      const session = await AuthService.Login({ email, password });
+      if (!session.access || !session.user) throw new Error("Invalid login response");
+
+      useAdminStore.setState({
+        isAuthenticated: true,
+        user: session.user,
+      });
       router.push("/admin");
-    } else {
-      setError("Invalid username or password");
+    } catch {
+      setError("Invalid email or password");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -39,16 +50,17 @@ export default function AdminLoginPage() {
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-brand-dark mb-1">
-              Username
+            <label htmlFor="email" className="block text-sm font-medium text-brand-dark mb-1">
+              Email
             </label>
             <input
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full h-11 px-3 rounded-md border border-light-gray bg-white text-brand-dark text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
-              placeholder="Enter username"
+              placeholder="Enter email"
             />
           </div>
 
@@ -82,9 +94,10 @@ export default function AdminLoginPage() {
 
           <button
             type="submit"
+            disabled={isSubmitting}
             className="w-full h-[52px] rounded-md bg-brand-primary text-white font-semibold inline-flex items-center justify-center gap-2 hover:brightness-110 transition"
           >
-            Sign In
+            {isSubmitting ? "Signing In..." : "Sign In"}
           </button>
         </form>
       </div>
