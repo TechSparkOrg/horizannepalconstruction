@@ -1,22 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star, Languages } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { useAdminStore } from "@/stores/admin-store";
 
-const testimonials = [
-  { name: "Rajesh Maharjan", role: "Homeowner · Lalitpur", quote: "Horizon Nepal delivered our family home on time and 4% under budget. The weekly updates made everything feel under control.", initials: "RM" },
-  { name: "Sita Gurung", role: "MD · Annapurna Retail", quote: "We've now done three commercial fit-outs with this team. The attention to structural detail is genuinely unmatched in the valley.", initials: "SG" },
-  { name: "Bibek Karki", role: "Director · Public Works", quote: "Their road maintenance crew is the rare contractor that finishes ahead of schedule and still passes every inspection.", initials: "BK" },
-  { name: "Anita Sharma", role: "Hotelier · Thamel", quote: "The interior renovation was handled with respect for our heritage building. Craftsmanship at a level we hadn't seen before.", initials: "AS" },
-];
+function Stars({ value }: { value: number }) {
+  return (
+    <div className="flex gap-1 text-amber-400 mb-3">
+      {[1, 2, 3, 4, 5].map((s) => (
+        <Star key={s} className={`size-4 ${s <= value ? "fill-current" : "text-gray-200"}`} />
+      ))}
+    </div>
+  );
+}
 
 export function TestimonialsSection() {
+  const { reviews } = useAdminStore();
   const [i, setI] = useState(0);
+  const [lang, setLang] = useState<"en" | "np">("en");
   const perView = 3;
-  const max = Math.max(0, testimonials.length - perView);
+  const max = Math.max(0, reviews.length - perView);
   const prev = () => setI((v) => Math.max(0, v - 1));
   const next = () => setI((v) => Math.min(max, v + 1));
+
+  if (reviews.length === 0) return null;
 
   return (
     <section className="bg-off-white py-16 sm:py-28" aria-label="Customer testimonials">
@@ -28,7 +36,14 @@ export function TestimonialsSection() {
               What Our Clients Say
             </h2>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setLang(lang === "en" ? "np" : "en")}
+              className="h-10 px-3 rounded-lg border border-light-gray bg-white text-xs font-semibold text-mid-gray flex items-center gap-1.5 hover:border-brand-primary hover:text-brand-primary transition"
+            >
+              <Languages className="size-3.5" />
+              {lang === "en" ? "NP" : "EN"}
+            </button>
             <button
               onClick={prev}
               aria-label="Previous"
@@ -54,19 +69,15 @@ export function TestimonialsSection() {
             }}
             aria-live="polite"
           >
-            {testimonials.map((t) => (
+            {reviews.map((t) => (
               <article
-                key={t.name}
+                key={t.id}
                 className="shrink-0 w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] bg-white rounded-2xl p-6 border border-light-gray/40 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] transition-shadow duration-300"
               >
-                <div className="flex gap-1 text-amber-400 mb-3">
-                  {[...Array(5)].map((_, k) => (
-                    <Star key={k} className="size-4 fill-current" />
-                  ))}
-                </div>
+                <Stars value={t.rating} />
                 <p className="text-brand-dark italic leading-relaxed">
                   <span className="text-brand-primary font-display text-xl">&ldquo;</span>
-                  {t.quote}
+                  {t.quote[lang]}
                   <span className="text-brand-primary font-display text-xl">&rdquo;</span>
                 </p>
                 <div className="mt-5 flex items-center gap-3">

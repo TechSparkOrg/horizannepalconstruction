@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { LogOut, LayoutDashboard, FolderKanban, Tags, MessageCircle, Image as ImageIcon, Settings, Newspaper, Box, Calculator } from "lucide-react";
+import { LogOut, LayoutDashboard, FolderKanban, Tags, MessageCircle, Image as ImageIcon, Settings, Newspaper, Box, Calculator, FileText, Sun, Users, Building2, Star, PhoneCall } from "lucide-react";
 import Link from "next/link";
 import { useAdminStore } from "@/stores/admin-store";
 
@@ -54,6 +54,14 @@ export default function AdminProtectedLayout({
             <Newspaper className="size-4" />
             Blogs
           </Link>
+          <Link href="/admin/pages" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/10 transition">
+            <FileText className="size-4" />
+            Pages
+          </Link>
+          <Link href="/admin/reviews" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/10 transition">
+            <Star className="size-4" />
+            Reviews
+          </Link>
           <Link href="/admin/models" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/10 transition">
             <Box className="size-4" />
             3D Models
@@ -61,6 +69,22 @@ export default function AdminProtectedLayout({
           <Link href="/admin/calculator" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/10 transition">
             <Calculator className="size-4" />
             Calculator
+          </Link>
+          <Link href="/admin/consultation" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/10 transition">
+            <PhoneCall className="size-4" />
+            Consultation
+          </Link>
+          <Link href="/admin/vastu" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/10 transition">
+            <Sun className="size-4" />
+            Vastu
+          </Link>
+          <Link href="/admin/team" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/10 transition">
+            <Users className="size-4" />
+            Team
+          </Link>
+          <Link href="/admin/building-permit" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/10 transition">
+            <Building2 className="size-4" />
+            Building Permit
           </Link>
           <Link href="/admin/settings" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/10 transition">
             <Settings className="size-4" />

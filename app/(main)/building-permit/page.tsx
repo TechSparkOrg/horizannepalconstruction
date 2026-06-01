@@ -1,71 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import { FileText, Building2, TriangleAlert, Wind, Flame, Clock } from "lucide-react";
+import { useAdminStore } from "@/stores/admin-store";
 
-const workflowSteps = [
-  {
-    num: 1,
-    title: "Site Verification",
-    desc: "The municipality verifies your land ownership and conducts an on-site inspection to confirm the location and boundaries of the property.",
-    duration: "2–3 days",
-    docs: ["Land ownership certificate", "Site photos", "Survey map"],
-  },
-  {
-    num: 2,
-    title: "Design Approval",
-    desc: "Submit architectural and structural designs, along with cadastral extracts and required certifications, to the municipality for approval.",
-    duration: "7–15 days",
-    docs: ["Architectural drawings", "Structural drawings", "Plumbing & electrical plans"],
-  },
-  {
-    num: 3,
-    title: "15-Day Public Notice",
-    desc: "The Ward Office sends a public notice to the site's neighbors to inform them about the proposed house construction. This notice period lasts 15 days, allowing neighbors to give feedback or objections before approval proceeds. The local inquiry starts after the notice period to finalize consent.",
-    duration: "15 days",
-    docs: ["Public Notice Form", "Proof of Land Ownership / Title Certificate", "Neighbor Acknowledgment / Consent Form / Commitment letter"],
-  },
-  {
-    num: 4,
-    title: "Permit Issuance",
-    desc: "After the notice period and local inquiry, the municipality issues the temporary or permanent building permit, allowing construction to proceed up to the plinth level. At least one neighbor must consent, or a commitment letter can be submitted by the builder to handle potential disputes.",
-    duration: "3–5 days",
-    docs: ["Payment receipts", "All approved drawings", "Commitment Letter / Neighbor Consent"],
-  },
-];
-
-const docCategories = [
-  {
-    label: "Land Documents",
-    items: ["Land ownership certificate (Lalpurja)", "Tax clearance certificate", "Survey map (Naksha Pass)"],
-  },
-  {
-    label: "Design Documents",
-    items: ["Site plan", "Floor plans for all levels", "Elevation drawings (all sides)", "Structural design with calculations", "Plumbing layout", "Electrical layout"],
-  },
-  {
-    label: "Legal Documents",
-    items: ["Citizenship certificate of owner", "Tax clearance certificate", "Building permit application form"],
-  },
-  {
-    label: "Technical Documents",
-    items: ["Structural engineer certificate", "Architect registration certificate", "Construction schedule", "Building Code Compliance"],
-  },
-];
-
-const regulations = [
-  { icon: Building2, title: "Building Height Restrictions", items: ["Maximum 4 floors in residential areas", "Maximum 7 floors in commercial areas", "Minimum setback: 1.5m from property line", "Floor-to-floor height: 2.75m to 3.35m"] },
-  { icon: TriangleAlert, title: "Earthquake Safety (NBC)", items: ["Seismic zone compliant design", "Reinforced concrete frame required", "Shear walls in multi-story buildings", "Foundation depth based on soil type"] },
-  { icon: Flame, title: "Fire Safety Requirements", items: ["Fire exits in buildings over 3 stories", "Fire extinguisher on each floor", "Smoke detectors in corridors", "Fire-resistant materials for staircases"] },
-  { icon: Wind, title: "Ventilation & Lighting", items: ["Minimum 10% of floor area as windows", "Cross-ventilation in all rooms", "Bathrooms must have exhaust fans", "Natural light in habitable rooms required"] },
-];
-
-const municipalities = [
-  { name: "Butwal Sub-Metropolitan", district: "Butwal", phone: "071-540294" },
-  { name: "Bhairahawa Municipality", district: "Rupandehi", phone: "071-520145" },
-  { name: "Tilottama Municipality", district: "Rupandehi", phone: "071-590123" },
-  { name: "Siddharthanagar Municipality", district: "Rupandehi", phone: "071-520145" },
-];
+const REG_ICONS = [Building2, TriangleAlert, Flame, Wind];
 
 export default function BuildingPermitPage() {
+  const { buildingPermitConfig } = useAdminStore();
+  const { workflowSteps, docCategories, regulations, municipalities } = buildingPermitConfig;
+
   return (
     <>
       {/* Hero */}
@@ -80,7 +24,7 @@ export default function BuildingPermitPage() {
             <h1 className="font-display font-bold text-white mt-6 leading-[1.08]" style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}>
               Building Permit<br />Assistant
             </h1>
-            <p className="mt-4 text-white/60 text-lg max-w-[540px] leading-relaxed">Navigate Nepal's building permit process with confidence.</p>
+            <p className="mt-4 text-white/60 text-lg max-w-[540px] leading-relaxed">Navigate Nepal&apos;s building permit process with confidence.</p>
             <div className="mt-8">
               <a href="#workflow" className="inline-flex items-center gap-2 px-6 py-3 bg-brand-primary text-white text-sm font-semibold rounded-xl hover:bg-brand-primary/90 transition-all shadow-lg shadow-brand-primary/30">
                 <FileText className="size-4" />
@@ -103,31 +47,26 @@ export default function BuildingPermitPage() {
           <div className="mt-14 space-y-8">
             {workflowSteps.map((step, i) => (
               <div key={step.num} className="relative flex gap-6">
-                {/* Timeline connector */}
                 {i < workflowSteps.length - 1 && (
                   <div className="absolute left-6 top-16 bottom-0 w-px bg-gradient-to-b from-brand-primary/40 to-brand-secondary/20 hidden sm:block" />
                 )}
-
-                {/* Step number */}
                 <div className="hidden sm:flex size-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-primary to-brand-primary/80 text-white font-bold text-lg shadow-lg shadow-brand-primary/25">
                   {step.num}
                 </div>
-
-                {/* Card */}
                 <div className="flex-1 bg-off-white rounded-2xl p-6 sm:p-8 border border-light-gray/40">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-4">
                     <div className="flex items-center gap-3">
                       <div className="sm:hidden flex size-8 items-center justify-center rounded-full bg-brand-primary text-white font-bold text-xs">
                         {step.num}
                       </div>
-                      <h3 className="font-display font-bold text-xl text-brand-dark">{step.title}</h3>
+                      <h3 className="font-display font-bold text-xl text-brand-dark">{step.title.en}</h3>
                     </div>
                     <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-primary bg-brand-primary/10 px-3 py-1 rounded-full shrink-0">
                       <Clock className="size-3" />
                       {step.duration}
                     </span>
                   </div>
-                  <p className="text-mid-gray text-sm leading-relaxed">{step.desc}</p>
+                  <p className="text-mid-gray text-sm leading-relaxed">{step.desc.en}</p>
                   <div className="mt-4 pt-4 border-t border-light-gray/40">
                     <p className="text-xs font-semibold text-mid-gray/70 uppercase tracking-wide mb-2">Required:</p>
                     <div className="flex flex-wrap gap-1.5">
@@ -156,13 +95,13 @@ export default function BuildingPermitPage() {
 
           <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {docCategories.map((cat) => (
-              <div key={cat.label} className="bg-white rounded-2xl p-6 border border-light-gray/40">
-                <h3 className="font-display font-bold text-base text-brand-primary mb-4 pb-3 border-b border-light-gray/30">{cat.label}</h3>
+              <div key={cat.label.en} className="bg-white rounded-2xl p-6 border border-light-gray/40">
+                <h3 className="font-display font-bold text-base text-brand-primary mb-4 pb-3 border-b border-light-gray/30">{cat.label.en}</h3>
                 <ul className="space-y-2.5">
                   {cat.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-mid-gray">
+                    <li key={item.en} className="flex items-start gap-2 text-sm text-mid-gray">
                       <span className="size-1.5 rounded-full bg-brand-secondary/40 shrink-0 mt-1.5" />
-                      {item}
+                      {item.en}
                     </li>
                   ))}
                 </ul>
@@ -182,24 +121,27 @@ export default function BuildingPermitPage() {
           </div>
 
           <div className="mt-12 grid sm:grid-cols-2 gap-5">
-            {regulations.map((reg) => (
-              <div key={reg.title} className="bg-off-white rounded-2xl p-6 border border-light-gray/40">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="size-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
-                    <reg.icon className="size-5" />
+            {regulations.map((reg, i) => {
+              const Icon = REG_ICONS[i] || Building2;
+              return (
+                <div key={reg.title.en} className="bg-off-white rounded-2xl p-6 border border-light-gray/40">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="size-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
+                      <Icon className="size-5" />
+                    </div>
+                    <h3 className="font-display font-bold text-lg text-brand-dark">{reg.title.en}</h3>
                   </div>
-                  <h3 className="font-display font-bold text-lg text-brand-dark">{reg.title}</h3>
+                  <ul className="space-y-2">
+                    {reg.items.map((item) => (
+                      <li key={item.en} className="flex items-start gap-2 text-sm text-mid-gray">
+                        <span className="size-1 rounded-full bg-brand-primary/40 shrink-0 mt-2" />
+                        {item.en}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-2">
-                  {reg.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-mid-gray">
-                      <span className="size-1 rounded-full bg-brand-primary/40 shrink-0 mt-2" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -242,4 +184,3 @@ export default function BuildingPermitPage() {
     </>
   );
 }
-

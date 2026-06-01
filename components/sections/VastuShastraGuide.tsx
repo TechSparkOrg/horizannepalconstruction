@@ -1,21 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { rooms, directions, sections, roomOptions, directionOptions } from "./vastuData";
+import type { VastuConfig } from "@/stores/admin-store";
 
-const sectionKeys = ["overview", "elements", "land", "entrance", "room-placement", "kitchen-dining"] as const;
-
-const sectionIcons: Record<string, string> = {
-  overview: "🪷",
-  elements: "🌍",
-  land: "🏞️",
-  entrance: "🚪",
-  "room-placement": "🏠",
-  "kitchen-dining": "🍳",
-};
-
-export default function VastuShastraGuide() {
-  const [activeSection, setActiveSection] = useState<string>("overview");
+export default function VastuShastraGuide({ data }: { data: VastuConfig }) {
+  const { sections, rooms, directions, roomOptions, directionOptions, sectionIcons, sectionKeys } = data;
+  const [activeSection, setActiveSection] = useState<string>(sectionKeys[0]);
   const [selectedRoom, setSelectedRoom] = useState("living-room");
   const [selectedDirection, setSelectedDirection] = useState("south");
   const [showRoomResult, setShowRoomResult] = useState(false);

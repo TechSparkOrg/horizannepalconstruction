@@ -3,12 +3,37 @@
 import { useState } from "react";
 import { ArrowRight, MapPin, Mail, Phone } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { useAdminStore } from "@/stores/admin-store";
+
+function genId() {
+  return crypto.randomUUID();
+}
 
 export function ConsultationForm() {
+  const { settings, consultationForm, addSubmission } = useAdminStore();
+  const { contactInfo } = settings;
+  const { sectionLabel, heading, description, formTitle, serviceOptions, privacyText, successHeading, successMessage } = consultationForm;
+
   const [submitted, setSubmitted] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [service, setService] = useState("");
+  const [desc, setDesc] = useState("");
+  const [preferredDate, setPreferredDate] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    addSubmission({
+      id: genId(),
+      name,
+      email,
+      phone,
+      service,
+      description: desc,
+      preferredDate,
+      createdAt: new Date().toISOString(),
+    });
     setSubmitted(true);
   };
 
@@ -22,12 +47,12 @@ export function ConsultationForm() {
               "repeating-linear-gradient(45deg, oklch(1 0 0 / 0.03) 0 2px, transparent 2px 14px)",
           }}
         >
-          <SectionLabel>Get in Touch</SectionLabel>
+          <SectionLabel>{sectionLabel}</SectionLabel>
           <h2 className="mt-3 font-display font-bold text-white text-3xl sm:text-4xl leading-tight">
-            Let&apos;s Discuss Your Project
+            {heading}
           </h2>
           <p className="mt-5 text-white/75 leading-relaxed max-w-md">
-            Tell us about your vision, and we&apos;ll get back to you within 24 hours for a free consultation.
+            {description}
           </p>
           <div className="mt-8 rounded-xl overflow-hidden h-32 sm:h-36 bg-white/5 flex items-center justify-center text-white/20">
             <Mail className="size-10" />
@@ -35,19 +60,19 @@ export function ConsultationForm() {
           <ul className="mt-6 space-y-4 text-white/85">
             <li className="flex items-center gap-3">
               <Phone className="size-5 text-brand-primary" />
-              <a href="tel:+97714411222" className="hover:text-brand-primary">
-                +977 1 441 1222
+              <a href={`tel:${contactInfo.phone}`} className="hover:text-brand-primary">
+                {contactInfo.phone}
               </a>
             </li>
             <li className="flex items-center gap-3">
               <Mail className="size-5 text-brand-primary" />
-              <a href="mailto:hello@horizonnepal.com.np" className="hover:text-brand-primary">
-                hello@horizonnepal.com.np
+              <a href={`mailto:${contactInfo.email}`} className="hover:text-brand-primary">
+                {contactInfo.email}
               </a>
             </li>
             <li className="flex items-center gap-3">
               <MapPin className="size-5 text-brand-primary" />
-              <span>Tinkune, Kathmandu</span>
+              <span>{contactInfo.address}</span>
             </li>
           </ul>
         </div>
@@ -57,7 +82,7 @@ export function ConsultationForm() {
           className="bg-off-white rounded-r-2xl rounded-b-2xl lg:rounded-b-2xl lg:rounded-bl-none p-8 sm:p-10"
         >
           <h3 className="font-display text-2xl font-bold text-brand-secondary">
-            Send Us a Message
+            {formTitle}
           </h3>
 
           {submitted ? (
@@ -67,8 +92,8 @@ export function ConsultationForm() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
               </div>
-              <h3 className="mt-4 font-display font-bold text-xl text-brand-dark">Thank You!</h3>
-              <p className="mt-2 text-mid-gray text-sm">We&apos;ll reach out within 24 hours to schedule your free consultation.</p>
+              <h3 className="mt-4 font-display font-bold text-xl text-brand-dark">{successHeading}</h3>
+              <p className="mt-2 text-mid-gray text-sm">{successMessage}</p>
             </div>
           ) : (
             <>
@@ -80,6 +105,8 @@ export function ConsultationForm() {
                   <input
                     id="name"
                     required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     className="w-full h-11 px-3 rounded-md border border-light-gray bg-white text-brand-dark text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                     placeholder="Your name"
                   />
@@ -92,6 +119,8 @@ export function ConsultationForm() {
                     id="email"
                     type="email"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full h-11 px-3 rounded-md border border-light-gray bg-white text-brand-dark text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                     placeholder="your@email.com"
                   />
@@ -103,6 +132,8 @@ export function ConsultationForm() {
                   <input
                     id="phone"
                     type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                     className="w-full h-11 px-3 rounded-md border border-light-gray bg-white text-brand-dark text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                     placeholder="+977 98XXXXXXXX"
                   />
@@ -113,15 +144,14 @@ export function ConsultationForm() {
                   </label>
                   <select
                     id="service"
+                    value={service}
+                    onChange={(e) => setService(e.target.value)}
                     className="w-full h-11 px-3 rounded-md border border-light-gray bg-white text-brand-dark text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                   >
                     <option value="">Select a service</option>
-                    <option>Architectural Design</option>
-                    <option>Engineering & Structure</option>
-                    <option>Construction Management</option>
-                    <option>Interior Design</option>
-                    <option>Material Consultation</option>
-                    <option>Other</option>
+                    {serviceOptions.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
                   </select>
                 </div>
                 <div className="sm:col-span-2">
@@ -131,6 +161,8 @@ export function ConsultationForm() {
                   <textarea
                     id="description"
                     rows={4}
+                    value={desc}
+                    onChange={(e) => setDesc(e.target.value)}
                     className="w-full px-3 py-2 rounded-md border border-light-gray bg-white text-brand-dark text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary resize-none"
                     placeholder="Tell us about your project..."
                   />
@@ -142,6 +174,8 @@ export function ConsultationForm() {
                   <input
                     id="date"
                     type="date"
+                    value={preferredDate}
+                    onChange={(e) => setPreferredDate(e.target.value)}
                     className="w-full h-11 px-3 rounded-md border border-light-gray bg-white text-brand-dark text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                   />
                 </div>
@@ -154,7 +188,7 @@ export function ConsultationForm() {
                 Send Message <ArrowRight className="size-4" />
               </button>
               <p className="mt-3 text-xs text-mid-gray">
-                We respect your privacy. Your information is safe with us.
+                {privacyText}
               </p>
             </>
           )}

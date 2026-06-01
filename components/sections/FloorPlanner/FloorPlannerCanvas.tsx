@@ -26,6 +26,8 @@ import {
   Warehouse,
 } from "lucide-react";
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 type ToolType =
   | "select"
   | "room"
@@ -65,93 +67,102 @@ interface FurnitureDef {
   h: number;
 }
 
+// ─── Constants ────────────────────────────────────────────────────────────────
+
 const FURNITURE: FurnitureDef[] = [
-  { tool: "sofa", label: "Sofa", Icon: Sofa, color: "#e74c3c", w: 90, h: 35 },
-  { tool: "bed", label: "Bed", Icon: BedDouble, color: "#9b59b6", w: 60, h: 90 },
-  { tool: "table", label: "Table", Icon: Table2, color: "#f39c12", w: 55, h: 55 },
-  { tool: "chair", label: "Chair", Icon: Armchair, color: "#1abc9c", w: 22, h: 22 },
-  { tool: "cabinet", label: "Cabinet", Icon: Box, color: "#e67e22", w: 45, h: 22 },
-  { tool: "wardrobe", label: "Wardrobe", Icon: Warehouse, color: "#8e44ad", w: 65, h: 28 },
-  { tool: "desk", label: "Desk", Icon: PanelTop, color: "#2ecc71", w: 55, h: 32 },
-  { tool: "dining-table", label: "Dining", Icon: Utensils, color: "#d35400", w: 75, h: 42 },
-  { tool: "bookshelf", label: "Shelves", Icon: BookOpen, color: "#7f8c8d", w: 32, h: 65 },
+  { tool: "sofa",         label: "Sofa",    Icon: Sofa,       color: "#e05a5a", w: 90, h: 35 },
+  { tool: "bed",          label: "Bed",     Icon: BedDouble,  color: "#7c5cbf", w: 60, h: 90 },
+  { tool: "table",        label: "Table",   Icon: Table2,     color: "#d4860e", w: 55, h: 55 },
+  { tool: "chair",        label: "Chair",   Icon: Armchair,   color: "#0f8a72", w: 22, h: 22 },
+  { tool: "cabinet",      label: "Cabinet", Icon: Box,        color: "#c96a18", w: 45, h: 22 },
+  { tool: "wardrobe",     label: "Wardrobe",Icon: Warehouse,  color: "#6e3da0", w: 65, h: 28 },
+  { tool: "desk",         label: "Desk",    Icon: PanelTop,   color: "#1e9b55", w: 55, h: 32 },
+  { tool: "dining-table", label: "Dining",  Icon: Utensils,   color: "#b84a0f", w: 75, h: 42 },
+  { tool: "bookshelf",    label: "Shelves", Icon: BookOpen,   color: "#5f7280", w: 32, h: 65 },
 ];
 
-const ELEMENT_COLORS = ["#3498db", "#2ecc71", "#e74c3c", "#f39c12", "#9b59b6", "#1abc9c", "#e67e22", "#34495e"];
+const ROOM_COLORS = [
+  "#3b82f6", "#10b981", "#f43f5e", "#f59e0b",
+  "#8b5cf6", "#06b6d4", "#f97316", "#64748b",
+];
+
 const TICK = 10;
 const GRID = 20;
-const MIN_ELEMENT_SIZE = 10;
+const MIN_SIZE = 10;
+
+const TOOLS: { tool: ToolType; label: string; Icon: ElementType }[] = [
+  { tool: "select", label: "Select",  Icon: MousePointer2 },
+  { tool: "room",   label: "Room",    Icon: Square },
+  { tool: "wall",   label: "Wall",    Icon: Ruler },
+  { tool: "stairs", label: "Stairs",  Icon: PanelTop },
+];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function snap(v: number) {
   return Math.round(v / TICK) * TICK;
 }
 
-function randomColor() {
-  return ELEMENT_COLORS[Math.floor(Math.random() * ELEMENT_COLORS.length)];
+function clampSize(v: number) {
+  return Number.isFinite(v) ? Math.max(MIN_SIZE, Math.round(v)) : MIN_SIZE;
 }
 
-function cleanSize(value: number) {
-  if (!Number.isFinite(value)) return MIN_ELEMENT_SIZE;
-  return Math.max(MIN_ELEMENT_SIZE, Math.round(value));
+function randomRoomColor() {
+  return ROOM_COLORS[Math.floor(Math.random() * ROOM_COLORS.length)];
 }
 
-const TOOLS: { tool: ToolType; label: string; Icon: ElementType }[] = [
-  { tool: "select", label: "Select", Icon: MousePointer2 },
-  { tool: "room", label: "Room", Icon: Square },
-  { tool: "wall", label: "Wall", Icon: Ruler },
-  { tool: "stairs", label: "Stairs", Icon: PanelTop },
-];
-
-function isEditableTarget(target: EventTarget | null) {
-  if (!(target instanceof HTMLElement)) return false;
-  const tag = target.tagName.toLowerCase();
-  return tag === "input" || tag === "textarea" || tag === "select" || target.isContentEditable;
+function isEditable(t: EventTarget | null) {
+  if (!(t instanceof HTMLElement)) return false;
+  const tag = t.tagName.toLowerCase();
+  return tag === "input" || tag === "textarea" || tag === "select" || t.isContentEditable;
 }
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function FloorPlannerCanvas() {
-  const [elements, setElements] = useState<FloorElement[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [activeTool, setActiveTool] = useState<ToolType>("select");
-  const [drawing, setDrawing] = useState(false);
-  const [drawStart, setDrawStart] = useState<{ x: number; y: number } | null>(null);
-  const [preview, setPreview] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
-  const [grid, setGrid] = useState(true);
-  const [zoom, setZoom] = useState(1);
-  const [size, setSize] = useState({ w: 800, h: 600 });
+  const [elements,      setElements]      = useState<FloorElement[]>([]);
+  const [selectedId,    setSelectedId]    = useState<string | null>(null);
+  const [activeTool,    setActiveTool]    = useState<ToolType>("select");
+  const [drawing,       setDrawing]       = useState(false);
+  const [drawStart,     setDrawStart]     = useState<{ x: number; y: number } | null>(null);
+  const [preview,       setPreview]       = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  const [showGrid,      setShowGrid]      = useState(true);
+  const [zoom,          setZoom]          = useState(1);
+  const [size,          setSize]          = useState({ w: 800, h: 600 });
   const [showFurniture, setShowFurniture] = useState(false);
 
-  const stageRef = useRef<Konva.Stage>(null);
-  const trRef = useRef<Konva.Transformer>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const stageRef    = useRef<Konva.Stage>(null);
+  const trRef       = useRef<Konva.Transformer>(null);
+  const containerRef= useRef<HTMLDivElement>(null);
+  const pendingSel  = useRef<string | null>(null);
 
+  // Canvas resize
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setSize({ w: Math.max(400, entry.contentRect.width), h: Math.max(400, entry.contentRect.height) });
+      for (const e of entries) {
+        setSize({ w: Math.max(400, e.contentRect.width), h: Math.max(400, e.contentRect.height) });
       }
     });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
 
-  // Track newly created element IDs to attach transformer after render
-  const pendingSelectRef = useRef<string | null>(null);
-
+  // Attach transformer to newly placed elements
   useEffect(() => {
-    if (!pendingSelectRef.current) return;
-    const id = pendingSelectRef.current;
-    pendingSelectRef.current = null;
-    const timer = setTimeout(() => {
+    if (!pendingSel.current) return;
+    const id = pendingSel.current;
+    pendingSel.current = null;
+    const t = setTimeout(() => {
       const node = stageRef.current?.findOne("#" + id);
       if (node && trRef.current) {
         trRef.current.nodes([node]);
         trRef.current.getLayer()?.batchDraw();
       }
     }, 20);
-    return () => clearTimeout(timer);
-  }, [elements.length]); // runs only when element count changes
+    return () => clearTimeout(t);
+  }, [elements.length]);
 
   const sel = elements.find((e) => e.id === selectedId);
 
@@ -159,7 +170,8 @@ export default function FloorPlannerCanvas() {
     setElements((prev) => prev.map((e) => (e.id === id ? { ...e, ...p } : e)));
   }, []);
 
-  // Pointer handlers
+  // ── Pointer events ──────────────────────────────────────────────────────────
+
   const onPointerDown = useCallback(
     (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
       if (activeTool === "select") {
@@ -172,33 +184,24 @@ export default function FloorPlannerCanvas() {
 
       const pos = e.target.getStage()?.getPointerPosition();
       if (!pos) return;
+      const px = showGrid ? snap(pos.x) : pos.x;
+      const py = showGrid ? snap(pos.y) : pos.y;
 
       if (activeTool === "room" || activeTool === "wall") {
         setDrawing(true);
-        setDrawStart({ x: grid ? snap(pos.x) : pos.x, y: grid ? snap(pos.y) : pos.y });
+        setDrawStart({ x: px, y: py });
         return;
       }
 
-      // Place stairs or furniture
-      const px = grid ? snap(pos.x) : pos.x;
-      const py = grid ? snap(pos.y) : pos.y;
-
       if (activeTool === "stairs") {
         const el: FloorElement = {
-          id: "e" + Date.now(),
-          type: "stairs",
-          x: px - 20,
-          y: py - 20,
-          width: 40,
-          height: 40,
-          rotation: 0,
-          label: "",
-          fill: "#f0f0f0",
-          stroke: "#7f8c8d",
-          strokeWidth: 2,
+          id: "e" + Date.now(), type: "stairs",
+          x: px - 20, y: py - 20, width: 40, height: 40,
+          rotation: 0, label: "",
+          fill: "#f1f5f9", stroke: "#94a3b8", strokeWidth: 1.5,
         };
         setElements((prev) => [...prev, el]);
-        pendingSelectRef.current = el.id;
+        pendingSel.current = el.id;
         setSelectedId(el.id);
         return;
       }
@@ -206,25 +209,18 @@ export default function FloorPlannerCanvas() {
       const fi = FURNITURE.find((f) => f.tool === activeTool);
       if (fi) {
         const el: FloorElement = {
-          id: "e" + Date.now(),
-          type: "furniture",
-          furnitureType: fi.tool,
-          x: px - fi.w / 2,
-          y: py - fi.h / 2,
-          width: fi.w,
-          height: fi.h,
-          rotation: 0,
-          label: "",
-          fill: fi.color,
-          stroke: "#2c3e50",
-          strokeWidth: 1.5,
+          id: "e" + Date.now(), type: "furniture", furnitureType: fi.tool,
+          x: px - fi.w / 2, y: py - fi.h / 2,
+          width: fi.w, height: fi.h,
+          rotation: 0, label: "",
+          fill: fi.color, stroke: "#1e293b", strokeWidth: 1,
         };
         setElements((prev) => [...prev, el]);
-        pendingSelectRef.current = el.id;
+        pendingSel.current = el.id;
         setSelectedId(el.id);
       }
     },
-    [activeTool, grid]
+    [activeTool, showGrid]
   );
 
   const onPointerMove = useCallback(
@@ -232,8 +228,8 @@ export default function FloorPlannerCanvas() {
       if (!drawing || !drawStart) return;
       const pos = e.target.getStage()?.getPointerPosition();
       if (!pos) return;
-      const ex = grid ? snap(pos.x) : pos.x;
-      const ey = grid ? snap(pos.y) : pos.y;
+      const ex = showGrid ? snap(pos.x) : pos.x;
+      const ey = showGrid ? snap(pos.y) : pos.y;
       setPreview({
         x: Math.min(drawStart.x, ex),
         y: Math.min(drawStart.y, ey),
@@ -241,78 +237,56 @@ export default function FloorPlannerCanvas() {
         h: Math.abs(ey - drawStart.y) || 1,
       });
     },
-    [drawing, drawStart, grid]
+    [drawing, drawStart, showGrid]
   );
 
-  const onPointerUp = useCallback(
-    () => {
-      if (!drawing || !drawStart || !preview) {
-        setDrawing(false);
-        setDrawStart(null);
-        setPreview(null);
-        return;
-      }
+  const onPointerUp = useCallback(() => {
+    if (!drawing || !drawStart || !preview) {
+      setDrawing(false); setDrawStart(null); setPreview(null);
+      return;
+    }
+    const { x, y, w, h } = preview;
 
-      const { x, y, w, h } = preview;
+    if (activeTool === "room" && w > 20 && h > 20) {
+      const color = randomRoomColor();
+      const el: FloorElement = {
+        id: "e" + Date.now(), type: "room",
+        x, y, width: w, height: h,
+        rotation: 0, label: "",
+        fill: color + "18", stroke: color, strokeWidth: 1.5,
+      };
+      setElements((prev) => [...prev, el]);
+      pendingSel.current = el.id;
+      setSelectedId(el.id);
+    }
 
-      if (activeTool === "room" && w > 20 && h > 20) {
-        const el: FloorElement = {
-          id: "e" + Date.now(),
-          type: "room",
-          x,
-          y,
-          width: w,
-          height: h,
-          rotation: 0,
-          label: "",
-          fill: randomColor() + "1a",
-          stroke: "#2c3e50",
-          strokeWidth: 2,
-        };
-        setElements((prev) => [...prev, el]);
-        pendingSelectRef.current = el.id;
-        setSelectedId(el.id);
-      }
+    if (activeTool === "wall" && (w > 5 || h > 5)) {
+      const el: FloorElement = {
+        id: "e" + Date.now(), type: "wall",
+        x, y, width: w, height: h,
+        rotation: 0, label: "",
+        fill: "#cbd5e1", stroke: "#94a3b8", strokeWidth: 1,
+      };
+      setElements((prev) => [...prev, el]);
+      pendingSel.current = el.id;
+      setSelectedId(el.id);
+    }
 
-      if (activeTool === "wall" && (w > 5 || h > 5)) {
-        const el: FloorElement = {
-          id: "e" + Date.now(),
-          type: "wall",
-          x,
-          y,
-          width: w,
-          height: h,
-          rotation: 0,
-          label: "",
-          fill: "#95a5a6",
-          stroke: "#7f8c8d",
-          strokeWidth: 1,
-        };
-        setElements((prev) => [...prev, el]);
-        pendingSelectRef.current = el.id;
-        setSelectedId(el.id);
-      }
+    setDrawing(false); setDrawStart(null); setPreview(null);
+  }, [drawing, drawStart, preview, activeTool]);
 
-      setDrawing(false);
-      setDrawStart(null);
-      setPreview(null);
-    },
-    [drawing, drawStart, preview, activeTool]
-  );
+  // ── Transform / drag ────────────────────────────────────────────────────────
 
   const onTransformEnd = useCallback(
     (e: Konva.KonvaEventObject<Event>) => {
       const node = e.target;
-      const id = node.id();
-      patch(id, {
-        x: node.x(),
-        y: node.y(),
-        width: cleanSize(node.width() * node.scaleX()),
-        height: cleanSize(node.height() * node.scaleY()),
+      patch(node.id(), {
+        x: node.x(), y: node.y(),
+        width:  clampSize(node.width()  * node.scaleX()),
+        height: clampSize(node.height() * node.scaleY()),
         rotation: node.rotation(),
       });
-      node.scaleX(1);
-      node.scaleY(1);
+      node.scaleX(1); node.scaleY(1);
     },
     [patch]
   );
@@ -320,34 +294,27 @@ export default function FloorPlannerCanvas() {
   const onDragEnd = useCallback(
     (e: Konva.KonvaEventObject<DragEvent>) => {
       const node = e.target;
-      const id = node.id();
-      let x = node.x();
-      let y = node.y();
-      if (grid) {
-        x = snap(x);
-        y = snap(y);
-        node.x(x);
-        node.y(y);
-      }
-      patch(id, { x, y });
+      let x = node.x(), y = node.y();
+      if (showGrid) { x = snap(x); y = snap(y); node.x(x); node.y(y); }
+      patch(node.id(), { x, y });
     },
-    [grid, patch]
+    [showGrid, patch]
   );
+
+  // ── Actions ─────────────────────────────────────────────────────────────────
 
   const del = useCallback(() => {
     if (!selectedId) return;
     setElements((prev) => prev.filter((e) => e.id !== selectedId));
     setSelectedId(null);
+    trRef.current?.nodes([]);
   }, [selectedId]);
 
   const clearAll = useCallback(() => {
-    setElements([]);
-    setSelectedId(null);
-    setDrawing(false);
-    setDrawStart(null);
-    setPreview(null);
+    setElements([]); setSelectedId(null);
+    setDrawing(false); setDrawStart(null); setPreview(null);
     setShowFurniture(false);
-    pendingSelectRef.current = null;
+    pendingSel.current = null;
     trRef.current?.nodes([]);
     trRef.current?.getLayer()?.batchDraw();
   }, []);
@@ -356,113 +323,97 @@ export default function FloorPlannerCanvas() {
     const stage = stageRef.current;
     if (!stage) return;
     const uri = stage.toDataURL({ pixelRatio: 2, mimeType: "image/png" });
-    const a = document.createElement("a");
-    a.download = "floor-plan.png";
-    a.href = uri;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const a = Object.assign(document.createElement("a"), { download: "floor-plan.png", href: uri });
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
   }, []);
+
+  // ── Keyboard ─────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (isEditableTarget(e.target)) return;
-
-      if (e.key === "Delete" || e.key === "Backspace") {
-        if (selectedId) e.preventDefault();
-        del();
+      if (isEditable(e.target)) return;
+      if ((e.key === "Delete" || e.key === "Backspace") && selectedId) {
+        e.preventDefault(); del();
       }
       if (e.key === "Escape") {
-        setSelectedId(null);
-        setActiveTool("select");
-        setDrawing(false);
-        setPreview(null);
+        setSelectedId(null); setActiveTool("select");
+        setDrawing(false); setPreview(null);
+        trRef.current?.nodes([]);
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [del, selectedId]);
 
-  // Grid dots
+  // ── Grid dots ────────────────────────────────────────────────────────────────
+
   const dots = useMemo(() => {
-    if (!grid) return [];
-    const result: ReactElement[] = [];
+    if (!showGrid) return [];
+    const out: ReactElement[] = [];
     for (let x = 0; x < size.w / GRID; x++) {
       for (let y = 0; y < size.h / GRID; y++) {
-        result.push(
-          <Rect key={x + ":" + y} x={x * GRID - 1} y={y * GRID - 1} width={2} height={2} fill="#d0d0d0" cornerRadius={1} />
+        out.push(
+          <Rect key={`${x}:${y}`} x={x * GRID - 1} y={y * GRID - 1} width={2} height={2} fill="#e2e8f0" cornerRadius={1} />
         );
       }
     }
-    return result;
-  }, [grid, size.w, size.h]);
+    return out;
+  }, [showGrid, size.w, size.h]);
+
+  // ── Element helpers ──────────────────────────────────────────────────────────
 
   function selectElement(id: string, node: Konva.Node) {
-    pendingSelectRef.current = null;
+    pendingSel.current = null;
     setSelectedId(id);
     trRef.current?.nodes([node]);
     trRef.current?.getLayer()?.batchDraw();
   }
 
-  function getElementLabel(el: FloorElement) {
+  function getLabel(el: FloorElement) {
     if (el.label.trim()) return el.label.trim();
-    if (el.type === "furniture" && el.furnitureType) {
+    if (el.type === "furniture" && el.furnitureType)
       return FURNITURE.find((f) => f.tool === el.furnitureType)?.label ?? "Furniture";
-    }
     return el.type.charAt(0).toUpperCase() + el.type.slice(1);
   }
 
   function renderLabel(el: FloorElement, w: number, h: number) {
-    const text = getElementLabel(el);
-    const fontSize = h < 28 ? 9 : 11;
-    const labelWidth = Math.max(46, Math.min(w - 8, text.length * fontSize * 0.58 + 14));
-    const labelHeight = fontSize + 8;
-    const x = (w - labelWidth) / 2;
-    const y = (h - labelHeight) / 2;
-
+    const text = getLabel(el);
+    const fs = h < 28 ? 9 : 10;
+    const lw = Math.max(44, Math.min(w - 8, text.length * fs * 0.6 + 16));
+    const lh = fs + 8;
     return (
-      <Group x={x} y={y} listening={false}>
-        <Rect
-          width={labelWidth}
-          height={labelHeight}
-          fill="rgba(255,255,255,0.92)"
-          stroke="rgba(44,62,80,0.18)"
-          strokeWidth={1}
-          cornerRadius={4}
-        />
-        <Text
-          text={text}
-          x={7}
-          y={4}
-          width={labelWidth - 14}
-          height={fontSize + 2}
-          fontSize={fontSize}
-          fontFamily="Inter, sans-serif"
-          fill="#2c3e50"
-          fontStyle="bold"
-          wrap="none"
-          ellipsis
-        />
+      <Group x={(w - lw) / 2} y={(h - lh) / 2} listening={false}>
+        <Rect width={lw} height={lh} fill="rgba(255,255,255,0.90)" stroke="rgba(15,23,42,0.10)" strokeWidth={0.5} cornerRadius={3} />
+        <Text text={text} x={8} y={4} width={lw - 16} height={fs + 2}
+          fontSize={fs} fontFamily="Inter, system-ui, sans-serif"
+          fill="#1e293b" fontStyle="600" wrap="none" ellipsis />
       </Group>
     );
   }
+
+  // ── Render elements ──────────────────────────────────────────────────────────
 
   function renderElement(el: FloorElement) {
     const isSel = el.id === selectedId;
     const sw = Math.max(1, el.width);
     const sh = Math.max(1, el.height);
+    const selStroke = "#f43f5e";
+
+    const groupProps = {
+      key: el.id, id: el.id,
+      x: el.x, y: el.y, rotation: el.rotation,
+      draggable: activeTool === "select",
+      onDragEnd,
+      onTransformEnd,
+      onClick:  (e: Konva.KonvaEventObject<MouseEvent>) => selectElement(el.id, e.currentTarget),
+      onTap:    (e: Konva.KonvaEventObject<TouchEvent>) => selectElement(el.id, e.currentTarget),
+    };
 
     if (el.type === "wall") {
       return (
-        <Group
-          key={el.id} id={el.id} x={el.x} y={el.y} rotation={el.rotation}
-          draggable={activeTool === "select"}
-          onDragEnd={onDragEnd}
-          onTransformEnd={onTransformEnd}
-          onClick={(e) => selectElement(el.id, e.currentTarget)}
-          onTap={(e) => selectElement(el.id, e.currentTarget)}
-        >
-          <Rect width={sw} height={sh} fill={el.fill} stroke={isSel ? "#e74c3c" : el.stroke} strokeWidth={el.strokeWidth} />
+        <Group {...groupProps}>
+          <Rect width={sw} height={sh} fill={el.fill}
+            stroke={isSel ? selStroke : el.stroke} strokeWidth={isSel ? 2 : el.strokeWidth} />
           {renderLabel(el, sw, sh)}
         </Group>
       );
@@ -470,20 +421,14 @@ export default function FloorPlannerCanvas() {
 
     if (el.type === "stairs") {
       return (
-        <Group
-          key={el.id} id={el.id} x={el.x} y={el.y} rotation={el.rotation}
-          draggable={activeTool === "select"}
-          onDragEnd={onDragEnd}
-          onTransformEnd={onTransformEnd}
-          onClick={(e) => selectElement(el.id, e.currentTarget)}
-          onTap={(e) => selectElement(el.id, e.currentTarget)}
-        >
-          <Rect width={sw} height={sh} fill={el.fill} stroke={isSel ? "#e74c3c" : el.stroke} strokeWidth={el.strokeWidth} cornerRadius={3} />
+        <Group {...groupProps}>
+          <Rect width={sw} height={sh} fill={el.fill}
+            stroke={isSel ? selStroke : el.stroke} strokeWidth={isSel ? 2 : el.strokeWidth} cornerRadius={2} />
           {[0.2, 0.4, 0.6, 0.8].map((r, i) => (
-            <Line key={i} points={[0, sh * r, sw, sh * r]} stroke="#b0b0b0" strokeWidth={1} />
+            <Line key={i} points={[0, sh * r, sw, sh * r]} stroke="#94a3b8" strokeWidth={0.75} />
           ))}
-          <Line points={[sw * 0.3, 0, sw * 0.3, sh]} stroke="#b0b0b0" strokeWidth={1} />
-          <Text text="⬉" x={4} y={sh / 2 - 7} fontSize={12} fill="#555" />
+          <Line points={[sw * 0.3, 0, sw * 0.3, sh]} stroke="#94a3b8" strokeWidth={0.75} />
+          <Text text="⬉" x={3} y={sh / 2 - 7} fontSize={11} fill="#64748b" />
           {renderLabel(el, sw, sh)}
         </Group>
       );
@@ -491,15 +436,11 @@ export default function FloorPlannerCanvas() {
 
     if (el.type === "furniture") {
       return (
-        <Group
-          key={el.id} id={el.id} x={el.x} y={el.y} rotation={el.rotation}
-          draggable={activeTool === "select"}
-          onDragEnd={onDragEnd}
-          onTransformEnd={onTransformEnd}
-          onClick={(e) => selectElement(el.id, e.currentTarget)}
-          onTap={(e) => selectElement(el.id, e.currentTarget)}
-        >
-          <Rect width={sw} height={sh} fill={el.fill} stroke={isSel ? "#fff" : el.stroke} strokeWidth={isSel ? 2.5 : el.strokeWidth} cornerRadius={3} shadowColor="rgba(0,0,0,0.12)" shadowBlur={6} shadowOffset={{ x: 0, y: 2 }} />
+        <Group {...groupProps}>
+          <Rect width={sw} height={sh} fill={el.fill}
+            stroke={isSel ? "#fff" : el.stroke}
+            strokeWidth={isSel ? 2 : el.strokeWidth}
+            cornerRadius={3} />
           {renderLabel(el, sw, sh)}
         </Group>
       );
@@ -507,97 +448,105 @@ export default function FloorPlannerCanvas() {
 
     // Room
     return (
-      <Group
-        key={el.id} id={el.id} x={el.x} y={el.y} rotation={el.rotation}
-        draggable={activeTool === "select"}
-        onDragEnd={onDragEnd}
-        onTransformEnd={onTransformEnd}
-        onClick={(e) => selectElement(el.id, e.currentTarget)}
-        onTap={(e) => selectElement(el.id, e.currentTarget)}
-      >
-        <Rect width={sw} height={sh} fill={el.fill} stroke={isSel ? "#e74c3c" : el.stroke} strokeWidth={isSel ? 2.5 : el.strokeWidth} cornerRadius={2} />
+      <Group {...groupProps}>
+        <Rect width={sw} height={sh} fill={el.fill}
+          stroke={isSel ? selStroke : el.stroke}
+          strokeWidth={isSel ? 2 : el.strokeWidth}
+          cornerRadius={2} />
         {renderLabel(el, sw, sh)}
-        <Text text={Math.round(el.width) + "×" + Math.round(el.height)} x={10} y={sh - 22} fontSize={10} fontFamily="Inter, sans-serif" fill="#7f8c8d" />
+        <Text text={`${Math.round(el.width)} × ${Math.round(el.height)}`}
+          x={8} y={sh - 18} fontSize={9}
+          fontFamily="Inter, system-ui, sans-serif" fill="#94a3b8" />
       </Group>
     );
   }
 
+  // ─── Render ────────────────────────────────────────────────────────────────
+
   return (
-    <div className="flex flex-col bg-white rounded-lg border border-light-gray/60 overflow-hidden shadow-sm">
+    <div className="flex flex-col bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
 
       {/* Top bar */}
-      <div className="flex flex-col gap-3 px-4 py-3 bg-white border-b border-light-gray/40 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-display font-bold text-brand-dark">Floor Planner</span>
-          <span className="rounded-full bg-off-white px-2 py-0.5 text-xs font-medium text-mid-gray">{elements.length} element{elements.length !== 1 ? "s" : ""}</span>
+      <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-slate-100 bg-white">
+        <div className="flex items-center gap-2.5">
+          <span className="text-sm font-semibold text-slate-800 tracking-tight">Floor Planner</span>
+          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500">
+            {elements.length} {elements.length === 1 ? "element" : "elements"}
+          </span>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <button onClick={exportPng} className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-semibold text-white bg-brand-primary hover:bg-brand-primary/90 transition-colors">
-            <Download size={14} />
-            Export PNG
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={exportPng}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 transition-all"
+          >
+            <Download size={13} />
+            Export
           </button>
-          <button onClick={clearAll} className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors">
-            <Eraser size={14} />
+          <button
+            onClick={clearAll}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-red-50 hover:text-red-600 active:scale-95 transition-all"
+          >
+            <Eraser size={13} />
             Clear
           </button>
         </div>
       </div>
 
-      {/* Body: Left toolbar + Canvas + Right panel */}
+      {/* Body */}
       <div className="flex flex-col lg:flex-row" style={{ minHeight: 500 }}>
 
-        {/* Left tool palette */}
-        <div className="flex lg:flex-col bg-off-white border-b border-light-gray/40 lg:w-16 lg:border-b-0 lg:border-r items-center p-2 gap-1 shrink-0 overflow-x-auto">
+        {/* Left toolbar */}
+        <div className="flex lg:flex-col items-center p-2 gap-1 bg-slate-50 border-b border-slate-100 lg:border-b-0 lg:border-r lg:w-14 shrink-0 overflow-x-auto">
           {TOOLS.map((t) => (
             <button
               key={t.tool}
               onClick={() => { setActiveTool(t.tool); setShowFurniture(false); }}
               title={t.label}
               aria-label={t.label}
-              className={`size-10 flex items-center justify-center rounded-md transition-all ${
+              className={`size-9 flex items-center justify-center rounded-lg transition-all ${
                 activeTool === t.tool
-                  ? "bg-brand-primary text-white shadow-sm"
-                  : "text-mid-gray hover:bg-white hover:text-brand-dark"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "text-slate-400 hover:bg-white hover:text-slate-700"
               }`}
             >
-              <t.Icon size={18} strokeWidth={2} />
+              <t.Icon size={16} strokeWidth={2} />
             </button>
           ))}
 
-          <div className="h-6 w-px bg-light-gray/70 mx-1 lg:mx-0 lg:my-1 lg:h-px lg:w-8" />
+          <div className="w-5 h-px bg-slate-200 lg:w-px lg:h-5 my-0.5 lg:mx-auto" />
 
-          {/* Furniture icon */}
+          {/* Furniture toggle */}
           <div className="relative">
             <button
               onClick={() => setShowFurniture(!showFurniture)}
               title="Furniture"
               aria-label="Furniture"
-              className={`size-10 flex items-center justify-center rounded-md transition-all ${
+              className={`size-9 flex items-center justify-center rounded-lg transition-all ${
                 showFurniture || FURNITURE.some((f) => f.tool === activeTool)
-                  ? "bg-brand-primary/10 text-brand-primary"
-                  : "text-mid-gray hover:bg-white hover:text-brand-dark"
+                  ? "bg-blue-50 text-blue-600 ring-1 ring-blue-200"
+                  : "text-slate-400 hover:bg-white hover:text-slate-700"
               }`}
             >
-              <Sofa size={18} strokeWidth={2} />
+              <Sofa size={16} strokeWidth={2} />
             </button>
 
             {showFurniture && (
-              <div className="absolute left-0 top-12 lg:left-14 lg:top-0 bg-white border border-light-gray rounded-lg shadow-lg z-30 p-2 w-48">
-                <p className="text-[10px] font-semibold text-mid-gray uppercase tracking-wide mb-1.5 px-1">Furniture</p>
+              <div className="absolute left-0 top-11 lg:left-12 lg:top-0 z-30 w-44 bg-white border border-slate-200 rounded-xl shadow-lg p-2">
+                <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5 px-1">Furniture</p>
                 <div className="grid grid-cols-3 gap-1">
                   {FURNITURE.map((f) => (
                     <button
                       key={f.tool}
                       onClick={() => { setActiveTool(f.tool); setShowFurniture(false); }}
                       title={f.label}
-                      className={`flex flex-col items-center gap-1 p-2 rounded-md transition-colors ${
+                      className={`flex flex-col items-center gap-1 py-2 px-1 rounded-lg text-slate-600 transition-all ${
                         activeTool === f.tool
-                          ? "bg-brand-primary/10 ring-1 ring-brand-primary/30"
-                          : "hover:bg-gray-50"
+                          ? "bg-blue-50 text-blue-600 ring-1 ring-blue-200"
+                          : "hover:bg-slate-50"
                       }`}
                     >
-                      <f.Icon size={17} strokeWidth={2} />
-                      <span className="text-[9px] text-mid-gray font-medium">{f.label}</span>
+                      <f.Icon size={15} strokeWidth={2} />
+                      <span className="text-[9px] font-medium leading-none">{f.label}</span>
                     </button>
                   ))}
                 </div>
@@ -607,7 +556,7 @@ export default function FloorPlannerCanvas() {
         </div>
 
         {/* Canvas */}
-        <div ref={containerRef} className="flex-1 bg-white relative overflow-hidden min-h-[420px]">
+        <div ref={containerRef} className="flex-1 bg-white relative overflow-hidden" style={{ minHeight: 420 }}>
           <Stage
             ref={stageRef}
             width={size.w}
@@ -627,15 +576,9 @@ export default function FloorPlannerCanvas() {
               {elements.map(renderElement)}
               {preview && (
                 <Rect
-                  x={preview.x}
-                  y={preview.y}
-                  width={preview.w}
-                  height={preview.h}
-                  fill="rgba(52,152,219,0.12)"
-                  stroke="#3498db"
-                  strokeWidth={1.5}
-                  dash={[6, 4]}
-                  cornerRadius={2}
+                  x={preview.x} y={preview.y} width={preview.w} height={preview.h}
+                  fill="rgba(59,130,246,0.08)" stroke="#3b82f6"
+                  strokeWidth={1} dash={[5, 4]} cornerRadius={2}
                 />
               )}
             </Layer>
@@ -643,94 +586,94 @@ export default function FloorPlannerCanvas() {
               <Transformer
                 ref={trRef}
                 keepRatio={false}
-                borderStroke="#e74c3c"
-                borderStrokeWidth={1.5}
+                borderStroke="#f43f5e"
+                borderStrokeWidth={1}
                 anchorFill="#fff"
-                anchorStroke="#e74c3c"
-                anchorSize={8}
+                anchorStroke="#f43f5e"
+                anchorSize={7}
+                anchorCornerRadius={2}
                 enabledAnchors={["top-left", "top-right", "bottom-left", "bottom-right"]}
-                boundBoxFunc={(oldBox, newBox) => (newBox.width < MIN_ELEMENT_SIZE || newBox.height < MIN_ELEMENT_SIZE ? oldBox : newBox)}
+                boundBoxFunc={(old, nw) =>
+                  nw.width < MIN_SIZE || nw.height < MIN_SIZE ? old : nw
+                }
               />
             </Layer>
           </Stage>
         </div>
 
-        {/* Right properties panel */}
-        <div className="bg-off-white border-t border-light-gray/40 p-4 shrink-0 flex flex-col gap-3 lg:w-64 lg:border-l lg:border-t-0">
-          <p className="text-[10px] font-semibold text-mid-gray uppercase tracking-wide">Properties</p>
+        {/* Right panel */}
+        <div className="bg-slate-50 border-t border-slate-100 lg:border-t-0 lg:border-l p-4 shrink-0 flex flex-col gap-3 lg:w-60">
+          <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest">Properties</p>
 
           {!sel ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-xs text-mid-gray/40 gap-1">
-              <MousePointer2 size={24} />
-              <p>Select element</p>
-              <p>to edit</p>
+            <div className="flex-1 flex flex-col items-center justify-center gap-2 text-slate-300 py-10">
+              <MousePointer2 size={22} strokeWidth={1.5} />
+              <p className="text-xs text-center leading-relaxed">Select an element<br />to edit properties</p>
             </div>
           ) : (
             <>
               {/* Label */}
               <div>
-                <label className="text-[10px] font-medium text-mid-gray/70 block mb-1 uppercase tracking-wide">Label</label>
+                <label className="block text-[9px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Label</label>
                 <input
                   type="text"
                   value={sel.label}
                   onChange={(e) => patch(sel.id, { label: e.target.value })}
                   placeholder="Add label..."
-                  className="w-full px-2.5 py-2 rounded-md border border-light-gray/70 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary/30"
+                  className="w-full px-2.5 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 bg-white placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
                 />
               </div>
 
-              {/* Dimensions */}
+              {/* Width + Height */}
               <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-[10px] font-medium text-mid-gray/70 block mb-1 uppercase tracking-wide">Width</label>
-                  <input
-                    type="number"
-                    min={MIN_ELEMENT_SIZE}
-                    value={Math.round(sel.width)}
-                    onChange={(e) => patch(sel.id, { width: cleanSize(Number(e.target.value)) })}
-                    className="w-full px-2.5 py-2 rounded-md border border-light-gray/70 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] font-medium text-mid-gray/70 block mb-1 uppercase tracking-wide">Height</label>
-                  <input
-                    type="number"
-                    min={MIN_ELEMENT_SIZE}
-                    value={Math.round(sel.height)}
-                    onChange={(e) => patch(sel.id, { height: cleanSize(Number(e.target.value)) })}
-                    className="w-full px-2.5 py-2 rounded-md border border-light-gray/70 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
-                  />
-                </div>
+                {(["width", "height"] as const).map((dim) => (
+                  <div key={dim}>
+                    <label className="block text-[9px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5">
+                      {dim === "width" ? "W" : "H"}
+                    </label>
+                    <input
+                      type="number"
+                      min={MIN_SIZE}
+                      value={Math.round(sel[dim])}
+                      onChange={(e) => patch(sel.id, { [dim]: clampSize(Number(e.target.value)) })}
+                      className="w-full px-2.5 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
+                    />
+                  </div>
+                ))}
               </div>
 
               {/* Rotation */}
               <div>
-                <label className="text-[10px] font-medium text-mid-gray/70 block mb-1 uppercase tracking-wide">Rotation</label>
+                <label className="block text-[9px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Rotation °</label>
                 <input
                   type="number"
                   value={Math.round(sel.rotation)}
                   onChange={(e) => patch(sel.id, { rotation: Number(e.target.value) })}
-                  className="w-full px-2.5 py-2 rounded-md border border-light-gray/70 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+                  className="w-full px-2.5 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
                 />
               </div>
 
-              {/* Type */}
-              <div className="text-xs text-mid-gray/60">
-                <span className="font-medium text-mid-gray/80">Type: </span>
-                <span className="capitalize">{sel.type}{sel.furnitureType ? " · " + sel.furnitureType : ""}</span>
+              {/* Type badge */}
+              <div className="flex items-center gap-1.5">
+                <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest">Type</span>
+                <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600 capitalize">
+                  {sel.furnitureType ?? sel.type}
+                </span>
               </div>
 
-              {/* Color picker for rooms */}
+              {/* Room color swatches */}
               {sel.type === "room" && (
                 <div>
-                  <label className="text-[10px] font-medium text-mid-gray/70 block mb-1 uppercase tracking-wide">Color</label>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {ELEMENT_COLORS.map((c) => (
+                  <label className="block text-[9px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5">Color</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {ROOM_COLORS.map((c) => (
                       <button
                         key={c}
-                        onClick={() => patch(sel.id, { fill: c + "1a", stroke: c })}
-                        className={`size-5 rounded-full border-2 transition-all ${sel.stroke === c ? "border-gray-800 scale-110" : "border-transparent"}`}
+                        onClick={() => patch(sel.id, { fill: c + "18", stroke: c })}
                         style={{ backgroundColor: c }}
+                        className={`size-5 rounded-full border-2 transition-transform active:scale-90 ${
+                          sel.stroke === c ? "border-slate-800 scale-110" : "border-transparent"
+                        }`}
                       />
                     ))}
                   </div>
@@ -739,9 +682,12 @@ export default function FloorPlannerCanvas() {
 
               <div className="flex-1" />
 
-              <button onClick={del} className="flex w-full items-center justify-center gap-1.5 rounded-md bg-red-50 py-2 text-xs font-semibold text-red-600 transition-colors hover:bg-red-100">
-                <Trash2 size={14} />
-                Delete Element
+              <button
+                onClick={del}
+                className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-red-50 py-2 text-xs font-semibold text-red-500 hover:bg-red-100 active:scale-98 transition-all"
+              >
+                <Trash2 size={13} />
+                Delete element
               </button>
             </>
           )}
@@ -749,21 +695,47 @@ export default function FloorPlannerCanvas() {
       </div>
 
       {/* Bottom bar */}
-      <div className="flex flex-col gap-2 px-4 py-2.5 bg-white border-t border-light-gray/40 text-xs text-mid-gray/70 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center justify-between gap-3 px-4 py-2 bg-white border-t border-slate-100 text-xs text-slate-400">
         <div className="flex items-center gap-3">
-          <label className="flex items-center gap-1.5 cursor-pointer select-none">
-            <input type="checkbox" checked={grid} onChange={() => setGrid((g) => !g)} className="accent-brand-primary" />
-            <Grid3X3 size={14} />
+          <label className="flex items-center gap-1.5 cursor-pointer select-none hover:text-slate-600 transition-colors">
+            <input
+              type="checkbox"
+              checked={showGrid}
+              onChange={() => setShowGrid((g) => !g)}
+              className="accent-blue-600 rounded"
+            />
+            <Grid3X3 size={13} />
             Grid
           </label>
-          <span className="text-light-gray/50">|</span>
-          <span>{size.w}×{size.h}</span>
+          <span className="text-slate-200">|</span>
+          <span className="font-mono">{size.w} × {size.h}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setZoom((z) => Math.max(z - 0.1, 0.2))} className="size-7 flex items-center justify-center rounded-md hover:bg-gray-100" aria-label="Zoom out"><Minus size={14} /></button>
-          <span className="w-12 text-center text-xs font-medium">{Math.round(zoom * 100)}%</span>
-          <button onClick={() => setZoom((z) => Math.min(z + 0.1, 3))} className="size-7 flex items-center justify-center rounded-md hover:bg-gray-100" aria-label="Zoom in"><Plus size={14} /></button>
-          <button onClick={() => setZoom(1)} className="flex h-7 items-center gap-1 rounded-md px-2 text-[10px] font-medium hover:bg-gray-100" aria-label="Reset zoom"><RotateCcw size={12} />Reset</button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setZoom((z) => Math.max(z - 0.1, 0.2))}
+            aria-label="Zoom out"
+            className="size-6 flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors"
+          >
+            <Minus size={13} />
+          </button>
+          <span className="w-11 text-center font-mono font-medium text-slate-600">
+            {Math.round(zoom * 100)}%
+          </span>
+          <button
+            onClick={() => setZoom((z) => Math.min(z + 0.1, 3))}
+            aria-label="Zoom in"
+            className="size-6 flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors"
+          >
+            <Plus size={13} />
+          </button>
+          <button
+            onClick={() => setZoom(1)}
+            aria-label="Reset zoom"
+            className="flex items-center gap-1 h-6 px-2 rounded-md hover:bg-slate-100 text-[10px] font-medium transition-colors"
+          >
+            <RotateCcw size={11} />
+            Reset
+          </button>
         </div>
       </div>
     </div>

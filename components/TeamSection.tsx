@@ -1,11 +1,7 @@
-import { Users, Mail, Clock, MapPin } from "lucide-react";
+"use client";
 
-const TEAM = [
-  { initials: "AP", name: "Arun Poudel", role: "Founder & Managing Director", spec: "Strategy & Client Relations", exp: "18 yrs" },
-  { initials: "SK", name: "Sita Karki", role: "Chief Architect", spec: "Residential & Heritage Design", exp: "14 yrs" },
-  { initials: "BS", name: "Binod Sharma", role: "Head of Engineering", spec: "Structural & Civil Engineering", exp: "16 yrs" },
-  { initials: "PT", name: "Pooja Thapa", role: "Senior Interior Designer", spec: "Spatial & Material Design", exp: "10 yrs" },
-];
+import { Users, Mail, Clock, MapPin } from "lucide-react";
+import { useAdminStore } from "@/stores/admin-store";
 
 const LinkedInIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12">
@@ -13,7 +9,20 @@ const LinkedInIcon = () => (
   </svg>
 );
 
+function avgExperience(team: { experience: string }[]): string {
+  const nums = team
+    .map((m) => parseFloat(m.experience))
+    .filter((n) => !isNaN(n));
+  if (nums.length === 0) return "—";
+  const avg = nums.reduce((a, b) => a + b, 0) / nums.length;
+  return avg.toFixed(1) + " yrs";
+}
+
 export function TeamSection() {
+  const { teamMembers } = useAdminStore();
+
+  if (teamMembers.length === 0) return null;
+
   return (
     <section className="bg-off-white py-16 sm:py-28">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,9 +48,9 @@ export function TeamSection() {
             ))}
           </div>
 
-          {TEAM.map((m) => (
+          {teamMembers.map((m) => (
             <div
-              key={m.initials}
+              key={m.id}
               className="grid grid-cols-[2fr_1.5fr_1fr_1fr] gap-2 items-center px-5 py-3.5 bg-white hover:bg-light-gray/10 transition-colors border-b border-light-gray last:border-b-0"
             >
               <div className="flex items-center gap-2.5">
@@ -53,15 +62,19 @@ export function TeamSection() {
                   <p className="text-xs text-mid-gray/70 mt-0.5">{m.role}</p>
                 </div>
               </div>
-              <span className="text-sm text-mid-gray">{m.spec}</span>
-              <span className="text-sm font-semibold text-brand-dark">{m.exp}</span>
+              <span className="text-sm text-mid-gray">{m.specialisation}</span>
+              <span className="text-sm font-semibold text-brand-dark">{m.experience}</span>
               <div className="flex gap-1.5">
-                <a href="#" aria-label="LinkedIn" className="size-6 rounded-md border border-light-gray flex items-center justify-center text-mid-gray hover:bg-brand-secondary hover:text-white hover:border-brand-secondary transition-all">
-                  <LinkedInIcon />
-                </a>
-                <a href="#" aria-label="Email" className="size-6 rounded-md border border-light-gray flex items-center justify-center text-mid-gray hover:bg-brand-secondary hover:text-white hover:border-brand-secondary transition-all">
-                  <Mail className="size-3" />
-                </a>
+                {m.linkedin && (
+                  <a href={m.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="size-6 rounded-md border border-light-gray flex items-center justify-center text-mid-gray hover:bg-brand-secondary hover:text-white hover:border-brand-secondary transition-all">
+                    <LinkedInIcon />
+                  </a>
+                )}
+                {m.email && (
+                  <a href={`mailto:${m.email}`} aria-label="Email" className="size-6 rounded-md border border-light-gray flex items-center justify-center text-mid-gray hover:bg-brand-secondary hover:text-white hover:border-brand-secondary transition-all">
+                    <Mail className="size-3" />
+                  </a>
+                )}
               </div>
             </div>
           ))}
@@ -69,11 +82,11 @@ export function TeamSection() {
           <div className="flex items-center justify-between flex-wrap gap-2 px-5 py-3 bg-light-gray/20 border-t border-light-gray text-xs text-mid-gray">
             <span className="flex items-center gap-1.5">
               <Users className="size-3.5" />
-              <strong className="font-semibold text-brand-dark">4</strong> core members
+              <strong className="font-semibold text-brand-dark">{teamMembers.length}</strong> core members
             </span>
             <span className="flex items-center gap-1.5">
               <Clock className="size-3.5" />
-              Avg. <strong className="font-semibold text-brand-dark">14.5 yrs</strong> experience
+              Avg. <strong className="font-semibold text-brand-dark">{avgExperience(teamMembers)}</strong> experience
             </span>
             <span className="flex items-center gap-1.5">
               <MapPin className="size-3.5" />
