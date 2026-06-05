@@ -1,4 +1,4 @@
-import type { Review } from "./admin-store";
+import type { Review } from "./admin-types";
 
 export const defaultReviews: Review[] = [
   {

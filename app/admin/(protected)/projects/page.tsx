@@ -1,11 +1,41 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, Edit2, Trash2, ExternalLink } from "lucide-react";
-import { useAdminStore } from "@/stores/admin-store";
+import { Plus, Edit2, Trash2, ExternalLink, Loader2 } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
+import { useAdminStore, type AdminProject } from "@/stores/admin-store";
+import { ProjectService } from "@/api/services/project.service";
+import type { Project } from "@/api/types/project.types";
+import { useState } from "react";
+import { toast } from "sonner";
+
+function toAdminProject(p: Project): AdminProject {
+  return {
+    id: p.id, title: p.title, slug: p.slug, categoryId: p.category_id ?? "", file: p.file ?? "",
+    location: p.location ?? "", startDate: p.start_date ?? "", completion: p.completion ?? "",
+    thumbnail: p.thumbnail ?? "", images: p.images ?? [], description: p.description ?? "",
+    materials: p.materials ?? [], costEstimation: p.cost_estimation ?? [],
+    specs: p.specs ?? [], gallery: p.gallery ?? [], socialLinks: p.social_links ?? [],
+  };
+}
 
 export default function AdminProjectsPage() {
-  const { projects, deleteProject } = useAdminStore();
+  const { projects, setProjects } = useAdminStore(useShallow((s) => ({ projects: s.projects, setProjects: s.setProjects })));
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  const remove = async (slug: string) => {
+    setDeleting(slug);
+    try {
+      await ProjectService.delete(slug);
+      toast.success("Project deleted");
+      const r = await ProjectService.adminList();
+      setProjects((r.results ?? []).map(toAdminProject));
+    } catch {
+      toast.error("Failed to delete project");
+    } finally {
+      setDeleting(null);
+    }
+  };
 
   return (
     <div>
@@ -39,8 +69,12 @@ export default function AdminProjectsPage() {
               <Link href={`/project-details/${p.slug}`} target="_blank" className="size-9 rounded-lg grid place-items-center text-mid-gray hover:bg-off-white hover:text-brand-dark transition">
                 <ExternalLink className="size-4" />
               </Link>
-              <button onClick={() => deleteProject(p.id)} className="size-9 rounded-lg grid place-items-center text-red-500 hover:bg-red-50 transition">
-                <Trash2 className="size-4" />
+              <button
+                onClick={() => remove(p.slug)}
+                disabled={deleting === p.slug}
+                className="size-9 rounded-lg grid place-items-center text-red-500 hover:bg-red-50 transition disabled:opacity-40"
+              >
+                {deleting === p.slug ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
               </button>
             </div>
           </div>

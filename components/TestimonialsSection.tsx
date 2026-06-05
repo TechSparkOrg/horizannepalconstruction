@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Star, Languages } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { useAdminStore } from "@/stores/admin-store";
+import { ReviewService } from "@/api/services/review.service";
+import type { Review } from "@/api/types/review.types";
 
 function Stars({ value }: { value: number }) {
   return (
@@ -16,8 +17,12 @@ function Stars({ value }: { value: number }) {
 }
 
 export function TestimonialsSection() {
-  const { reviews } = useAdminStore();
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [i, setI] = useState(0);
+
+  useEffect(() => {
+    ReviewService.list().then((res) => setReviews(res.results ?? []));
+  }, []);
   const [lang, setLang] = useState<"en" | "np">("en");
   const perView = 3;
   const max = Math.max(0, reviews.length - perView);
@@ -32,7 +37,7 @@ export function TestimonialsSection() {
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <SectionLabel>Testimonials</SectionLabel>
-            <h2 className="mt-3 font-display font-bold text-brand-secondary text-3xl sm:text-4xl lg:text-5xl">
+            <h2 className="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl text-brand-dark">
               What Our Clients Say
             </h2>
           </div>

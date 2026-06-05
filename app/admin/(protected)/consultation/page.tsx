@@ -1,15 +1,89 @@
 "use client";
 
-import { useState } from "react";
-import { MessageSquare, Inbox, Plus, Trash2 } from "lucide-react";
-import { useAdminStore, type ConsultationFormSettings, type ConsultationSubmission } from "@/stores/admin-store";
+import { useState, useEffect } from "react";
+import { MessageSquare, Inbox, Plus, Trash2, Loader2 } from "lucide-react";
+import { ConsultationService } from "@/api/services/consultation.service";
+import type { ConsultationFormSettings, ConsultationSubmission } from "@/stores/admin-types";
+import type { ConsultationSettings } from "@/api/types/consultation.types";
+import { cn } from "@/lib/utils";
 
 const TABS = ["Content", "Submissions"] as const;
 type Tab = typeof TABS[number];
 
+function toCamel(s: ConsultationSettings): ConsultationFormSettings {
+  return {
+    sectionLabel: s.section_label,
+    heading: s.heading,
+    description: s.description,
+    formTitle: s.form_title,
+    serviceOptions: s.service_options,
+    privacyText: s.privacy_text,
+    successHeading: s.success_heading,
+    successMessage: s.success_message,
+  };
+}
+
+function toSubmissionCamel(s: import("@/api/types/consultation.types").ConsultationSubmission): ConsultationSubmission {
+  return {
+    id: s.id,
+    name: s.name,
+    email: s.email,
+    phone: s.phone,
+    service: s.service,
+    description: s.description,
+    preferredDate: s.preferred_date,
+    createdAt: s.created_at,
+  };
+}
+
+function toSnakePatch(patch: Partial<ConsultationFormSettings>): Partial<ConsultationSettings> {
+  const out: Record<string, unknown> = {};
+  if ("sectionLabel" in patch) out.section_label = patch.sectionLabel;
+  if ("heading" in patch) out.heading = patch.heading;
+  if ("description" in patch) out.description = patch.description;
+  if ("formTitle" in patch) out.form_title = patch.formTitle;
+  if ("serviceOptions" in patch) out.service_options = patch.serviceOptions;
+  if ("privacyText" in patch) out.privacy_text = patch.privacyText;
+  if ("successHeading" in patch) out.success_heading = patch.successHeading;
+  if ("successMessage" in patch) out.success_message = patch.successMessage;
+  return out;
+}
+
 export default function AdminConsultationPage() {
-  const { consultationForm, submissions, updateConsultationForm, deleteSubmission } = useAdminStore();
+  const [consultationForm, setConsultationForm] = useState<ConsultationFormSettings | null>(null);
+  const [submissions, setSubmissions] = useState<ConsultationSubmission[]>([]);
+  const [saving, setSaving] = useState(false);
   const [tab, setTab] = useState<Tab>("Content");
+
+  useEffect(() => {
+    Promise.all([
+      ConsultationService.getSettings(),
+      ConsultationService.listSubmissions(),
+    ]).then(([settings, subs]) => {
+      setConsultationForm(toCamel(settings));
+      setSubmissions(subs.map(toSubmissionCamel));
+    });
+  }, []);
+
+  if (!consultationForm) return null;
+
+  const updateConsultationForm = (patch: Partial<ConsultationFormSettings>) => {
+    setConsultationForm((prev) => prev ? { ...prev, ...patch } : prev);
+  };
+
+  const saveSettings = async () => {
+    setSaving(true);
+    try {
+      await ConsultationService.updateSettings(toSnakePatch(consultationForm));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteSubmission = async (id: string) => {
+    await ConsultationService.deleteSubmission(id);
+    setSubmissions((prev) => prev.filter((s) => s.id !== id));
+  };
 
   return (
     <div>
@@ -31,7 +105,7 @@ export default function AdminConsultationPage() {
       </div>
 
       {tab === "Content" && (
-        <ContentTab config={consultationForm} onChange={updateConsultationForm} />
+        <ContentTab config={consultationForm} onChange={updateConsultationForm} onSave={saveSettings} saving={saving} />
       )}
       {tab === "Submissions" && (
         <SubmissionsTab submissions={submissions} onDelete={deleteSubmission} />
@@ -40,9 +114,11 @@ export default function AdminConsultationPage() {
   );
 }
 
-function ContentTab({ config, onChange }: {
+function ContentTab({ config, onChange, onSave, saving }: {
   config: ConsultationFormSettings;
   onChange: (patch: Partial<ConsultationFormSettings>) => void;
+  onSave: () => void;
+  saving: boolean;
 }) {
   const [serviceInput, setServiceInput] = useState("");
   const addService = () => {
@@ -52,7 +128,7 @@ function ContentTab({ config, onChange }: {
   };
 
   return (
-    <div className="max-w-2xl space-y-5 bg-white rounded-xl border border-light-gray/40 p-6">
+    <div className="max-w-7xl space-y-5 bg-white rounded-xl border border-light-gray/40 p-6">
       <p className="text-sm font-semibold text-brand-secondary">Left Panel — Hero Content</p>
 
       <div>
@@ -91,9 +167,9 @@ function ContentTab({ config, onChange }: {
               />
               <button
                 onClick={() => onChange({ serviceOptions: config.serviceOptions.filter((_, idx) => idx !== i) })}
-                className="text-red-400 hover:text-red-600 p-1"
+                className="h-8 px-2 rounded border border-red-200 text-red-400 text-xs font-semibold inline-flex items-center gap-1 hover:bg-red-50 hover:border-red-400 transition"
               >
-                <Trash2 className="size-3.5" />
+                <Trash2 className="size-3" /> Delete
               </button>
             </div>
           ))}
@@ -119,6 +195,18 @@ function ContentTab({ config, onChange }: {
         <label className="text-xs font-medium text-mid-gray uppercase mb-1 block">Privacy Text</label>
         <input value={config.privacyText} onChange={(e) => onChange({ privacyText: e.target.value })} className="w-full h-9 px-3 rounded-md border border-light-gray text-sm" />
       </div>
+
+      <hr className="border-light-gray/40" />
+      <div className="flex justify-end pt-2">
+        <button
+          onClick={onSave}
+          disabled={saving}
+          className="h-10 px-6 rounded-lg bg-brand-primary text-white text-sm font-semibold inline-flex items-center gap-2 hover:brightness-110 transition disabled:opacity-60"
+        >
+          {saving && <Loader2 className="size-4 animate-spin" />}
+          {saving ? "Saving…" : "Save Changes"}
+        </button>
+      </div>
     </div>
   );
 }
@@ -127,6 +215,8 @@ function SubmissionsTab({ submissions, onDelete }: {
   submissions: ConsultationSubmission[];
   onDelete: (id: string) => void;
 }) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
   if (submissions.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-light-gray/40 p-12 text-center">
@@ -137,37 +227,79 @@ function SubmissionsTab({ submissions, onDelete }: {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-light-gray/40 overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="bg-gray-50 border-b border-light-gray/40">
-              <th className="text-left font-semibold text-brand-dark px-4 py-3">Date</th>
-              <th className="text-left font-semibold text-brand-dark px-4 py-3">Name</th>
-              <th className="text-left font-semibold text-brand-dark px-4 py-3">Email</th>
-              <th className="text-left font-semibold text-brand-dark px-4 py-3">Phone</th>
-              <th className="text-left font-semibold text-brand-dark px-4 py-3">Service</th>
-              <th className="text-left font-semibold text-brand-dark px-4 py-3">Preferred Date</th>
-              <th className="w-10" />
-            </tr>
-          </thead>
-          <tbody>
-            {submissions.map((s) => (
-              <tr key={s.id} className="border-b border-light-gray/20 hover:bg-gray-50">
-                <td className="px-4 py-3 text-mid-gray text-xs whitespace-nowrap">{new Date(s.createdAt).toLocaleDateString()}</td>
-                <td className="px-4 py-3 font-medium text-brand-dark whitespace-nowrap">{s.name}</td>
-                <td className="px-4 py-3 text-mid-gray">{s.email}</td>
-                <td className="px-4 py-3 text-mid-gray whitespace-nowrap">{s.phone}</td>
-                <td className="px-4 py-3 text-mid-gray">{s.service}</td>
-                <td className="px-4 py-3 text-mid-gray text-xs whitespace-nowrap">{s.preferredDate}</td>
-                <td className="px-4 py-3">
-                  <button onClick={() => onDelete(s.id)} className="text-red-400 hover:text-red-600"><Trash2 className="size-3.5" /></button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div className="grid gap-4">
+      {submissions.map((s) => {
+        const isExpanded = expandedId === s.id;
+
+        return (
+          <div
+            key={s.id}
+            className="bg-white rounded-xl border border-light-gray/40 shadow-sm hover:shadow-md transition-shadow"
+          >
+            {/* Header */}
+            <div className="px-5 py-4 flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-1">
+                  <h3 className="font-semibold text-brand-dark truncate">{s.name}</h3>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-brand-primary/10 text-brand-primary text-xs font-medium shrink-0">
+                    {s.service}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4 text-xs text-mid-gray">
+                  <span className="tabular-nums">{new Date(s.createdAt).toLocaleDateString()}</span>
+                  <span className="w-px h-3 bg-light-gray/60" />
+                  <span>{s.email}</span>
+                  <span className="w-px h-3 bg-light-gray/60" />
+                  <span className="tabular-nums">{s.phone}</span>
+                  {s.preferredDate && (
+                    <>
+                      <span className="w-px h-3 bg-light-gray/60" />
+                      <span className="tabular-nums">{s.preferredDate}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => onDelete(s.id)}
+                className="p-2 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors shrink-0"
+                title="Delete"
+              >
+                <Trash2 className="size-4" />
+              </button>
+            </div>
+
+            {/* Description — the star of the show */}
+            {s.description && (
+              <div className="px-5 pb-4">
+                <button
+                  onClick={() => setExpandedId(isExpanded ? null : s.id)}
+                  className="w-full text-left"
+                >
+                  <p
+                    className={cn(
+                      "text-sm text-brand-dark leading-relaxed",
+                      !isExpanded && "line-clamp-3"
+                    )}
+                  >
+                    {s.description}
+                  </p>
+                  {s.description.length > 180 && (
+                    <span className="inline-block mt-2 text-xs font-medium text-brand-primary hover:underline">
+                      {isExpanded ? "Show less" : "Show more"}
+                    </span>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {!s.description && (
+              <div className="px-5 pb-4">
+                <p className="text-sm text-light-gray italic">No project details provided.</p>
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

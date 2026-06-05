@@ -3,28 +3,29 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Save, ArrowLeft, Plus, Trash2, Upload, ImageIcon, Eye, Box, X } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 import { useAdminStore, type AdminProject } from "@/stores/admin-store";
+import { ProjectService } from "@/api/services/project.service";
+import type { Project } from "@/api/types/project.types";
+import { toBase64, toDateInput } from "@/lib/utils";
+import { toast } from "sonner";
 import RichEditor from "@/components/admin/RichEditor";
 
-function toBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(r.result as string);
-    r.onerror = reject;
-    r.readAsDataURL(file);
-  });
-}
-
-function toDateInput(dateStr: string): string {
-  if (!dateStr) return "";
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return "";
-  return d.toISOString().split("T")[0];
+function toAdminProject(p: Project): AdminProject {
+  return {
+    id: p.id, title: p.title, slug: p.slug, categoryId: p.category_id ?? "", file: p.file ?? "",
+    location: p.location ?? "", startDate: p.start_date ?? "", completion: p.completion ?? "",
+    thumbnail: p.thumbnail ?? "", images: p.images ?? [], description: p.description ?? "",
+    materials: p.materials ?? [], costEstimation: p.cost_estimation ?? [],
+    specs: p.specs ?? [], gallery: p.gallery ?? [], socialLinks: p.social_links ?? [],
+  };
 }
 
 export default function NewProjectPage() {
   const router = useRouter();
-  const { addProject, projects, categories, mediaItems, modelItems } = useAdminStore();
+  const { projects, categories, mediaItems, modelItems, setProjects } = useAdminStore(useShallow((s) => ({
+    projects: s.projects, categories: s.categories, mediaItems: s.mediaItems, modelItems: s.modelItems, setProjects: s.setProjects,
+  })));
   const [saving, setSaving] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showMediaPicker, setShowMediaPicker] = useState<"thumbnail" | "images" | "gallery" | null>(null);
@@ -60,28 +61,39 @@ export default function NewProjectPage() {
     if (modelFileRef.current) modelFileRef.current.value = "";
   };
 
-  const save = () => {
-    setSaving(true);
-    const project: AdminProject = {
-      id: crypto.randomUUID(),
-      title: form.title || "",
-      slug: form.slug || "",
-      categoryId: form.categoryId || "",
-      file: form.file || "",
-      location: form.location || "",
-      startDate: form.startDate || "",
-      completion: form.completion || "",
-      thumbnail: form.thumbnail || "",
-      description: form.description || "",
-      images: form.images?.filter(Boolean) || [],
-      materials: form.materials?.filter((m) => m.name) || [],
-      costEstimation: form.costEstimation?.filter((c) => c.item) || [],
-      specs: form.specs?.filter((s) => s.label) || [],
-      gallery: form.gallery?.filter(Boolean) || [],
-      socialLinks: form.socialLinks || [],
+  function toPayload(f: Partial<AdminProject>) {
+    return {
+      title: f.title || "",
+      category_id: f.categoryId || null,
+      file: f.file || "",
+      location: f.location || "",
+      start_date: f.startDate || "",
+      completion: f.completion || "",
+      thumbnail: f.thumbnail || "",
+      images: f.images?.filter(Boolean) || [],
+      description: f.description || "",
+      materials: f.materials?.filter((m) => m.name) || [],
+      cost_estimation: f.costEstimation?.filter((c) => c.item) || [],
+      specs: f.specs?.filter((s) => s.label) || [],
+      gallery: f.gallery?.filter(Boolean) || [],
+      social_links: f.socialLinks || [],
     };
-    addProject(project);
-    router.push("/admin/projects");
+  }
+
+  const save = async () => {
+    if (!form.title?.trim()) return;
+    setSaving(true);
+    try {
+      const project = await ProjectService.create(toPayload(form));
+      toast.success("Project created");
+      const r = await ProjectService.adminList();
+      setProjects((r.results ?? []).map(toAdminProject));
+      router.push("/admin/projects");
+    } catch {
+      toast.error("Failed to save project");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -93,7 +105,8 @@ export default function NewProjectPage() {
       <div className="flex items-center justify-between">
         <h1 className="font-display font-bold text-2xl text-brand-dark">New Project</h1>
         <button onClick={save} disabled={saving} className="h-10 px-5 rounded-lg bg-brand-primary text-white text-sm font-semibold flex items-center gap-2 hover:brightness-110 transition disabled:opacity-50">
-          <Save className="size-4" /> {saving ? "Saving..." : "Save Project"}
+          {saving ? <span className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save className="size-4" />}
+          {saving ? "Saving..." : "Save Project"}
         </button>
       </div>
 

@@ -1,9 +1,19 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useLangStore as useLang } from "@/stores/lang-store";
+import { useSettings } from "@/stores/settings-store";
 import { Menu, X, ChevronRight, ChevronDown, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+
+const WA_MSG = "Hello! I'd like to know more about Horizon Nepal's services.";
+
+function useWaHref() {
+  const contactInfo = useSettings((s) => s.settings?.contact_info);
+  const num = contactInfo?.whatsappNumber || contactInfo?.phone?.replace(/[^0-9]/g, "") || "";
+  return num ? `https://wa.me/${num}?text=${encodeURIComponent(WA_MSG)}` : "#";
+}
 
 const NAV_ITEMS = [
   { href: "/",               label: "Home" },
@@ -24,10 +34,10 @@ const TOOLS_ITEMS = [
 export function Header() {
   const [open,            setOpen]            = useState(false);
   const [scrolled,        setScrolled]        = useState(false);
-  const [lang,            setLang]            = useState<"en" | "np">("en");
   const [toolsOpen,       setToolsOpen]       = useState(false);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const toolsRef = useRef<HTMLLIElement>(null);
+  const { lang, toggle } = useLang();
 
   // Lock body scroll when mobile menu open
   useEffect(() => {
@@ -78,7 +88,7 @@ export function Header() {
           {/* Logo */}
           <Link
             href="/"
-            prefetch={false}
+            
             className="flex items-center gap-2 flex-shrink-0 group"
           >
             <div className="relative">
@@ -101,7 +111,7 @@ export function Header() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  prefetch={false}
+                  
                   className="px-3 py-2 rounded-lg text-sm font-medium text-white/75 hover:text-white hover:bg-white/8 transition-colors duration-150"
                 >
                   {item.label}
@@ -138,7 +148,7 @@ export function Header() {
                     <Link
                       key={t.href}
                       href={t.href}
-                      prefetch={false}
+                      
                       onClick={() => setToolsOpen(false)}
                       className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white/65 hover:text-white hover:bg-white/8 transition-colors duration-150"
                     >
@@ -156,7 +166,7 @@ export function Header() {
             {/* Language toggle */}
             <button
               type="button"
-              onClick={() => setLang((l) => l === "en" ? "np" : "en")}
+              onClick={toggle}
               aria-label={lang === "en" ? "Switch to Nepali" : "Switch to English"}
               className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-white/15 hover:border-white/30 text-white/70 hover:text-white transition-all duration-150"
             >
@@ -172,7 +182,7 @@ export function Header() {
 
             {/* WhatsApp */}
             <a
-              href="https://wa.me/97714411222?text=Hello!%20I'd%20like%20to%20know%20more%20about%20Horizon%20Nepal's%20services."
+              href={useWaHref()}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Chat on WhatsApp"
@@ -184,7 +194,7 @@ export function Header() {
             {/* CTA — desktop only */}
             <Link
               href="/contact"
-              prefetch={false}
+              
               className="hidden sm:inline-flex items-center gap-1.5 h-8 px-4 rounded-full bg-brand-primary text-white text-sm font-bold tracking-wide shadow-md shadow-brand-primary/20 hover:shadow-lg hover:shadow-brand-primary/35 hover:-translate-y-px active:translate-y-0 active:scale-[0.97] transition-all duration-200"
             >
               Get a Quote
@@ -229,7 +239,7 @@ export function Header() {
         <div className="flex items-center justify-between h-16 px-5 border-b border-white/8 flex-shrink-0">
           <Link
             href="/"
-            prefetch={false}
+            
             onClick={closeAll}
             className="flex items-center gap-2"
           >
@@ -256,7 +266,7 @@ export function Header() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  prefetch={false}
+                  
                   onClick={closeAll}
                   className="flex items-center justify-between px-4 py-3 rounded-xl text-[15px] font-medium text-white/70 hover:text-white hover:bg-white/6 transition-colors duration-150"
                 >
@@ -288,7 +298,7 @@ export function Header() {
                     <Link
                       key={t.href}
                       href={t.href}
-                      prefetch={false}
+                      
                       onClick={closeAll}
                       className="block px-3 py-2.5 rounded-lg text-sm font-medium text-white/55 hover:text-white hover:bg-white/6 transition-colors duration-150"
                     >
@@ -306,7 +316,7 @@ export function Header() {
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
-              onClick={() => setLang((l) => l === "en" ? "np" : "en")}
+              onClick={toggle}
               className="flex items-center justify-center gap-1.5 h-9 rounded-full border border-white/15 text-white/65 text-sm font-medium hover:bg-white/6 transition-colors duration-150"
             >
               {lang === "en" ? (
@@ -317,7 +327,7 @@ export function Header() {
               {lang === "en" ? "नेपाली" : "English"}
             </button>
             <a
-              href="https://wa.me/97714411222?text=Hello!%20I'd%20like%20to%20know%20more%20about%20Horizon%20Nepal's%20services."
+              href={useWaHref()}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-1.5 h-9 rounded-full bg-[#25D366]/12 text-[#25D366] border border-[#25D366]/25 text-sm font-medium hover:bg-[#25D366] hover:text-white hover:border-[#25D366] transition-all duration-150"
@@ -328,7 +338,7 @@ export function Header() {
           </div>
           <Link
             href="/contact"
-            prefetch={false}
+            
             onClick={closeAll}
             className="flex items-center justify-center gap-2 w-full h-11 rounded-full bg-brand-primary text-white text-sm font-bold tracking-wide shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/35 active:scale-[0.98] transition-all duration-200"
           >

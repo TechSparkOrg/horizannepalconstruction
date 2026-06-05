@@ -1,7 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Users, Mail, Clock, MapPin } from "lucide-react";
-import { useAdminStore } from "@/stores/admin-store";
+import { TeamService } from "@/api/services/team.service";
+import type { TeamMember } from "@/api/types/team.types";
 
 const LinkedInIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12">
@@ -19,7 +21,13 @@ function avgExperience(team: { experience: string }[]): string {
 }
 
 export function TeamSection() {
-  const { teamMembers } = useAdminStore();
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+
+  useEffect(() => {
+    TeamService.list().then((res) => {
+      setTeamMembers(res.results ?? []);
+    });
+  }, []);
 
   if (teamMembers.length === 0) return null;
 

@@ -1,4 +1,4 @@
-import type { BuildingPermitConfig } from "./admin-store";
+import type { BuildingPermitConfig } from "./admin-types";
 
 export const defaultPermitConfig: BuildingPermitConfig = {
   workflowSteps: [

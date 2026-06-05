@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-  ClipboardList, ListChecks, Shield, Building2, Plus, Trash2,
+  ClipboardList, ListChecks, Shield, Building2, Plus, Trash2, Loader2,
 } from "lucide-react";
-import { useAdminStore, type BuildingPermitConfig, type BPStep, type BPDocCategory, type BPRegulation, type BPMunicipality, type BPText } from "@/stores/admin-store";
+import { toast } from "sonner";
+import { BuildingPermitService } from "@/api/services/building-permit.service";
+import type { BuildingPermitConfig as ApiBuildingPermitConfig } from "@/api/types/building-permit.types";
+import type { BuildingPermitConfig, BPStep, BPDocCategory, BPRegulation, BPMunicipality, BPText } from "@/stores/admin-types";
 
 const TABS = ["Workflow", "Checklist", "Regulations", "Municipalities"] as const;
 type Tab = typeof TABS[number];
@@ -13,6 +16,24 @@ const TAGS = TABS.map((t, i) => ({
   label: t,
   icon: [ClipboardList, ListChecks, Shield, Building2][i],
 }));
+
+function toApiPayload(c: BuildingPermitConfig) {
+  return {
+    workflow_steps: c.workflowSteps,
+    doc_categories: c.docCategories,
+    regulations: c.regulations,
+    municipalities: c.municipalities,
+  };
+}
+
+function fromApiResponse(data: ApiBuildingPermitConfig): BuildingPermitConfig {
+  return {
+    workflowSteps: data.workflow_steps,
+    docCategories: data.doc_categories,
+    regulations: data.regulations,
+    municipalities: data.municipalities,
+  };
+}
 
 function BilingualInput({ value, onChange, placeholder }: { value: BPText; onChange: (v: BPText) => void; placeholder?: string }) {
   return (
@@ -73,14 +94,65 @@ function TagListEditor({ items, onChange }: { items: string[]; onChange: (items:
 }
 
 export default function AdminBuildingPermitPage() {
-  const { buildingPermitConfig, updateBuildingPermitConfig } = useAdminStore();
+  const [config, setConfig] = useState<BuildingPermitConfig | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [tab, setTab] = useState<Tab>("Workflow");
 
-  const update = (patch: Partial<BuildingPermitConfig>) => updateBuildingPermitConfig(patch);
+  useEffect(() => {
+    BuildingPermitService.adminGet()
+      .then((data) => setConfig(fromApiResponse(data)))
+      .catch(() => toast.error("Failed to load building permit config"))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const update = (patch: Partial<BuildingPermitConfig>) => {
+    setConfig((prev) => prev ? { ...prev, ...patch } : prev);
+  };
+
+  const handleSave = async () => {
+    if (!config) return;
+    setSaving(true);
+    try {
+      const res = await BuildingPermitService.adminUpdate(toApiPayload(config));
+      setConfig(fromApiResponse(res));
+      toast.success("Building permit config saved");
+    } catch {
+      toast.error("Failed to save building permit config");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="size-6 animate-spin text-mid-gray" />
+      </div>
+    );
+  }
+
+  if (!config) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-sm text-mid-gray">Failed to load building permit config.</p>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <h1 className="font-display font-bold text-2xl text-brand-dark mb-6">Building Permit</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="font-display font-bold text-2xl text-brand-dark">Building Permit</h1>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="h-10 px-5 rounded-lg bg-brand-primary text-white text-sm font-semibold hover:brightness-110 transition disabled:opacity-60 inline-flex items-center gap-2"
+        >
+          {saving && <Loader2 className="size-4 animate-spin" />}
+          {saving ? "Saving..." : "Save"}
+        </button>
+      </div>
 
       {/* Tabs */}
       <div className="flex gap-1 mb-6 border-b border-light-gray/40">
@@ -96,10 +168,10 @@ export default function AdminBuildingPermitPage() {
         ))}
       </div>
 
-      {tab === "Workflow" && <WorkflowTab config={buildingPermitConfig} onChange={update} />}
-      {tab === "Checklist" && <ChecklistTab config={buildingPermitConfig} onChange={update} />}
-      {tab === "Regulations" && <RegulationsTab config={buildingPermitConfig} onChange={update} />}
-      {tab === "Municipalities" && <MunicipalitiesTab config={buildingPermitConfig} onChange={update} />}
+      {tab === "Workflow" && <WorkflowTab config={config} onChange={update} />}
+      {tab === "Checklist" && <ChecklistTab config={config} onChange={update} />}
+      {tab === "Regulations" && <RegulationsTab config={config} onChange={update} />}
+      {tab === "Municipalities" && <MunicipalitiesTab config={config} onChange={update} />}
     </div>
   );
 }
@@ -110,13 +182,29 @@ function WorkflowTab({ config, onChange }: { config: BuildingPermitConfig; onCha
     next[i] = { ...next[i], ...patch };
     onChange({ workflowSteps: next });
   };
+  const removeStep = (i: number) => {
+    const next = config.workflowSteps.filter((_, idx) => idx !== i).map((s, idx) => ({ ...s, num: idx + 1 }));
+    onChange({ workflowSteps: next });
+  };
+  const addStep = () => {
+    const nextNum = config.workflowSteps.length + 1;
+    onChange({ workflowSteps: [...config.workflowSteps, { num: nextNum, title: { en: "", np: "" }, desc: { en: "", np: "" }, duration: "", docs: [] }] });
+  };
   return (
     <div className="space-y-4 bg-white rounded-xl border border-light-gray/40 p-6">
-      <p className="text-sm font-semibold text-brand-secondary">Nepal Permit Workflow Steps</p>
-      <p className="text-xs text-mid-gray">Edit the 4 workflow steps — title, description, duration, and required documents.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-semibold text-brand-secondary">Nepal Permit Workflow Steps</p>
+          <p className="text-xs text-mid-gray mt-0.5">Title, description, duration, and required documents for each step.</p>
+        </div>
+        <button onClick={addStep} className="h-8 px-4 rounded-lg bg-brand-primary text-white text-xs font-semibold flex items-center gap-1.5 hover:brightness-110 transition"><Plus className="size-3.5" /> Add Step</button>
+      </div>
       {config.workflowSteps.map((step, i) => (
         <div key={i} className="border border-light-gray/30 rounded-xl p-4 space-y-3">
-          <span className="text-xs font-bold bg-brand-primary text-white px-2 py-0.5 rounded-full">Step {step.num}</span>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold bg-brand-primary text-white px-2 py-0.5 rounded-full">Step {i + 1}</span>
+            <button onClick={() => removeStep(i)} className="text-red-400 hover:text-red-600 text-xs px-1.5 py-0.5 rounded hover:bg-red-50"><Trash2 className="size-3.5" /></button>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <BilingualInput value={step.title} onChange={(title) => updateStep(i, { title })} placeholder="Title" />
             <div>

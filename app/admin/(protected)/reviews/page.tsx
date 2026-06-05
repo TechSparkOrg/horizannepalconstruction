@@ -1,22 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { Star, Plus, Pencil, Trash2 } from "lucide-react";
-import { useAdminStore, type Review } from "@/stores/admin-store";
-
-function genId() {
-  return crypto.randomUUID();
-}
-
-function makeInitials(name: string): string {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-}
+import { useState, useEffect } from "react";
+import { Star, Plus, Trash2, Loader2, Pencil, Languages } from "lucide-react";
+import { ReviewService } from "@/api/services/review.service";
+import { cn } from "@/lib/utils";
+import type { Review, ReviewCreate } from "@/api/types/review.types";
 
 function Stars({ value, onChange }: { value: number; onChange?: (v: number) => void }) {
   return (
@@ -29,39 +17,72 @@ function Stars({ value, onChange }: { value: number; onChange?: (v: number) => v
           onClick={() => onChange?.(s)}
           className={`${onChange ? "cursor-pointer hover:scale-110" : "cursor-default"} transition`}
         >
-          <Star className={`size-4 ${s <= value ? "text-amber-400 fill-amber-400" : "text-gray-300"}`} />
+          <Star key={s} className={`size-4 ${s <= value ? "text-amber-400 fill-amber-400" : "text-gray-300"}`} />
         </button>
       ))}
     </div>
   );
 }
 
-const emptyForm: Review = {
-  id: "", name: "", initials: "", role: "",
+function makeInitials(name: string): string {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+const emptyForm: ReviewCreate = {
+  name: "", initials: "", role: "",
   quote: { en: "", np: "" }, rating: 5,
 };
 
 export default function AdminReviewsPage() {
-  const { reviews, addReview, updateReview, deleteReview } = useAdminStore();
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<Review>({ ...emptyForm });
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState<ReviewCreate>({ ...emptyForm });
+  const [saving, setSaving] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const resetForm = () => setForm({ ...emptyForm });
+  useEffect(() => {
+    ReviewService.adminList().then((res) => setReviews(res.results ?? []));
+  }, []);
+
+  const resetForm = () => { setForm({ ...emptyForm }); setShowForm(false); };
+
   const startEdit = (item: Review) => {
-    setForm({ ...item, quote: { ...item.quote } });
+    setForm({ name: item.name, initials: item.initials, role: item.role, quote: { ...item.quote }, rating: item.rating });
     setEditingId(item.id);
+    setShowForm(true);
   };
 
-  const save = () => {
+  const save = async () => {
     if (!form.name.trim() || !form.quote.en.trim()) return;
-    const initials = form.initials.trim() || makeInitials(form.name);
-    if (editingId) {
-      updateReview(editingId, { ...form, initials });
-    } else {
-      addReview({ ...form, id: genId(), initials });
+    setSaving(true);
+    try {
+      const initials = form.initials.trim() || makeInitials(form.name);
+      const payload = { ...form, initials };
+      if (editingId) {
+        await ReviewService.update(editingId, payload);
+      } else {
+        await ReviewService.create(payload);
+      }
+      const res = await ReviewService.adminList();
+      setReviews(res.results ?? []);
+      resetForm();
+      setEditingId(null);
+      setShowForm(false);
+    } finally {
+      setSaving(false);
     }
-    resetForm();
-    setEditingId(null);
+  };
+
+  const remove = async (id: string) => {
+    await ReviewService.delete(id);
+    setReviews((prev) => prev.filter((r) => r.id !== id));
   };
 
   return (
@@ -69,47 +90,18 @@ export default function AdminReviewsPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display font-bold text-2xl text-brand-dark">Reviews</h1>
         <button
-          onClick={() => { resetForm(); setEditingId(null); }}
+          onClick={() => { resetForm(); setEditingId(null); setShowForm(true); }}
           className="h-10 px-5 rounded-lg bg-brand-primary text-white text-sm font-semibold flex items-center gap-2 hover:brightness-110 transition"
         >
           <Plus className="size-4" /> New Review
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* List */}
-        <div className="lg:col-span-3 bg-white rounded-xl border border-light-gray/40">
-          {reviews.length === 0 ? (
-            <p className="text-sm text-mid-gray py-8 text-center">No reviews yet.</p>
-          ) : (
-            <div className="divide-y divide-light-gray/30">
-              {reviews.map((item) => (
-                <div key={item.id} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 group">
-                  <div className="size-9 rounded-lg bg-brand-secondary/10 border border-brand-secondary/20 flex items-center justify-center text-xs font-bold text-brand-secondary shrink-0">
-                    {item.initials}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-brand-dark truncate">{item.name}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <Stars value={item.rating} />
-                      <span className="text-[11px] text-mid-gray truncate">{item.role}</span>
-                    </div>
-                  </div>
-                  <div className="opacity-0 group-hover:opacity-100 flex gap-1 transition">
-                    <button onClick={() => startEdit(item)} className="p-1.5 rounded-md hover:bg-gray-200 text-mid-gray"><Pencil className="size-3.5" /></button>
-                    <button onClick={() => deleteReview(item.id)} className="p-1.5 rounded-md hover:bg-red-50 text-red-400"><Trash2 className="size-3.5" /></button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Form */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-light-gray/40 p-5">
+      {/* Form panel */}
+      {showForm && (
+        <div className="mb-6 bg-white rounded-xl border border-light-gray/40 p-5">
           <h2 className="font-bold text-brand-dark mb-4">{editingId ? "Edit Review" : "New Review"}</h2>
-
-          <div className="space-y-3 mb-5">
+          <div className="grid sm:grid-cols-2 gap-x-5 gap-y-3 mb-5">
             <div>
               <label className="block text-xs font-medium text-mid-gray mb-1 uppercase">Full Name</label>
               <input
@@ -124,7 +116,7 @@ export default function AdminReviewsPage() {
                 value={form.initials}
                 onChange={(e) => setForm({ ...form, initials: e.target.value })}
                 className="w-full h-10 px-3 rounded-md border border-light-gray text-sm font-mono"
-                placeholder="Auto-generated from name"
+                placeholder="Auto-generated"
               />
             </div>
             <div>
@@ -154,19 +146,103 @@ export default function AdminReviewsPage() {
               />
             </div>
           </div>
-
           <div className="flex gap-2">
-            <button onClick={save} className="flex-1 h-10 rounded-lg bg-brand-primary text-white text-sm font-semibold hover:brightness-110 transition">
-              {editingId ? "Update" : "Create"}
+            <button
+              onClick={save}
+              disabled={saving}
+              className="h-10 px-6 rounded-lg bg-brand-primary text-white text-sm font-semibold inline-flex items-center gap-2 hover:brightness-110 transition disabled:opacity-60"
+            >
+              {saving && <Loader2 className="size-4 animate-spin" />}
+              {saving ? "Saving…" : (editingId ? "Update" : "Create")}
             </button>
-            {editingId && (
-              <button onClick={() => { resetForm(); setEditingId(null); }} className="h-10 px-5 rounded-lg border border-light-gray text-sm text-mid-gray hover:bg-gray-50 transition">
-                Cancel
-              </button>
-            )}
+            <button onClick={() => { resetForm(); setEditingId(null); }} className="h-10 px-5 rounded-lg border border-light-gray text-sm text-mid-gray hover:bg-gray-50 transition">
+              Cancel
+            </button>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Reviews list */}
+      {reviews.length === 0 ? (
+        <div className="bg-white rounded-xl border border-light-gray/40 p-12 text-center">
+          <Star className="size-12 mx-auto text-light-gray mb-3" />
+          <p className="text-sm text-mid-gray">No reviews yet.</p>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {reviews.map((r) => {
+            const isExpanded = expandedId === r.id;
+            return (
+              <div
+                key={r.id}
+                className="bg-white rounded-xl border border-light-gray/40 shadow-sm hover:shadow-md transition-shadow"
+              >
+                {/* Header */}
+                <div className="px-5 py-4 flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="size-9 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-xs font-bold text-amber-600 shrink-0">
+                      {r.initials}
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-brand-dark truncate">{r.name}</h3>
+                      <Stars value={r.rating} />
+                    </div>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <button
+                      onClick={() => startEdit(r)}
+                      className="p-2 rounded-lg text-mid-gray hover:text-brand-dark hover:bg-gray-100 transition-colors"
+                      title="Edit"
+                    >
+                      <Pencil className="size-3.5" />
+                    </button>
+                    <button
+                      onClick={() => remove(r.id)}
+                      className="p-2 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                      title="Delete"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Quote */}
+                <div className="px-5 pb-4">
+                  <p className="text-xs text-mid-gray mb-1.5">{r.role}</p>
+                  <button
+                    onClick={() => setExpandedId(isExpanded ? null : r.id)}
+                    className="w-full text-left"
+                  >
+                    <p
+                      className={cn(
+                        "text-sm text-brand-dark leading-relaxed",
+                        !isExpanded && "line-clamp-3"
+                      )}
+                    >
+                      &ldquo;{r.quote.en}&rdquo;
+                    </p>
+                    {r.quote.en.length > 180 && (
+                      <span className="inline-block mt-2 text-xs font-medium text-brand-primary hover:underline">
+                        {isExpanded ? "Show less" : "Show more"}
+                      </span>
+                    )}
+                  </button>
+                  {r.quote.np && (
+                    <div className="mt-3 pt-3 border-t border-light-gray/40">
+                      <div className="flex items-center gap-1.5 text-xs text-mid-gray mb-1">
+                        <Languages className="size-3" /> NP
+                      </div>
+                      <p className="text-sm text-brand-dark leading-relaxed">
+                        &ldquo;{r.quote.np}&rdquo;
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

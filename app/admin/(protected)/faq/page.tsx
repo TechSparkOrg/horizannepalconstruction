@@ -1,16 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Pencil, Trash2, GripVertical } from "lucide-react";
+import { Plus, Pencil, Trash2, GripVertical, Loader2 } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 import { useAdminStore, type FaqItem } from "@/stores/admin-store";
+import { FaqService } from "@/api/services/faq.service";
+import { toast } from "sonner";
+import type { FaqItem as ApiFaqItem } from "@/api/types/faq.types";
 
-function genId() {
-  return crypto.randomUUID();
+function formToApi(form: FaqItem) {
+  return {
+    category_id: form.categoryId,
+    question: { en: form.questionEn, np: form.questionNp },
+    answer: { en: form.answerEn, np: form.answerNp },
+    order: form.order,
+  };
+}
+
+function mapApiToForm(f: ApiFaqItem): FaqItem {
+  return {
+    id: f.id,
+    categoryId: f.category_id,
+    questionEn: f.question.en,
+    answerEn: f.answer.en,
+    questionNp: f.question.np,
+    answerNp: f.answer.np,
+    order: f.order,
+  };
 }
 
 export default function AdminFaqPage() {
-  const { faqItems, categories, addFaqItem, updateFaqItem, deleteFaqItem } = useAdminStore();
+  const { faqItems, categories, setFaqItems } = useAdminStore(useShallow((s) => ({ faqItems: s.faqItems, categories: s.categories, setFaqItems: s.setFaqItems })
+  ));
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const [form, setForm] = useState<FaqItem>({
     id: "", categoryId: "", questionEn: "", answerEn: "", questionNp: "", answerNp: "", order: 0,
@@ -24,15 +47,43 @@ export default function AdminFaqPage() {
     setEditingId(item.id);
   };
 
-  const save = () => {
-    if (!form.questionEn.trim() || !form.answerEn.trim() || !form.categoryId) return;
-    if (editingId) {
-      updateFaqItem(editingId, form);
-    } else {
-      addFaqItem({ ...form, id: genId() });
+  const refresh = async () => {
+    try {
+      const res = await FaqService.adminList();
+      setFaqItems((res.results ?? []).map(mapApiToForm));
+    } catch {
+      toast.error("Failed to refresh FAQ list");
     }
-    resetForm();
-    setEditingId(null);
+  };
+
+  const save = async () => {
+    if (!form.questionEn.trim() || !form.answerEn.trim() || !form.categoryId) return;
+    setSaving(true);
+    try {
+      if (editingId) {
+        await FaqService.update(editingId, formToApi(form));
+      } else {
+        await FaqService.create(formToApi(form));
+      }
+      await refresh();
+      resetForm();
+      setEditingId(null);
+      toast.success(editingId ? "FAQ updated" : "FAQ created");
+    } catch {
+      toast.error("Failed to save FAQ");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await FaqService.delete(id);
+      await refresh();
+      toast.success("FAQ deleted");
+    } catch {
+      toast.error("Failed to delete FAQ");
+    }
   };
 
   const getCategoryName = (id: string) => categories.find((c) => c.id === id)?.name || "—";
@@ -68,7 +119,7 @@ export default function AdminFaqPage() {
                   </div>
                   <div className="opacity-0 group-hover:opacity-100 flex gap-1 transition">
                     <button onClick={() => startEdit(item)} className="p-1.5 rounded-md hover:bg-gray-200 text-mid-gray"><Pencil className="size-3.5" /></button>
-                    <button onClick={() => deleteFaqItem(item.id)} className="p-1.5 rounded-md hover:bg-red-50 text-red-400"><Trash2 className="size-3.5" /></button>
+                    <button onClick={() => handleDelete(item.id)} className="p-1.5 rounded-md hover:bg-red-50 text-red-400"><Trash2 className="size-3.5" /></button>
                   </div>
                 </div>
               ))}
@@ -140,8 +191,9 @@ export default function AdminFaqPage() {
           </div>
 
           <div className="flex gap-2">
-            <button onClick={save} className="flex-1 h-10 rounded-lg bg-brand-primary text-white text-sm font-semibold hover:brightness-110 transition">
-              {editingId ? "Update" : "Create"}
+            <button onClick={save} disabled={saving} className="flex-1 h-10 rounded-lg bg-brand-primary text-white text-sm font-semibold hover:brightness-110 transition disabled:opacity-60 inline-flex items-center justify-center gap-2">
+              {saving && <Loader2 className="size-4 animate-spin" />}
+              {saving ? "Saving..." : (editingId ? "Update" : "Create")}
             </button>
             {editingId && (
               <button onClick={() => { resetForm(); setEditingId(null); }} className="h-10 px-5 rounded-lg border border-light-gray text-sm text-mid-gray hover:bg-gray-50 transition">

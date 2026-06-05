@@ -1,10 +1,16 @@
-import { MessageCircle } from "lucide-react";
+"use client";
 
-const WHATSAPP_NUMBER = "97714411222";
+import { MessageCircle } from "lucide-react";
+import { useSettings } from "@/stores/settings-store";
+
 const MESSAGE = "Hello! I'd like to know more about Horizon Nepal's services.";
 
 export function WhatsAppButton() {
-  const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(MESSAGE)}`;
+  const contactInfo = useSettings((s) => s.settings?.contact_info);
+  const waNumber = contactInfo?.whatsappNumber || contactInfo?.phone?.replace(/[^0-9]/g, "") || "";
+  const href = waNumber ? `https://wa.me/${waNumber}?text=${encodeURIComponent(MESSAGE)}` : "#";
+
+  if (!waNumber) return null;
 
   return (
     <a

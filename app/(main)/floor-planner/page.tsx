@@ -1,5 +1,5 @@
-import Image from "next/image";
 import FloorPlanner from "@/components/sections/FloorPlanner";
+import { BannerCarousel } from "@/components/BannerCarousel";
 
 const benefits = [
   { title: "Accurate Measurements", desc: "Scale-accurate layouts prevent costly errors during construction." },
@@ -14,15 +14,10 @@ export default function FloorPlannerPage() {
   return (
     <>
       <section className="relative min-h-[50vh] flex items-center overflow-hidden bg-brand-dark">
-        {/* Base image — architecture blueprint feel */}
-        <div className="absolute inset-0">
-          <Image src="https://images.unsplash.com/photo-1600607687644-c94bf556e12d?auto=format&fit=crop&w=2000&q=80" alt="" fill priority sizes="100vw" className="object-cover opacity-50 scale-105" />
-        </div>
-        {/* Second image — warm overlay for depth */}
+        <BannerCarousel slug="floor-planner-page-hero" imgClassName="object-cover opacity-50 scale-105" />
         <div className="absolute inset-0 bg-gradient-to-br from-brand-dark/80 via-brand-dark/40 to-transparent">
           <div className="absolute inset-0 opacity-30" style={{ background: "linear-gradient(135deg, rgba(215,30,41,0.15) 0%, transparent 50%)" }} />
         </div>
-        {/* Gradient overlays */}
         <div className="absolute inset-0 bg-gradient-to-r from-brand-dark/80 via-brand-dark/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-brand-dark/30" />
         <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center">

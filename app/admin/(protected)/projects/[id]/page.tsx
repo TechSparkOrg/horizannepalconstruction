@@ -3,23 +3,22 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Save, ArrowLeft, Plus, Trash2, Upload, ImageIcon, Eye, Box, X } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 import { useAdminStore, type AdminProject } from "@/stores/admin-store";
+import { ProjectService } from "@/api/services/project.service";
+import type { Project } from "@/api/types/project.types";
+import { toBase64, toDateInput } from "@/lib/utils";
+import { toast } from "sonner";
 import RichEditor from "@/components/admin/RichEditor";
 
-function toBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(r.result as string);
-    r.onerror = reject;
-    r.readAsDataURL(file);
-  });
-}
-
-function toDateInput(dateStr: string): string {
-  if (!dateStr) return "";
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return "";
-  return d.toISOString().split("T")[0];
+function toAdminProject(p: Project): AdminProject {
+  return {
+    id: p.id, title: p.title, slug: p.slug, categoryId: p.category_id ?? "", file: p.file ?? "",
+    location: p.location ?? "", startDate: p.start_date ?? "", completion: p.completion ?? "",
+    thumbnail: p.thumbnail ?? "", images: p.images ?? [], description: p.description ?? "",
+    materials: p.materials ?? [], costEstimation: p.cost_estimation ?? [],
+    specs: p.specs ?? [], gallery: p.gallery ?? [], socialLinks: p.social_links ?? [],
+  };
 }
 
 export default function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
@@ -27,9 +26,12 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
   const [id, setId] = useState("");
   useEffect(() => { params.then((p) => setId(p.id)); }, [params]);
 
-  const { projects, categories, updateProject, mediaItems, modelItems } = useAdminStore();
+  const { projects, categories, mediaItems, modelItems, setProjects } = useAdminStore(useShallow((s) => ({
+    projects: s.projects, categories: s.categories, mediaItems: s.mediaItems, modelItems: s.modelItems, setProjects: s.setProjects,
+  })));
   const project = projects.find((p) => p.id === id);
   const [form, setForm] = useState<Partial<AdminProject>>({});
+  const [saving, setSaving] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showMediaPicker, setShowMediaPicker] = useState<"thumbnail" | "images" | null>(null);
   const [showModelPicker, setShowModelPicker] = useState(false);
@@ -60,10 +62,39 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
     if (modelFileRef.current) modelFileRef.current.value = "";
   };
 
-  const save = () => {
-    if (!id) return;
-    updateProject(id, form as AdminProject);
-    router.push("/admin/projects");
+  function toPayload(f: Partial<AdminProject>) {
+    return {
+      title: f.title || "",
+      category_id: f.categoryId || null,
+      file: f.file || "",
+      location: f.location || "",
+      start_date: f.startDate || "",
+      completion: f.completion || "",
+      thumbnail: f.thumbnail || "",
+      images: f.images?.filter(Boolean) || [],
+      description: f.description || "",
+      materials: f.materials?.filter((m) => m.name) || [],
+      cost_estimation: f.costEstimation?.filter((c) => c.item) || [],
+      specs: f.specs?.filter((s) => s.label) || [],
+      gallery: f.gallery?.filter(Boolean) || [],
+      social_links: f.socialLinks || [],
+    };
+  }
+
+  const save = async () => {
+    if (!id || !project?.slug) return;
+    setSaving(true);
+    try {
+      await ProjectService.update(project.slug, toPayload(form));
+      toast.success("Project updated");
+      const r = await ProjectService.adminList();
+      setProjects((r.results ?? []).map(toAdminProject));
+      router.push("/admin/projects");
+    } catch {
+      toast.error("Failed to save project");
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (!project) return <div className="text-center py-16 text-mid-gray text-sm">Project not found.</div>;
@@ -76,14 +107,15 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
 
       <div className="flex items-center justify-between">
         <h1 className="font-display font-bold text-2xl text-brand-dark">Edit: {form.title}</h1>
-        <button onClick={save} className="h-10 px-5 rounded-lg bg-brand-primary text-white text-sm font-semibold flex items-center gap-2 hover:brightness-110 transition">
-          <Save className="size-4" /> Save Changes
+        <button onClick={save} disabled={saving} className="h-10 px-5 rounded-lg bg-brand-primary text-white text-sm font-semibold flex items-center gap-2 hover:brightness-110 transition disabled:opacity-50">
+          {saving ? <span className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save className="size-4" />}
+          {saving ? "Saving..." : "Save Changes"}
         </button>
       </div>
 
       <div className="mt-6 max-w-3xl space-y-6">
         <div className="grid sm:grid-cols-2 gap-4">
-          <Field label="Title" value={form.title || ""} onChange={(v) => update("title", v)} />
+          <Field label="Title" value={form.title || ""} onChange={(v) => { update("title", v); update("slug", v.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")); }} />
           <Field label="Slug" value={form.slug || ""} onChange={(v) => update("slug", v)} />
           <div>
             <label className="block text-sm font-medium text-brand-dark mb-1">Category</label>

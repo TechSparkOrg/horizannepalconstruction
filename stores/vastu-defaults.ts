@@ -1,4 +1,4 @@
-import type { VastuConfig } from "./admin-store";
+import type { VastuConfig } from "./admin-types";
 
 const r = (en: string, np: string) => ({ en, np });
 
@@ -9,7 +9,7 @@ export const defaultVastuConfig: VastuConfig = {
     bgImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=80",
     badge: "Tools",
   },
-  quickTools: {
+  quick_tools: {
     badge: "Quick Tools",
     title: "Vastu Analysis Tools",
     description: "Get instant Vastu guidance for any room or direction.",
@@ -18,7 +18,7 @@ export const defaultVastuConfig: VastuConfig = {
     directionToolTitle: "Directional Analysis",
     directionToolDesc: "दिशा विश्लेषण",
   },
-  sectionIcons: {
+  section_icons: {
     overview: "🪷",
     elements: "🌍",
     land: "🏞️",
@@ -26,7 +26,7 @@ export const defaultVastuConfig: VastuConfig = {
     "room-placement": "🏠",
     "kitchen-dining": "🍳",
   },
-  sectionKeys: ["overview", "elements", "land", "entrance", "room-placement", "kitchen-dining"],
+  section_keys: ["overview", "elements", "land", "entrance", "room-placement", "kitchen-dining"],
   sections: {
     overview: {
       title: "Vastu Shastra Overview",
@@ -548,7 +548,7 @@ export const defaultVastuConfig: VastuConfig = {
       ],
     },
   },
-  roomOptions: [
+  room_options: [
     { id: "living-room", label: "Living Room", labelNp: "बस्ने कोठा" },
     { id: "master-bedroom", label: "Master Bedroom", labelNp: "मास्टर बेडरूम" },
     { id: "kids-bedroom", label: "Children's Bedroom", labelNp: "बच्चाको कोठा" },
@@ -560,7 +560,7 @@ export const defaultVastuConfig: VastuConfig = {
     { id: "guest-room", label: "Guest Room", labelNp: "पाहुना कोठा" },
     { id: "store-room", label: "Store Room", labelNp: "भण्डार कोठा" },
   ],
-  directionOptions: [
+  direction_options: [
     { id: "north", label: "North (उत्तर)", subtitle: "Wealth & Prosperity" },
     { id: "northeast", label: "Northeast (उत्तर-पूर्व)", subtitle: "Spirituality & Peace" },
     { id: "east", label: "East (पूर्व)", subtitle: "Health & Vitality" },

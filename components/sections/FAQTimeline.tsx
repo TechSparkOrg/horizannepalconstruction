@@ -1,63 +1,41 @@
 "use client";
 
-import { useState } from "react";
-import { Minus, Plus, HelpCircle, DollarSign, Settings, Shield, FileText } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Minus, Plus, HelpCircle, DollarSign, Settings, Shield, FileText, Building2, Loader2 } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
+import { useClientStore } from "@/stores/client-store";
 
-const categories = [
-  {
-    icon: HelpCircle,
-    title: "General Questions",
-    subtitle: "Everything you need to know to get started",
-    items: [
-      { q: "What services does Horizon Nepal offer?", a: "We provide end-to-end architectural design, engineering, construction management, interior design, material consultation, and site supervision for residential, commercial, and heritage projects across Nepal." },
-      { q: "Where do you operate?", a: "We are based in Kathmandu and work across all districts of Nepal, including Pokhara, Chitwan, Bhaktapur, Lalitpur, and Dhulikhel." },
-      { q: "How long has Horizon Nepal been in business?", a: "We have been shaping Nepal's built environment since 1999, with over 25 years of experience in architecture, engineering, and construction." },
-    ],
-  },
-  {
-    icon: DollarSign,
-    title: "Pricing & Payments",
-    subtitle: "Transparent costs, no hidden surprises",
-    items: [
-      { q: "How do you price your services?", a: "We offer fixed-fee, percentage-of-project, and phased payment models. A detailed quotation is provided after the initial consultation and site assessment." },
-      { q: "Is the initial consultation free?", a: "Yes, the first consultation and site visit are completely free with no obligation to proceed." },
-      { q: "Do you require a deposit to start?", a: "A standard upfront payment is required to begin design work. The amount varies by project scope and is clearly outlined in your proposal." },
-    ],
-  },
-  {
-    icon: Settings,
-    title: "Process & Timeline",
-    subtitle: "How we deliver your project on schedule",
-    items: [
-      { q: "How long does a typical project take?", a: "A standard residential project takes 6–12 months from design to completion. Commercial projects range from 12–24 months depending on complexity and size." },
-      { q: "What is your design process?", a: "We follow a structured approach: initial consultation, concept design, site assessment, detailed planning, approvals, construction, and handover — with you involved at every stage." },
-      { q: "Can I make changes during construction?", a: "Yes, changes can be accommodated. We assess the impact on timeline and budget and discuss options with you before proceeding." },
-    ],
-  },
-  {
-    icon: Shield,
-    title: "Quality & Compliance",
-    subtitle: "Built to last, built to code",
-    items: [
-      { q: "Do you handle permits and approvals?", a: "Yes, we manage all municipal approvals, building permits, and environmental clearances as part of our full-service offering." },
-      { q: "What quality guarantees do you offer?", a: "We conduct regular quality audits and safety inspections throughout construction. All work complies with Nepali building codes and standards." },
-      { q: "Do you offer post-completion support?", a: "Absolutely. We provide documentation, warranties, and remain available for maintenance and post-completion support." },
-    ],
-  },
-  {
-    icon: FileText,
-    title: "Documentation & Contracts",
-    subtitle: "Clear paperwork, clear expectations",
-    items: [
-      { q: "What documents do I receive?", a: "You receive detailed architectural drawings, structural calculations, BOQ, permits, warranties, and a completion certificate." },
-      { q: "Is there a written contract?", a: "Yes, every project begins with a detailed contract outlining scope, timeline, payment schedule, and terms." },
-    ],
-  },
-];
+const CATEGORY_ICONS = [HelpCircle, DollarSign, Settings, Shield, FileText, Building2];
 
 export function FAQTimeline() {
-  const [openCategory, setOpenCategory] = useState<number | null>(0);
+  const { categories, faqItems, fetchCategories, fetchFaqs, faqsLoading, categoriesLoading } = useClientStore(useShallow((s) => ({
+    categories: s.categories,
+    faqItems: s.faqItems,
+    fetchCategories: s.fetchCategories,
+    fetchFaqs: s.fetchFaqs,
+    faqsLoading: s.faqsLoading,
+    categoriesLoading: s.categoriesLoading,
+  })));
+
+  useEffect(() => {
+    fetchCategories();
+    fetchFaqs();
+  }, [fetchCategories, fetchFaqs]);
+
+  const grouped = categories
+    .map((cat, idx) => ({
+      icon: CATEGORY_ICONS[idx % CATEGORY_ICONS.length],
+      title: cat.name,
+      items: faqItems
+        .filter((item) => item.category_id === cat.id)
+        .map((item) => ({ q: item.question.en, a: item.answer.en })),
+    }))
+    .filter((g) => g.items.length > 0);
+
+  const [openCategory, setOpenCategory] = useState<number | null>(null);
   const [openItems, setOpenItems] = useState<Record<string, number | null>>({});
+
+  const loading = faqsLoading || categoriesLoading;
 
   const toggleItem = (catIdx: number, itemIdx: number) => {
     setOpenItems((prev) => ({
@@ -81,7 +59,13 @@ export function FAQTimeline() {
         <div className="relative">
           <div className="absolute left-1/2 -translate-x-px top-0 bottom-0 w-0.5 bg-light-gray hidden lg:block" />
 
-          {categories.map((cat, catIdx) => {
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="size-6 animate-spin text-mid-gray" />
+            </div>
+          ) : grouped.length === 0 ? (
+            <p className="text-sm text-mid-gray py-10 text-center">No FAQs available yet.</p>
+          ) : grouped.map((cat, catIdx) => {
             const Icon = cat.icon;
             const isLeft = catIdx % 2 === 0;
 
@@ -103,7 +87,6 @@ export function FAQTimeline() {
                       </div>
                       <div className="flex-1">
                         <h3 className="font-display font-bold text-lg text-brand-secondary">{cat.title}</h3>
-                        <p className="text-xs text-mid-gray mt-0.5">{cat.subtitle}</p>
                       </div>
                       <span className={`shrink-0 size-6 rounded-full flex items-center justify-center transition-colors ${
                         openCategory === catIdx ? "bg-brand-primary/10 text-brand-primary" : "bg-light-gray/30 text-mid-gray"

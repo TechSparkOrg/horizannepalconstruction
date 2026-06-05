@@ -1,22 +1,33 @@
 "use client";
 
-import Image from "next/image";
+import { useEffect } from "react";
 import { FileText, Building2, TriangleAlert, Wind, Flame, Clock } from "lucide-react";
-import { useAdminStore } from "@/stores/admin-store";
+import { useShallow } from "zustand/react/shallow";
+import { useClientStore } from "@/stores/client-store";
+import { BannerCarousel } from "@/components/BannerCarousel";
 
 const REG_ICONS = [Building2, TriangleAlert, Flame, Wind];
 
 export default function BuildingPermitPage() {
-  const { buildingPermitConfig } = useAdminStore();
-  const { workflowSteps, docCategories, regulations, municipalities } = buildingPermitConfig;
+  const { buildingPermitConfig, fetchBuildingPermitConfig } = useClientStore(useShallow((s) => ({
+    buildingPermitConfig: s.buildingPermitConfig,
+    fetchBuildingPermitConfig: s.fetchBuildingPermitConfig,
+  })));
+
+  useEffect(() => {
+    fetchBuildingPermitConfig();
+  }, [fetchBuildingPermitConfig]);
+
+  const workflowSteps = buildingPermitConfig?.workflow_steps ?? [];
+  const docCategories = buildingPermitConfig?.doc_categories ?? [];
+  const regulations = buildingPermitConfig?.regulations ?? [];
+  const municipalities = buildingPermitConfig?.municipalities ?? [];
 
   return (
     <>
       {/* Hero */}
       <section className="relative min-h-[55vh] flex items-center overflow-hidden bg-brand-dark">
-        <div className="absolute inset-0">
-          <Image src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=80" alt="" fill priority sizes="100vw" className="object-cover opacity-35" />
-        </div>
+        <BannerCarousel slug="building-permit-page-hero" imgClassName="object-cover opacity-35" />
         <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/60 to-brand-dark" />
         <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-16">
           <div className="max-w-2xl">

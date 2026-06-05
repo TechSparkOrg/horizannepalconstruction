@@ -1,28 +1,20 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { BannerCarousel } from "@/components/BannerCarousel";
+
+
 
 const stats = [
-  { label: "25+ Years", sub: "Experience" },
-  { label: "200+", sub: "Projects Done" },
-  { label: "50+", sub: "Team Members" },
-  { label: "15+", sub: "Districts" },
+  { label: "50+", sub: "Projects delivered" },
+  { label: "12+", sub: "Years in Nepal" },
+  { label: "98%", sub: "Client satisfaction" },
+  { label: "200+", sub: "Happy clients" },
 ];
 
 export function AboutHero() {
   return (
     <section className="relative min-h-[75vh] flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0">
-        <Image
-          src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=2000&q=80"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
-      </div>
-
+      <BannerCarousel slug="about-page-hero" imgClassName="object-cover" />
       <div
         className="absolute inset-0"
         style={{

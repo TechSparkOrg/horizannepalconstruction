@@ -1,19 +1,50 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowRight, MapPin, Mail, Phone } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowRight, MapPin, Mail, Phone, Minus, Plus } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { useAdminStore } from "@/stores/admin-store";
+import { ConsultationService } from "@/api/services/consultation.service";
+import { useSettings } from "@/stores/settings-store";
+import { useClientStore } from "@/stores/client-store";
+import type { ConsultationFormSettings } from "@/stores/admin-types";
 
-function genId() {
-  return crypto.randomUUID();
-}
+export function ConsultationForm({ faqCategorySlug = "consultation" }: { faqCategorySlug?: string }) {
+  const [formConfig, setFormConfig] = useState<ConsultationFormSettings | null>(null);
+  const contactInfo = useSettings((s) => s.settings?.contact_info);
 
-export function ConsultationForm() {
-  const { settings, consultationForm, addSubmission } = useAdminStore();
-  const { contactInfo } = settings;
-  const { sectionLabel, heading, description, formTitle, serviceOptions, privacyText, successHeading, successMessage } = consultationForm;
+  useEffect(() => {
+    ConsultationService.getSettings().then((res) => {
+      setFormConfig({
+        sectionLabel: res.section_label,
+        heading: res.heading,
+        description: res.description,
+        formTitle: res.form_title,
+        serviceOptions: res.service_options,
+        privacyText: res.privacy_text,
+        successHeading: res.success_heading,
+        successMessage: res.success_message,
+      });
+    });
+  }, []);
 
+  const { sectionLabel, heading, description, formTitle, serviceOptions, privacyText, successHeading, successMessage } = formConfig ?? {};
+
+  const { categories, faqItems, fetchCategories, fetchFaqs } = useClientStore(useShallow((s) => ({
+    categories: s.categories, faqItems: s.faqItems, fetchCategories: s.fetchCategories, fetchFaqs: s.fetchFaqs,
+  })));
+
+  useEffect(() => {
+    fetchCategories();
+    fetchFaqs();
+  }, [fetchCategories, fetchFaqs]);
+
+  const faqCategory = categories.find((c) => c.slug === faqCategorySlug);
+  const consultationFaqs = faqCategory
+    ? faqItems.filter((f) => f.category_id === faqCategory.id)
+    : [];
+
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -22,17 +53,15 @@ export function ConsultationForm() {
   const [desc, setDesc] = useState("");
   const [preferredDate, setPreferredDate] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    addSubmission({
-      id: genId(),
+    await ConsultationService.submit({
       name,
       email,
       phone,
       service,
       description: desc,
-      preferredDate,
-      createdAt: new Date().toISOString(),
+      preferred_date: preferredDate,
     });
     setSubmitted(true);
   };
@@ -60,19 +89,19 @@ export function ConsultationForm() {
           <ul className="mt-6 space-y-4 text-white/85">
             <li className="flex items-center gap-3">
               <Phone className="size-5 text-brand-primary" />
-              <a href={`tel:${contactInfo.phone}`} className="hover:text-brand-primary">
-                {contactInfo.phone}
+              <a href={`tel:${contactInfo?.phone}`} className="hover:text-brand-primary">
+                {contactInfo?.phone}
               </a>
             </li>
             <li className="flex items-center gap-3">
               <Mail className="size-5 text-brand-primary" />
-              <a href={`mailto:${contactInfo.email}`} className="hover:text-brand-primary">
-                {contactInfo.email}
+              <a href={`mailto:${contactInfo?.email}`} className="hover:text-brand-primary">
+                {contactInfo?.email}
               </a>
             </li>
             <li className="flex items-center gap-3">
               <MapPin className="size-5 text-brand-primary" />
-              <span>{contactInfo.address}</span>
+              <span>{contactInfo?.address}</span>
             </li>
           </ul>
         </div>
@@ -149,7 +178,7 @@ export function ConsultationForm() {
                     className="w-full h-11 px-3 rounded-md border border-light-gray bg-white text-brand-dark text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                   >
                     <option value="">Select a service</option>
-                    {serviceOptions.map((opt) => (
+                    {serviceOptions?.map((opt) => (
                       <option key={opt} value={opt}>{opt}</option>
                     ))}
                   </select>
@@ -194,6 +223,39 @@ export function ConsultationForm() {
           )}
         </form>
       </div>
+
+      {consultationFaqs.length > 0 && (
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12">
+          <div className="max-w-3xl mx-auto">
+            <h3 className="font-display font-bold text-xl sm:text-2xl text-brand-secondary text-center mb-8">
+              Frequently Asked Questions
+            </h3>
+            <div className="space-y-3">
+              {consultationFaqs.map((faq, i) => {
+                const isOpen = openFaq === i;
+                return (
+                  <div key={faq.id} className="bg-off-white rounded-xl border border-light-gray/40 overflow-hidden">
+                    <button
+                      onClick={() => setOpenFaq(isOpen ? null : i)}
+                      className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left"
+                    >
+                      <span className="text-sm font-medium text-brand-dark flex-1">{faq.question.en}</span>
+                      <span className={`shrink-0 size-6 rounded-full flex items-center justify-center transition-colors ${isOpen ? "bg-brand-primary/10 text-brand-primary" : "bg-light-gray/30 text-mid-gray"}`}>
+                        {isOpen ? <Minus className="size-3.5" /> : <Plus className="size-3.5" />}
+                      </span>
+                    </button>
+                    <div className="grid transition-all duration-300 ease-out" style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}>
+                      <div className="overflow-hidden">
+                        <p className="px-5 pb-4 text-sm text-mid-gray leading-relaxed">{faq.answer.en}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -5,74 +5,33 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Play, Check } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-
-const bgImages = [
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=80",
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2000&q=80",
-  "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=2000&q=80",
-];
+import { BannerCarousel } from "@/components/BannerCarousel";
+import { BannerService } from "@/api/services/banner.service";
 
 export function HeroSection() {
-  const [current, setCurrent] = useState(0);
+  const [featuredImg, setFeaturedImg] = useState("");
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrent((c) => (c + 1) % bgImages.length);
-    }, 5000);
-    return () => clearInterval(timer);
+    BannerService.getBySlug("home-page-hero").then((banners) => {
+      const b = banners.find((b) => b.url);
+      if (b) setFeaturedImg(b.url);
+    });
   }, []);
 
   return (
     <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
-      <div className="absolute inset-0">
-        {bgImages.map((src, i) => (
-          <div
-            key={i}
-            className="absolute inset-0 transition-opacity duration-1000"
-            style={{ opacity: i === current ? 1 : 0 }}
-          >
-            <Image
-              src={src}
-              alt=""
-              fill
-              priority={i === 0}
-              sizes="100vw"
-              className="object-cover scale-[1.02]"
-            />
-          </div>
-        ))}
-      </div>
-
-      <div
-        className="absolute inset-0"
-        style={{
-          background: "linear-gradient(105deg, var(--color-brand-dark) 0%, color-mix(in oklch, var(--color-brand-dark) 60%, transparent) 55%, color-mix(in oklch, var(--color-brand-dark) 25%, transparent) 100%)",
-        }}
-        aria-hidden="true"
+      <BannerCarousel
+        slug="home-page-hero"
+        carousel
+        imgClassName="object-cover scale-[1.02]"
+        overlay="linear-gradient(105deg, var(--color-brand-dark) 0%, color-mix(in oklch, var(--color-brand-dark) 60%, transparent) 55%, color-mix(in oklch, var(--color-brand-dark) 25%, transparent) 100%)"
       />
+
       <div
         className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
         style={{ background: "linear-gradient(to top, color-mix(in oklch, var(--color-brand-dark) 50%, transparent), transparent)" }}
         aria-hidden="true"
       />
-
-      {bgImages.length > 1 && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
-          {bgImages.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => setCurrent(i)}
-              className={`rounded-full transition-all duration-300 ${
-                i === current
-                  ? "w-6 h-2 bg-brand-primary"
-                  : "w-2 h-2 bg-white/40 hover:bg-white/70"
-              }`}
-              aria-label={`Go to slide ${i + 1}`}
-            />
-          ))}
-        </div>
-      )}
 
       <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-36 pb-24 grid lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-7 max-w-[640px]">
@@ -110,36 +69,38 @@ export function HeroSection() {
             <p className="text-white/55 text-sm">Trusted by 50+ clients across Nepal</p>
           </div>
         </div>
-        <aside className="hidden lg:flex lg:col-span-5 justify-end">
-          <div className="w-full max-w-[360px] relative group">
-            <div className="rounded-2xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl shadow-black/40">
-              <div className="relative h-56">
-                <Image
-                  src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80"
-                  alt="Sunrise Residential Complex"
-                  fill
-                  sizes="360px"
-                  className="object-cover"
-                />
-              </div>
-              <div className="px-4 py-3 border-t border-white/8 flex items-center justify-between">
-                <div>
-                  <p className="text-white text-sm font-semibold leading-tight">Sunrise Residential Complex</p>
-                  <p className="text-white/50 text-xs mt-0.5">Lalitpur, Nepal</p>
+        {/* {featuredImg && (
+          <aside className="hidden lg:flex lg:col-span-5 justify-end">
+            <div className="w-full max-w-[360px] relative group">
+              <div className="rounded-2xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl shadow-black/40">
+                <div className="relative h-56">
+                  <Image
+                    src={featuredImg}
+                    alt="Featured project"
+                    fill
+                    sizes="360px"
+                    className="object-cover"
+                  />
                 </div>
-                <span className="inline-flex items-center gap-1 bg-brand-primary/20 text-brand-primary text-xs font-semibold px-2.5 py-1 rounded-full border border-brand-primary/25">
-                  <Check className="size-3" />
-                  Completed
-                </span>
+                <div className="px-4 py-3 border-t border-white/8 flex items-center justify-between">
+                  <div>
+                    <p className="text-white text-sm font-semibold leading-tight">Featured Project</p>
+                    <p className="text-white/50 text-xs mt-0.5">Horizon Nepal</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 bg-brand-primary/20 text-brand-primary text-xs font-semibold px-2.5 py-1 rounded-full border border-brand-primary/25">
+                    <Check className="size-3" />
+                    Completed
+                  </span>
+                </div>
               </div>
+              <div
+                className="absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.15), 0 24px 48px -12px rgba(0,0,0,0.5)" }}
+                aria-hidden="true"
+              />
             </div>
-            <div
-              className="absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-              style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.15), 0 24px 48px -12px rgba(0,0,0,0.5)" }}
-              aria-hidden="true"
-            />
-          </div>
-        </aside>
+          </aside>
+        )} */}
       </div>
     </section>
   );

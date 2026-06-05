@@ -8,7 +8,8 @@ import {
   Building2, Ruler, Trophy, type LucideIcon,
 } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import clsx from "clsx";
+import { useSettings } from "@/stores/settings-store";
+import { cn } from "@/lib/utils";
 
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -308,7 +309,7 @@ function HousePreview({
         ).map(({ val, lbl }, i) => (
           <div
             key={lbl}
-            className={clsx("px-3 py-2.5", i < 2 && "border-r border-white/10")}
+            className={cn("px-3 py-2.5", i < 2 && "border-r border-white/10")}
           >
             <p className="text-sm font-semibold text-white">{val}</p>
             <p className="text-[10px] text-white/40 mt-0.5">{lbl}</p>
@@ -339,17 +340,17 @@ function GradeTabs({
           key={key}
           type="button"
           onClick={() => onChange(key)}
-          className={clsx(
+          className={cn(
             "rounded-xl py-2.5 px-2 text-center border transition-all duration-150",
             value === key
               ? "border-[#4B5DDB] bg-[#EEEDFE] border-[1.5px]"
               : "border-light-gray/40 bg-off-white hover:border-light-gray",
           )}
         >
-          <p className={clsx("text-xs font-semibold", value === key ? "text-[#3C3489]" : "text-brand-dark")}>
+          <p className={cn("text-xs font-semibold", value === key ? "text-[#3C3489]" : "text-brand-dark")}>
             {label}
           </p>
-          <p className={clsx("text-[10px] mt-0.5", value === key ? "text-[#534AB7]" : "text-mid-gray")}>
+          <p className={cn("text-[10px] mt-0.5", value === key ? "text-[#534AB7]" : "text-mid-gray")}>
             {price}
           </p>
         </button>
@@ -388,11 +389,11 @@ function FaqItem({ q, a }: { q: string; a: string }) {
       >
         <span className="text-sm font-semibold text-brand-dark">{q}</span>
         <ChevronDown
-        className={clsx("size-4 text-mid-gray shrink-0 transition-transform duration-200", open && "rotate-180")}
+        className={cn("size-4 text-mid-gray shrink-0 transition-transform duration-200", open && "rotate-180")}
         />
       </button>
       <div
-        className={clsx("overflow-hidden transition-all duration-200", open ? "max-h-[200px] opacity-100" : "max-h-0 opacity-0")}
+        className={cn("overflow-hidden transition-all duration-200", open ? "max-h-[200px] opacity-100" : "max-h-0 opacity-0")}
       >
         <p className="text-[13px] text-mid-gray leading-relaxed pb-3.5">{a}</p>
       </div>
@@ -426,6 +427,8 @@ export function CostEstimator() {
     setResult({ totalArea, totalCost: totalArea * rate, vals });
   }
 
+  const contactInfo = useSettings((s) => s.settings?.contact_info);
+  const waNum = contactInfo?.whatsappNumber || contactInfo?.phone?.replace(/[^0-9]/g, "") || "97714411222";
   const waText = result
     ? `Hi Horizon Nepal!\nArea: ${area} sq.ft/floor\nFloors: ${floors}\nMaterial: ${material}\nTotal: ~Rs. ${fmt(result.totalCost)}\n\nPlease share a detailed quote.`
     : "Hello! I'd like to know more about Horizon Nepal's construction services.";
@@ -507,7 +510,7 @@ export function CostEstimator() {
               </button>
 
               <a
-                href={`https://wa.me/97714411222?text=${encodeURIComponent(waText)}`}
+                href={`https://wa.me/${waNum}?text=${encodeURIComponent(waText)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full h-10 rounded-xl border border-light-gray/50 bg-off-white text-mid-gray text-sm font-semibold flex items-center justify-center gap-2 hover:bg-[#e8fef2] hover:text-[#1a7a4a] hover:border-[#25D366] transition-all"
@@ -632,7 +635,7 @@ export function CostEstimator() {
               Get detailed quote <ArrowRight className="size-4" />
             </Link>
             <a
-              href={`https://wa.me/97714411222?text=${encodeURIComponent(waText)}`}
+              href={`https://wa.me/${waNum}?text=${encodeURIComponent(waText)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 h-11 px-6 rounded-full border border-white/20 text-white/75 text-sm font-bold hover:bg-white/10 transition"

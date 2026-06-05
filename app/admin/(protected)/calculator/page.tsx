@@ -1,51 +1,93 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2, Calculator, Settings2, Pencil } from "lucide-react";
+import { Plus, Trash2, Calculator, Settings2, Pencil, X } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 import { useAdminStore, type CalcMaterial } from "@/stores/admin-store";
 
 const CUSTOM_PARENT_VALUE = "__custom_parent__";
 
+const EMPTY_MAT: CalcMaterial = {
+  id: "", name: "", parentName: "", buildingType: "",
+  unitPrice: 0, unitsPerSqft: 0, size: "",
+  custom: [{ key: "", value: "" }, { key: "", value: "" }],
+};
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="block text-[11px] font-medium text-mid-gray uppercase tracking-wide mb-1.5">
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+const inputCls =
+  "w-full h-9 px-3 rounded-lg border border-light-gray text-sm focus:outline-none focus:border-brand-primary/50 transition bg-white";
+const selectCls =
+  "w-full h-9 px-3 rounded-lg border border-light-gray text-sm focus:outline-none focus:border-brand-primary/50 transition bg-white";
+
 export default function AdminCalculatorPage() {
-  const { calcBuildingTypes, calcMaterials, addCalcBuildingType, removeCalcBuildingType, addCalcMaterial, updateCalcMaterial, deleteCalcMaterial } = useAdminStore();
+  const {
+    calcBuildingTypes, calcMaterials,
+    addCalcBuildingType, removeCalcBuildingType,
+    addCalcMaterial, updateCalcMaterial, deleteCalcMaterial,
+  } = useAdminStore(useShallow((s) => ({ calcBuildingTypes: s.calcBuildingTypes, calcMaterials: s.calcMaterials, addCalcBuildingType: s.addCalcBuildingType, removeCalcBuildingType: s.removeCalcBuildingType, addCalcMaterial: s.addCalcMaterial, updateCalcMaterial: s.updateCalcMaterial, deleteCalcMaterial: s.deleteCalcMaterial })
+  ));
+
   const [tab, setTab] = useState<"config" | "calculate">("config");
-
   const [newType, setNewType] = useState("");
-
-  const [matForm, setMatForm] = useState<CalcMaterial>({
-    id: "", name: "", parentName: "", buildingType: "", unitPrice: 0, unitsPerSqft: 0, size: "", custom: [{ key: "", value: "" }, { key: "", value: "" }],
-  });
+  const [matForm, setMatForm] = useState<CalcMaterial>(EMPTY_MAT);
   const [editingMatId, setEditingMatId] = useState<string | null>(null);
   const [customParentMode, setCustomParentMode] = useState(false);
-  const parentGroups = Array.from(new Set(calcMaterials.map((m) => m.parentName.trim()).filter(Boolean))).sort();
-  const isCustomParent = Boolean(matForm.parentName) && !parentGroups.includes(matForm.parentName);
-  const parentSelectValue = customParentMode ? CUSTOM_PARENT_VALUE : matForm.parentName ? (isCustomParent ? CUSTOM_PARENT_VALUE : matForm.parentName) : "";
+  const [showMatForm, setShowMatForm] = useState(false);
+
+  const parentGroups = Array.from(
+    new Set(calcMaterials.map((m) => m.parentName.trim()).filter(Boolean))
+  ).sort();
+
+  const isCustomParent =
+    Boolean(matForm.parentName) && !parentGroups.includes(matForm.parentName);
+  const parentSelectValue = customParentMode
+    ? CUSTOM_PARENT_VALUE
+    : matForm.parentName
+    ? isCustomParent
+      ? CUSTOM_PARENT_VALUE
+      : matForm.parentName
+    : "";
 
   const resetMatForm = () => {
-    setMatForm({ id: "", name: "", parentName: "", buildingType: "", unitPrice: 0, unitsPerSqft: 0, size: "", custom: [{ key: "", value: "" }, { key: "", value: "" }] });
+    setMatForm(EMPTY_MAT);
     setEditingMatId(null);
     setCustomParentMode(false);
+    setShowMatForm(false);
   };
 
   const saveMat = () => {
     if (!matForm.name || !matForm.buildingType || matForm.unitPrice <= 0) return;
-    const cleanedMat = { ...matForm, parentName: matForm.parentName.trim(), name: matForm.name.trim() };
+    const cleaned = { ...matForm, parentName: matForm.parentName.trim(), name: matForm.name.trim() };
     if (editingMatId) {
-      updateCalcMaterial(editingMatId, cleanedMat);
+      updateCalcMaterial(editingMatId, cleaned);
     } else {
-      addCalcMaterial({ ...cleanedMat, id: crypto.randomUUID() });
+      addCalcMaterial({ ...cleaned, id: crypto.randomUUID() });
     }
     resetMatForm();
   };
 
   const startEditMat = (m: CalcMaterial) => {
-    const custom = m.custom.length >= 2 ? m.custom : [...m.custom, ...[{ key: "", value: "" }, { key: "", value: "" }].slice(m.custom.length)];
+    const custom =
+      m.custom.length >= 2
+        ? m.custom
+        : [...m.custom, ...[{ key: "", value: "" }, { key: "", value: "" }].slice(m.custom.length)];
     setMatForm({ ...m, custom });
     setEditingMatId(m.id);
     setCustomParentMode(false);
+    setShowMatForm(true);
   };
 
-  // Calculator state
+  // Calculator
   const [calcArea, setCalcArea] = useState("");
   const [calcFloors, setCalcFloors] = useState("1");
   const [calcType, setCalcType] = useState(calcBuildingTypes[0] || "");
@@ -55,220 +97,396 @@ export default function AdminCalculatorPage() {
     const area = parseFloat(calcArea);
     const floors = parseInt(calcFloors) || 1;
     if (!area || area <= 0 || !calcType) return;
-    const materials = calcMaterials.filter((m) => m.buildingType === calcType);
-    const res = materials.map((m) => {
-      const quantity = area * floors * m.unitsPerSqft;
-      return { mat: m, quantity, cost: quantity * m.unitPrice };
-    });
+    const res = calcMaterials
+      .filter((m) => m.buildingType === calcType)
+      .map((m) => {
+        const quantity = area * floors * m.unitsPerSqft;
+        return { mat: m, quantity, cost: quantity * m.unitPrice };
+      });
     setResult(res);
   };
 
-  const totalCost = result?.reduce((sum, r) => sum + r.cost, 0) || 0;
+  const totalCost = result?.reduce((sum, r) => sum + r.cost, 0) ?? 0;
+
+  const groupedResult = result
+    ? Array.from(
+        result.reduce((map, r) => {
+          const key = r.mat.parentName || "Other";
+          map.set(key, [...(map.get(key) ?? []), r]);
+          return map;
+        }, new Map<string, typeof result>())
+      )
+    : [];
 
   return (
     <div>
-      <h1 className="font-display font-bold text-2xl text-brand-dark">Cost Calculator</h1>
-
-      {/* Tabs */}
-      <div className="flex gap-1 mt-4 bg-off-white rounded-lg p-1 w-fit border border-light-gray/40">
-        <button onClick={() => setTab("config")} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${tab === "config" ? "bg-white text-brand-dark shadow-sm" : "text-mid-gray hover:text-brand-dark"}`}>
-          <Settings2 className="size-4" /> Config
-        </button>
-        <button onClick={() => setTab("calculate")} className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition ${tab === "calculate" ? "bg-white text-brand-dark shadow-sm" : "text-mid-gray hover:text-brand-dark"}`}>
-          <Calculator className="size-4" /> Calculate
-        </button>
+      {/* Header */}
+      <div className="flex items-start justify-between mb-5">
+        <div>
+          <h1 className="font-display font-bold text-2xl text-brand-dark">Cost Calculator</h1>
+          <p className="text-sm text-mid-gray mt-0.5">Configure materials and estimate build costs</p>
+        </div>
       </div>
 
-      <div className="mt-6 max-w-3xl space-y-6">
-        {/* ═══════════ CONFIG TAB ═══════════ */}
-        {tab === "config" && (
-          <>
-            {/* Building Types */}
-            <div className="bg-white rounded-xl border border-light-gray/40 p-5">
-              <h3 className="font-bold text-brand-dark text-sm mb-3">Building Types</h3>
-              <div className="flex flex-wrap gap-2 mb-3">
+      {/* Tabs */}
+      <div className="flex gap-0.5 bg-off-white border border-light-gray/40 rounded-lg p-1 w-fit mb-6">
+        {(["config", "calculate"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition ${
+              tab === t
+                ? "bg-white text-brand-dark shadow-sm"
+                : "text-mid-gray hover:text-brand-dark"
+            }`}
+          >
+            {t === "config" ? <Settings2 className="size-3.5" /> : <Calculator className="size-3.5" />}
+            {t === "config" ? "Config" : "Calculate"}
+          </button>
+        ))}
+      </div>
+
+      {/* ── CONFIG ── */}
+      {tab === "config" && (
+        <div className="space-y-4">
+
+          {/* Building types */}
+          <div className="bg-white rounded-xl border border-light-gray/40 overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-light-gray/40">
+              <span className="text-sm font-semibold text-brand-dark">Building types</span>
+            </div>
+            <div className="p-5">
+              <div className="flex flex-wrap gap-2 mb-4">
+                {calcBuildingTypes.length === 0 && (
+                  <p className="text-sm text-mid-gray">No types yet.</p>
+                )}
                 {calcBuildingTypes.map((t) => (
-                  <span key={t} className="flex items-center gap-1.5 px-3 py-1.5 bg-off-white rounded-full text-sm text-brand-dark">
+                  <span
+                    key={t}
+                    className="inline-flex items-center gap-1.5 h-8 pl-3 pr-2 bg-off-white border border-light-gray/60 rounded-full text-sm text-brand-dark"
+                  >
                     {t}
-                    <button onClick={() => removeCalcBuildingType(t)} className="text-red-400 hover:text-red-600 transition">
-                      <Trash2 className="size-3.5" />
+                    <button
+                      onClick={() => removeCalcBuildingType(t)}
+                      className="size-5 grid place-items-center rounded-full hover:bg-red-50 text-mid-gray hover:text-red-500 transition"
+                    >
+                      <X className="size-3" />
                     </button>
                   </span>
                 ))}
               </div>
-              <div className="flex gap-2">
-                <input value={newType} onChange={(e) => setNewType(e.target.value)} placeholder="New type name" className="flex-1 h-10 px-3 rounded-md border border-light-gray text-sm" />
-                <button onClick={() => { if (newType.trim() && !calcBuildingTypes.includes(newType.trim())) { addCalcBuildingType(newType.trim()); setNewType(""); } }} className="h-10 px-4 rounded-lg bg-brand-primary text-white text-sm font-semibold flex items-center gap-1.5">
-                  <Plus className="size-4" /> Add
+              <div className="flex gap-2 max-w-sm">
+                <input
+                  value={newType}
+                  onChange={(e) => setNewType(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && newType.trim() && !calcBuildingTypes.includes(newType.trim())) {
+                      addCalcBuildingType(newType.trim());
+                      setNewType("");
+                    }
+                  }}
+                  placeholder="New type name…"
+                  className={inputCls}
+                />
+                <button
+                  onClick={() => {
+                    if (newType.trim() && !calcBuildingTypes.includes(newType.trim())) {
+                      addCalcBuildingType(newType.trim());
+                      setNewType("");
+                    }
+                  }}
+                  className="h-9 px-4 rounded-lg bg-brand-primary text-white text-sm font-semibold flex items-center gap-1.5 hover:brightness-110 transition shrink-0"
+                >
+                  <Plus className="size-3.5" /> Add
                 </button>
               </div>
             </div>
+          </div>
 
-            {/* Materials */}
-            <div className="bg-white rounded-xl border border-light-gray/40 p-5">
-              <h3 className="font-bold text-brand-dark text-sm mb-3">Materials / Substances</h3>
-
-              {/* Material form */}
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4 p-4 bg-off-white rounded-lg">
-                <div>
-                  <label className="block text-xs text-mid-gray mb-1">Material Name</label>
-                  <input value={matForm.name} onChange={(e) => setMatForm({ ...matForm, name: e.target.value })} placeholder="e.g. Cement" className="w-full h-10 px-3 rounded-md border border-light-gray text-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs text-mid-gray mb-1">Parent Group</label>
-                  <select
-                    value={parentSelectValue}
-                    onChange={(e) => {
-                      const isCustom = e.target.value === CUSTOM_PARENT_VALUE;
-                      setCustomParentMode(isCustom);
-                      setMatForm({ ...matForm, parentName: isCustom ? "" : e.target.value });
-                    }}
-                    className="w-full h-10 px-3 rounded-md border border-light-gray text-sm"
-                  >
-                    <option value="">— Select parent —</option>
-                    {parentGroups.map((parent) => <option key={parent} value={parent}>{parent}</option>)}
-                    <option value={CUSTOM_PARENT_VALUE}>+ Add new parent</option>
-                  </select>
-                  {(customParentMode || parentGroups.length === 0) && (
-                    <input
-                      value={matForm.parentName}
-                      onChange={(e) => setMatForm({ ...matForm, parentName: e.target.value })}
-                      placeholder="e.g. Steel, Mineral"
-                      className="mt-2 w-full h-10 px-3 rounded-md border border-light-gray text-sm"
-                    />
-                  )}
-                </div>
-                <div>
-                  <label className="block text-xs text-mid-gray mb-1">Building Type</label>
-                  <select value={matForm.buildingType} onChange={(e) => setMatForm({ ...matForm, buildingType: e.target.value })} className="w-full h-10 px-3 rounded-md border border-light-gray text-sm">
-                    <option value="">— Select —</option>
-                    {calcBuildingTypes.map((t) => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs text-mid-gray mb-1">Price per Unit ($)</label>
-                  <input type="number" step="0.01" min="0" value={matForm.unitPrice || ""} onChange={(e) => setMatForm({ ...matForm, unitPrice: parseFloat(e.target.value) || 0 })} className="w-full h-10 px-3 rounded-md border border-light-gray text-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs text-mid-gray mb-1">Units per sq ft / floor</label>
-                  <input type="number" step="0.001" min="0" value={matForm.unitsPerSqft || ""} onChange={(e) => setMatForm({ ...matForm, unitsPerSqft: parseFloat(e.target.value) || 0 })} className="w-full h-10 px-3 rounded-md border border-light-gray text-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs text-mid-gray mb-1">Size / Bag Size</label>
-                  <input value={matForm.size} onChange={(e) => setMatForm({ ...matForm, size: e.target.value })} placeholder="e.g. 50 kg" className="w-full h-10 px-3 rounded-md border border-light-gray text-sm" />
-                </div>
-                {matForm.custom.map((c, i) => (
-                  <div key={i}>
-                    <label className="block text-xs text-mid-gray mb-1">Custom {i + 1}</label>
-                    <div className="flex gap-1">
-                      <input value={c.key} onChange={(e) => { const c2 = [...matForm.custom]; c2[i] = { ...c2[i], key: e.target.value }; setMatForm({ ...matForm, custom: c2 }); }} placeholder="Key" className="w-1/2 h-10 px-3 rounded-md border border-light-gray text-sm" />
-                      <input value={c.value} onChange={(e) => { const c2 = [...matForm.custom]; c2[i] = { ...c2[i], value: e.target.value }; setMatForm({ ...matForm, custom: c2 }); }} placeholder="Value" className="w-1/2 h-10 px-3 rounded-md border border-light-gray text-sm" />
-                    </div>
-                  </div>
-                ))}
-                <div className="flex items-end gap-2">
-                  <button onClick={saveMat} className="h-10 px-4 rounded-lg bg-brand-primary text-white text-sm font-semibold flex items-center gap-1.5">
-                    <Plus className="size-4" /> {editingMatId ? "Update" : "Add"}
-                  </button>
-                  {editingMatId && (
-                    <button onClick={resetMatForm} className="h-10 px-3 rounded-lg border border-light-gray text-sm text-mid-gray">Cancel</button>
-                  )}
-                </div>
-              </div>
-
-              {/* Material list */}
-              {calcMaterials.length === 0 ? (
-                <p className="text-sm text-mid-gray">No materials added yet.</p>
-              ) : (
-                <div className="space-y-2">
-                  {calcMaterials.map((m) => (
-                    <div key={m.id} className="flex items-center justify-between px-4 py-3 bg-off-white rounded-lg text-sm">
-                      <div className="flex items-center gap-4">
-                        <span className="font-medium text-brand-dark">{m.name}</span>
-                        <span className="text-xs text-mid-gray bg-white px-2 py-0.5 rounded">{m.parentName || "—"}</span>
-                        <span className="text-mid-gray">{m.buildingType}</span>
-                        <span className="text-mid-gray">${m.unitPrice}/{m.size || "unit"}</span>
-                        <span className="text-mid-gray">{m.unitsPerSqft}/sqft</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => startEditMat(m)} className="text-mid-gray hover:text-brand-dark transition">
-                          <Pencil className="size-4" />
-                        </button>
-                        <button onClick={() => deleteCalcMaterial(m.id)} className="text-red-400 hover:text-red-600 transition">
-                          <Trash2 className="size-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+          {/* Materials */}
+          <div className="bg-white rounded-xl border border-light-gray/40 overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-light-gray/40">
+              <span className="text-sm font-semibold text-brand-dark">Materials</span>
+              {!showMatForm && (
+                <button
+                  onClick={() => { setMatForm(EMPTY_MAT); setShowMatForm(true); setEditingMatId(null); }}
+                  className="h-8 px-3 rounded-lg bg-brand-primary text-white text-xs font-semibold flex items-center gap-1.5 hover:brightness-110 transition"
+                >
+                  <Plus className="size-3.5" /> Add material
+                </button>
               )}
             </div>
-          </>
-        )}
 
-        {/* ═══════════ CALCULATE TAB ═══════════ */}
-        {tab === "calculate" && (
-          <div className="bg-white rounded-xl border border-light-gray/40 p-5">
-            <h3 className="font-bold text-brand-dark text-sm mb-4">Estimate Your Build Cost</h3>
-
-            <div className="grid sm:grid-cols-3 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-brand-dark mb-1">Building Type</label>
-                <select value={calcType} onChange={(e) => setCalcType(e.target.value)} className="w-full h-11 px-3 rounded-md border border-light-gray text-sm">
-                  {calcBuildingTypes.map((t) => <option key={t} value={t}>{t}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-brand-dark mb-1">Area (sq ft)</label>
-                <input type="number" min="0" value={calcArea} onChange={(e) => setCalcArea(e.target.value)} placeholder="e.g. 1500" className="w-full h-11 px-3 rounded-md border border-light-gray text-sm" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-brand-dark mb-1">Floors</label>
-                <input type="number" min="1" value={calcFloors} onChange={(e) => setCalcFloors(e.target.value)} className="w-full h-11 px-3 rounded-md border border-light-gray text-sm" />
-              </div>
-            </div>
-
-            <button onClick={runCalc} className="h-11 px-6 rounded-lg bg-brand-primary text-white text-sm font-semibold flex items-center gap-2 hover:brightness-110 transition">
-              <Calculator className="size-4" /> Calculate Cost
-            </button>
-
-            {result && (
-              <div className="mt-6 pt-4 border-t border-light-gray/40">
-                <h4 className="font-bold text-brand-dark mb-3">Cost Breakdown — {calcType}</h4>
-                <p className="text-xs text-mid-gray mb-3">{calcArea} sq ft × {calcFloors} floor{parseInt(calcFloors) > 1 ? "s" : ""}</p>
-                {(() => {
-                  const groups = new Map<string, typeof result>();
-                  for (const r of result) {
-                    const key = r.mat.parentName || "Other";
-                    if (!groups.has(key)) groups.set(key, []);
-                    groups.get(key)!.push(r);
-                  }
-                  return Array.from(groups.entries()).map(([groupName, items]) => (
-                    <div key={groupName} className="mb-4">
-                      <h5 className="text-xs font-semibold text-mid-gray uppercase tracking-wider mb-2">{groupName}</h5>
-                      <div className="space-y-1.5">
-                        {items.map((r) => (
-                          <div key={r.mat.id} className="flex items-center justify-between px-4 py-3 bg-off-white rounded-lg text-sm">
-                            <div>
-                              <span className="font-medium text-brand-dark">{r.mat.name}</span>
-                              <span className="text-mid-gray ml-2">({r.mat.size || "unit"} — {r.quantity.toFixed(1)} units × ${r.mat.unitPrice})</span>
-                            </div>
-                            <span className="font-semibold text-brand-dark">${r.cost.toFixed(2)}</span>
-                          </div>
-                        ))}
+            {/* Inline form */}
+            {showMatForm && (
+              <div className="p-5 border-b border-light-gray/40 bg-off-white/60">
+                <p className="text-xs font-semibold text-mid-gray uppercase tracking-wide mb-4">
+                  {editingMatId ? "Edit material" : "New material"}
+                </p>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+                  <Field label="Name">
+                    <input
+                      value={matForm.name}
+                      onChange={(e) => setMatForm({ ...matForm, name: e.target.value })}
+                      placeholder="e.g. Cement"
+                      className={inputCls}
+                    />
+                  </Field>
+                  <Field label="Parent group">
+                    <select
+                      value={parentSelectValue}
+                      onChange={(e) => {
+                        const isCustom = e.target.value === CUSTOM_PARENT_VALUE;
+                        setCustomParentMode(isCustom);
+                        setMatForm({ ...matForm, parentName: isCustom ? "" : e.target.value });
+                      }}
+                      className={selectCls}
+                    >
+                      <option value="">— Select —</option>
+                      {parentGroups.map((p) => <option key={p} value={p}>{p}</option>)}
+                      <option value={CUSTOM_PARENT_VALUE}>+ New parent group</option>
+                    </select>
+                    {(customParentMode || parentGroups.length === 0) && (
+                      <input
+                        value={matForm.parentName}
+                        onChange={(e) => setMatForm({ ...matForm, parentName: e.target.value })}
+                        placeholder="e.g. Steel, Mineral"
+                        className={`${inputCls} mt-2`}
+                      />
+                    )}
+                  </Field>
+                  <Field label="Building type">
+                    <select
+                      value={matForm.buildingType}
+                      onChange={(e) => setMatForm({ ...matForm, buildingType: e.target.value })}
+                      className={selectCls}
+                    >
+                      <option value="">— Select —</option>
+                      {calcBuildingTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </Field>
+                  <Field label="Price / unit ($)">
+                    <input
+                      type="number" step="0.01" min="0"
+                      value={matForm.unitPrice || ""}
+                      onChange={(e) => setMatForm({ ...matForm, unitPrice: parseFloat(e.target.value) || 0 })}
+                      className={inputCls}
+                    />
+                  </Field>
+                  <Field label="Units / sq ft">
+                    <input
+                      type="number" step="0.001" min="0"
+                      value={matForm.unitsPerSqft || ""}
+                      onChange={(e) => setMatForm({ ...matForm, unitsPerSqft: parseFloat(e.target.value) || 0 })}
+                      className={inputCls}
+                    />
+                  </Field>
+                  <Field label="Size / bag">
+                    <input
+                      value={matForm.size}
+                      onChange={(e) => setMatForm({ ...matForm, size: e.target.value })}
+                      placeholder="e.g. 50 kg"
+                      className={inputCls}
+                    />
+                  </Field>
+                  {matForm.custom.map((c, i) => (
+                    <Field key={i} label={`Custom ${i + 1}`}>
+                      <div className="flex gap-1.5">
+                        <input
+                          value={c.key}
+                          onChange={(e) => {
+                            const c2 = [...matForm.custom];
+                            c2[i] = { ...c2[i], key: e.target.value };
+                            setMatForm({ ...matForm, custom: c2 });
+                          }}
+                          placeholder="Key"
+                          className="w-1/2 h-9 px-3 rounded-lg border border-light-gray text-sm focus:outline-none"
+                        />
+                        <input
+                          value={c.value}
+                          onChange={(e) => {
+                            const c2 = [...matForm.custom];
+                            c2[i] = { ...c2[i], value: e.target.value };
+                            setMatForm({ ...matForm, custom: c2 });
+                          }}
+                          placeholder="Value"
+                          className="w-1/2 h-9 px-3 rounded-lg border border-light-gray text-sm focus:outline-none"
+                        />
                       </div>
-                    </div>
-                  ));
-                })()}
-                <div className="flex items-center justify-between px-4 py-3 mt-3 bg-brand-primary/10 rounded-lg">
-                  <span className="font-bold text-brand-dark">Total Estimated Cost</span>
-                  <span className="font-bold text-lg text-brand-primary">${totalCost.toFixed(2)}</span>
+                    </Field>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={saveMat}
+                    className="h-9 px-5 rounded-lg bg-brand-primary text-white text-sm font-semibold hover:brightness-110 transition"
+                  >
+                    {editingMatId ? "Update" : "Add material"}
+                  </button>
+                  <button
+                    onClick={resetMatForm}
+                    className="h-9 px-4 rounded-lg border border-light-gray text-sm text-mid-gray hover:bg-gray-50 transition"
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             )}
+
+            {/* Table */}
+            {calcMaterials.length === 0 ? (
+              <p className="text-sm text-mid-gray px-5 py-10 text-center">No materials yet.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="bg-off-white">
+                      {["Material", "Group", "Type", "Price", "Units/sqft", "Size", ""].map((h) => (
+                        <th
+                          key={h}
+                          className="px-4 py-2.5 text-left text-[11px] font-semibold text-mid-gray uppercase tracking-wide border-b border-light-gray/40 whitespace-nowrap"
+                        >
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-light-gray/30">
+                    {calcMaterials.map((m) => (
+                      <tr key={m.id} className="hover:bg-gray-50 group">
+                        <td className="px-4 py-3 font-medium text-brand-dark">{m.name}</td>
+                        <td className="px-4 py-3">
+                          {m.parentName ? (
+                            <span className="inline-block text-xs px-2 py-0.5 rounded-full bg-off-white border border-light-gray/60 text-mid-gray">
+                              {m.parentName}
+                            </span>
+                          ) : (
+                            <span className="text-mid-gray/40">—</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-mid-gray">{m.buildingType}</td>
+                        <td className="px-4 py-3 tabular-nums">${m.unitPrice.toFixed(2)}</td>
+                        <td className="px-4 py-3 font-mono text-xs text-mid-gray">{m.unitsPerSqft}</td>
+                        <td className="px-4 py-3 text-mid-gray">{m.size || "—"}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex gap-1 justify-end opacity-0 group-hover:opacity-100 transition">
+                            <button
+                              onClick={() => startEditMat(m)}
+                              className="p-1.5 rounded-md hover:bg-gray-100 text-mid-gray hover:text-brand-dark transition"
+                            >
+                              <Pencil className="size-3.5" />
+                            </button>
+                            <button
+                              onClick={() => deleteCalcMaterial(m.id)}
+                              className="p-1.5 rounded-md hover:bg-red-50 text-mid-gray hover:text-red-500 transition"
+                            >
+                              <Trash2 className="size-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* ── CALCULATE ── */}
+      {tab === "calculate" && (
+        <div className="max-w-2xl">
+          <div className="bg-white rounded-xl border border-light-gray/40 overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-light-gray/40">
+              <span className="text-sm font-semibold text-brand-dark">Estimate build cost</span>
+            </div>
+            <div className="p-5">
+              <div className="grid grid-cols-3 gap-4 mb-5">
+                <Field label="Building type">
+                  <select
+                    value={calcType}
+                    onChange={(e) => setCalcType(e.target.value)}
+                    className={selectCls}
+                  >
+                    {calcBuildingTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </Field>
+                <Field label="Area (sq ft)">
+                  <input
+                    type="number" min="0"
+                    value={calcArea}
+                    onChange={(e) => setCalcArea(e.target.value)}
+                    placeholder="e.g. 1500"
+                    className={inputCls}
+                  />
+                </Field>
+                <Field label="Floors">
+                  <input
+                    type="number" min="1"
+                    value={calcFloors}
+                    onChange={(e) => setCalcFloors(e.target.value)}
+                    className={inputCls}
+                  />
+                </Field>
+              </div>
+              <button
+                onClick={runCalc}
+                className="h-10 px-6 rounded-lg bg-brand-primary text-white text-sm font-semibold flex items-center gap-2 hover:brightness-110 transition"
+              >
+                <Calculator className="size-4" /> Calculate cost
+              </button>
+
+              {result && (
+                <div className="mt-6 pt-5 border-t border-light-gray/40">
+                  <div className="flex items-baseline justify-between mb-1">
+                    <p className="text-sm font-semibold text-brand-dark">
+                      {calcType} — {Number(calcArea).toLocaleString()} sq ft × {calcFloors} floor{parseInt(calcFloors) > 1 ? "s" : ""}
+                    </p>
+                    <p className="text-xs text-mid-gray">{result.length} materials</p>
+                  </div>
+
+                  <div className="space-y-4 mt-4">
+                    {groupedResult.map(([groupName, items]) => (
+                      <div key={groupName}>
+                        <p className="text-[11px] font-semibold text-mid-gray uppercase tracking-widest mb-2">
+                          {groupName}
+                        </p>
+                        <div className="space-y-1.5">
+                          {items.map((r) => (
+                            <div
+                              key={r.mat.id}
+                              className="flex items-center justify-between px-4 py-2.5 bg-off-white rounded-lg"
+                            >
+                              <div>
+                                <p className="text-sm font-medium text-brand-dark">{r.mat.name}</p>
+                                <p className="text-xs text-mid-gray mt-0.5">
+                                  {r.quantity.toFixed(1)} units × ${r.mat.unitPrice}
+                                  {r.mat.size ? ` (${r.mat.size})` : ""}
+                                </p>
+                              </div>
+                              <span className="text-sm font-semibold text-brand-dark tabular-nums">
+                                ${r.cost.toFixed(2)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between px-4 py-3.5 mt-4 bg-brand-dark rounded-xl">
+                    <span className="text-sm font-semibold text-white">Total estimated cost</span>
+                    <span className="text-lg font-bold text-white tabular-nums">
+                      ${totalCost.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

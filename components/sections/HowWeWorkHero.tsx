@@ -1,17 +1,22 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-
-const images = [
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=400&q=80",
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=400&q=80",
-  "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=400&q=80",
-  "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=400&q=80",
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=400&q=80",
-  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=400&q=80",
-];
+import { BannerService } from "@/api/services/banner.service";
 
 export function HowWeWorkHero() {
+  const [images, setImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    BannerService.getBySlug("how-we-work-page-hero").then((banners) => {
+      setImages(banners.filter(b => b.url).map(b => b.url));
+    });
+  }, []);
+
+  const imgs = images.length > 0 ? images : [];
+
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-brand-dark">
       <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 grid lg:grid-cols-2 gap-12 items-center">
@@ -56,27 +61,34 @@ export function HowWeWorkHero() {
         </div>
 
         <div className="relative h-[500px] overflow-hidden rounded-2xl border border-white/10">
-          <div
-            className="flex gap-4 absolute inset-0"
-            style={{
-              animation: "scroll-x 20s linear infinite",
-            }}
-          >
-            {[...images, ...images].map((src, i) => (
-              <div key={i} className="relative h-full w-[300px] shrink-0 rounded-xl overflow-hidden">
-                <Image
-                  src={src}
-                  alt=""
-                  fill
-                  sizes="300px"
-                  className="object-cover"
-                />
+          {imgs.length > 0 ? (
+            <>
+              <div
+                className="flex gap-4 absolute inset-0"
+                style={{
+                  animation: "scroll-x 20s linear infinite",
+                }}
+              >
+                {[...imgs, ...imgs].map((src, i) => (
+                  <div key={i} className="relative h-full w-[300px] shrink-0 rounded-xl overflow-hidden">
+                    <Image
+                      src={src}
+                      alt=""
+                      fill
+                      sizes="300px"
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-
-          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-brand-dark to-transparent pointer-events-none z-10" />
-          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-brand-dark to-transparent pointer-events-none z-10" />
+              <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-brand-dark to-transparent pointer-events-none z-10" />
+              <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-brand-dark to-transparent pointer-events-none z-10" />
+            </>
+          ) : (
+            <div className="size-full flex items-center justify-center">
+              <p className="text-white/30 text-sm">Gallery loading...</p>
+            </div>
+          )}
         </div>
       </div>
 

@@ -1,55 +1,27 @@
-import { Armchair, ArrowRight, Building2, Calendar, Home } from "lucide-react";
+"use client";
+
+import { useEffect } from "react";
+import { ArrowRight, Calendar } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import type { ElementType } from "react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-
-const posts = [
-  {
-    title: "The Future of Sustainable Architecture in Nepal",
-    excerpt: "Exploring how eco-friendly design practices are transforming the construction landscape across the country.",
-    category: "Architecture",
-    categoryColor: "oklch(0.55 0.15 35)",
-    categoryBg: "oklch(0.97 0.03 35)",
-    thumbBg: "oklch(0.97 0.03 35)",
-    thumbColor: "oklch(0.75 0.10 35)",
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&q=80",
-    date: "May 15, 2026",
-    slug: "/blog/the-future-of-sustainable-architecture-in-nepal",
-  },
-  {
-    title: "Top 5 Things to Consider Before Building Your Dream Home",
-    excerpt: "A practical guide to budgeting, site selection, design choices, and hiring the right team for your project.",
-    category: "Guides",
-    categoryColor: "oklch(0.45 0.15 240)",
-    categoryBg: "oklch(0.96 0.03 240)",
-    thumbBg: "oklch(0.96 0.03 240)",
-    thumbColor: "oklch(0.68 0.12 240)",
-    image: "https://images.unsplash.com/photo-1600585153490-76fb20a32601?w=600&q=80",
-    date: "April 28, 2026",
-    slug: "/blog/top-5-things-to-consider-before-building-your-dream-home",
-  },
-  {
-    title: "Modern Interior Design Trends for Nepali Homes",
-    excerpt: "From minimalist aesthetics to fusion designs — discover the latest interior trends reshaping Kathmandu Valley.",
-    category: "Design",
-    categoryColor: "oklch(0.45 0.18 275)",
-    categoryBg: "oklch(0.96 0.04 275)",
-    thumbBg: "oklch(0.96 0.04 275)",
-    thumbColor: "oklch(0.68 0.14 275)",
-    image: "https://images.unsplash.com/photo-1618220179428-22790b461013?w=600&q=80",
-    date: "April 10, 2026",
-    slug: "/blog/modern-interior-design-trends-for-nepali-homes",
-  },
-];
-
-const categoryIcons: Record<string, ElementType> = {
-  Architecture: Building2,
-  Guides: Home,
-  Design: Armchair,
-};
+import { useClientStore } from "@/stores/client-store";
 
 export function BlogSection() {
+  const blogs = useClientStore((s) => s.blogs);
+  const loading = useClientStore((s) => s.blogsLoading);
+  const categories = useClientStore((s) => s.categories);
+  const fetchBlogs = useClientStore((s) => s.fetchBlogs);
+  const fetchCategories = useClientStore((s) => s.fetchCategories);
+
+  useEffect(() => {
+    fetchBlogs();
+    fetchCategories();
+  }, [fetchBlogs, fetchCategories]);
+
+  const catName = (id: string) => categories.find((c) => c.id === id)?.name;
+  const posts = blogs.slice(0, 3);
+
   return (
     <section className="py-16 sm:py-28 bg-off-white">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,16 +43,19 @@ export function BlogSection() {
         </div>
 
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {posts.map((post) => {
-            const Icon = categoryIcons[post.category];
-            return (
+          {loading && posts.length === 0 ? (
+            <div className="col-span-full flex items-center justify-center py-20">
+              <div className="size-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
+            posts.map((post) => (
               <Link
-                key={post.title}
-                href={post.slug}
+                key={post.id}
+                href={`/blog/${post.slug}`}
                 className="group flex flex-col bg-white rounded-xl border border-light-gray/40 shadow-sm hover:shadow-md overflow-hidden transition-all duration-200"
               >
-                <div className="relative h-44 flex items-center justify-center overflow-hidden">
-                  {post.image ? (
+                <div className="relative h-44 overflow-hidden">
+                  {post.image && (
                     <Image
                       src={post.image}
                       alt={post.title}
@@ -88,19 +63,9 @@ export function BlogSection() {
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
-                  ) : (
-                    <div
-                      className="flex items-center justify-center w-full h-full"
-                      style={{ backgroundColor: post.thumbBg }}
-                    >
-                      <Icon className="size-14 opacity-60" style={{ color: post.thumbColor }} />
-                    </div>
                   )}
-                  <span
-                    className="absolute top-3 left-3 text-xs font-medium uppercase tracking-wider px-3 py-1 rounded-full text-white"
-                    style={{ backgroundColor: post.categoryColor }}
-                  >
-                    {post.category}
+                  <span className="absolute top-3 left-3 text-xs font-medium uppercase tracking-wider bg-brand-primary text-white px-3 py-1 rounded-full">
+                    {catName(post.category_id) || post.category_id}
                   </span>
                 </div>
 
@@ -121,8 +86,8 @@ export function BlogSection() {
                   </span>
                 </div>
               </Link>
-            );
-          })}
+            ))
+          )}
         </div>
 
       </div>

@@ -1,23 +1,46 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { useParams, notFound } from "next/navigation";
 import { ArrowLeft, Calendar, User, Quote } from "lucide-react";
-import { posts, getBlogPostBySlug } from "@/lib/blog";
+import { useClientStore } from "@/stores/client-store";
 
-export function generateStaticParams() {
-  return posts.map((p) => ({ slug: p.slug }));
-}
+export default function BlogPostPage() {
+  const { slug } = useParams<{ slug: string }>();
+  const post = useClientStore((s) => s.blogDetail);
+  const loading = useClientStore((s) => s.blogsLoading);
+  const blogs = useClientStore((s) => s.blogs);
+  const categories = useClientStore((s) => s.categories);
+  const fetchBlogBySlug = useClientStore((s) => s.fetchBlogBySlug);
+  const fetchBlogs = useClientStore((s) => s.fetchBlogs);
+  const fetchCategories = useClientStore((s) => s.fetchCategories);
 
-export default async function BlogPostPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const post = getBlogPostBySlug(slug);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    fetchBlogBySlug(slug);
+    if (blogs.length === 0) fetchBlogs();
+    if (categories.length === 0) fetchCategories();
+  }, [slug, fetchBlogBySlug, fetchBlogs, blogs.length, fetchCategories, categories.length]);
+
+  if (!mounted || (loading && !post)) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="size-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   if (!post) notFound();
 
-  const related = posts.filter((p) => p.slug !== slug && p.category === post.category).slice(0, 3);
+  const catName = (id: string) => categories.find((c) => c.id === id)?.name;
+
+  const related = blogs
+    .filter((p) => p.slug !== slug && p.category_id === post.category_id)
+    .slice(0, 3);
 
   return (
     <>
@@ -33,7 +56,7 @@ export default async function BlogPostPage({
             Back to Blog
           </Link>
           <span className="inline-block text-xs font-semibold uppercase tracking-wider bg-brand-primary text-white px-3 py-1 rounded-full mb-3">
-            {post.category}
+            {catName(post.category_id) || post.category_id}
           </span>
           <h1 className="font-display font-bold text-white text-3xl sm:text-4xl lg:text-5xl leading-tight">
             {post.title}
@@ -57,11 +80,17 @@ export default async function BlogPostPage({
           {/* Author Card */}
           <div className="flex items-center gap-4 pb-8 mb-10 border-b border-light-gray/40">
             <div className="relative size-14 rounded-full overflow-hidden shrink-0">
-              <Image src={post.authorImage} alt={post.author} fill sizes="56px" className="object-cover" />
+              {post.author_image ? (
+                <Image src={post.author_image} alt={post.author} fill sizes="56px" className="object-cover" />
+              ) : (
+                <div className="size-full bg-gray-200 flex items-center justify-center text-mid-gray text-sm font-bold">
+                  {post.author?.charAt(0)?.toUpperCase()}
+                </div>
+              )}
             </div>
             <div>
               <p className="font-bold text-brand-dark">{post.author}</p>
-              <p className="text-xs text-mid-gray">{post.authorRole}</p>
+              <p className="text-xs text-mid-gray">{post.author_role}</p>
             </div>
           </div>
 
@@ -71,7 +100,7 @@ export default async function BlogPostPage({
               switch (block.type) {
                 case "paragraph":
                   return (
-                    <p key={i} className="text-mid-gray leading-relaxed text-lg">{block.value}</p>
+                    <p key={i} className="text-mid-gray leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: block.value || "" }} />
                   );
                 case "heading":
                   return (
@@ -85,7 +114,7 @@ export default async function BlogPostPage({
                   return (
                     <div key={i} className="relative pl-6 border-l-4 border-brand-primary bg-brand-primary/5 rounded-r-xl py-5 pr-5 my-8">
                       <Quote className="size-6 text-brand-primary/30 absolute top-3 left-3" />
-                      <p className="text-lg italic text-brand-dark font-medium leading-relaxed">&ldquo;{block.value}&rdquo;</p>
+                      <p className="text-lg italic text-brand-dark font-medium leading-relaxed" dangerouslySetInnerHTML={{ __html: `&ldquo;${block.value || ""}&rdquo;` }} />
                     </div>
                   );
                 case "list":
@@ -134,7 +163,7 @@ export default async function BlogPostPage({
                     <Image src={r.image} alt={r.title} fill sizes="400px" className="object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <div className="p-5">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-brand-primary">{r.category}</span>
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-brand-primary">{catName(r.category_id) || r.category_id}</span>
                     <h3 className="mt-1.5 font-display font-bold text-brand-dark group-hover:text-brand-primary transition-colors">{r.title}</h3>
                     <p className="mt-1.5 text-xs text-mid-gray flex items-center gap-1">
                       <Calendar className="size-3" />

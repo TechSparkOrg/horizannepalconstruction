@@ -24,4 +24,5 @@ export type AdminSessionUser = Pick<AuthUser, "id" | "email" | "username" | "is_
 export type AdminAuthState = Readonly<{
     isAuthenticated: boolean;
     user: AdminSessionUser | null;
+    hasHydrated: boolean;
 }>;

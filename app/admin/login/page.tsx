@@ -20,13 +20,10 @@ export default function AdminLoginPage() {
     setIsSubmitting(true);
 
     try {
-      const session = await AuthService.Login({ email, password });
+      const session = await AuthService.login({ email, password });
       if (!session.access || !session.user) throw new Error("Invalid login response");
 
-      useAdminStore.setState({
-        isAuthenticated: true,
-        user: session.user,
-      });
+      useAdminStore.getState().setAuth(session.user);
       router.push("/admin");
     } catch {
       setError("Invalid email or password");

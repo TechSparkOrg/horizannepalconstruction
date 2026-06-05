@@ -3,15 +3,32 @@
 import { useState } from "react";
 import type { VastuConfig } from "@/stores/admin-store";
 
+const FALLBACK_ICONS: Record<string, string> = {
+  overview: "🪷",
+  elements: "🌍",
+  land: "🏞️",
+  entrance: "🚪",
+  "room-placement": "🏠",
+  "kitchen-dining": "🍳",
+};
+
 export default function VastuShastraGuide({ data }: { data: VastuConfig }) {
-  const { sections, rooms, directions, roomOptions, directionOptions, sectionIcons, sectionKeys } = data;
-  const [activeSection, setActiveSection] = useState<string>(sectionKeys[0]);
-  const [selectedRoom, setSelectedRoom] = useState("living-room");
-  const [selectedDirection, setSelectedDirection] = useState("south");
+  const sections = data.sections || {};
+  const rooms = data.rooms || {};
+  const directions = data.directions || {};
+  const sectionKeys = data.section_keys?.length ? data.section_keys : Object.keys(data.sections || {});
+  const sectionIcons = data.section_icons || {};
+  const roomOptions = data.room_options?.length ? data.room_options : Object.keys(data.rooms || {}).map((id) => ({ id, label: id, labelNp: id }));
+  const directionOptions = data.direction_options?.length ? data.direction_options : Object.keys(data.directions || {}).map((id) => ({ id, label: id, subtitle: "" }));
+  const qt = data.quick_tools || {};
+  const icon = (key: string) => sectionIcons[key] || FALLBACK_ICONS[key] || "📄";
+  const [activeSection, setActiveSection] = useState<string>(sectionKeys[0] || "");
+  const [selectedRoom, setSelectedRoom] = useState(roomOptions[0]?.id || "");
+  const [selectedDirection, setSelectedDirection] = useState(directionOptions[0]?.id || "");
   const [showRoomResult, setShowRoomResult] = useState(false);
   const [showDirResult, setShowDirResult] = useState(false);
 
-  const section = sections[activeSection];
+  const section = sections?.[activeSection];
 
   return (
     <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-28">
@@ -27,9 +44,9 @@ export default function VastuShastraGuide({ data }: { data: VastuConfig }) {
                 : "bg-off-white text-brand-dark hover:bg-brand-secondary/10 border border-light-gray/40"
             }`}
           >
-            <span>{sectionIcons[key]}</span>
-            <span className="hidden sm:inline">{sections[key].title}</span>
-            <span className="sm:hidden">{sections[key].titleNp}</span>
+            <span>{icon(key)}</span>
+            <span className="hidden sm:inline">{sections?.[key]?.title || key}</span>
+            <span className="sm:hidden">{sections?.[key]?.titleNp || ""}</span>
           </button>
         ))}
       </div>
@@ -49,10 +66,10 @@ export default function VastuShastraGuide({ data }: { data: VastuConfig }) {
               }`}
             >
               <div className="flex items-center gap-2">
-                <span>{sectionIcons[key]}</span>
+                <span>{icon(key)}</span>
                 <div>
-                  <p className="font-semibold">{sections[key].title}</p>
-                  <p className="text-xs text-mid-gray/60">{sections[key].titleNp}</p>
+                  <p className="font-semibold">{sections?.[key]?.title || key}</p>
+                  <p className="text-xs text-mid-gray/60">{sections?.[key]?.titleNp || ""}</p>
                 </div>
               </div>
             </button>
@@ -61,10 +78,10 @@ export default function VastuShastraGuide({ data }: { data: VastuConfig }) {
 
         {/* Content */}
         <div className="bg-white rounded-2xl border border-light-gray/40 p-6 sm:p-8">
-          <h3 className="font-display font-bold text-2xl text-brand-secondary mb-2">{section.title}</h3>
-          <p className="text-sm text-mid-gray/60 mb-6 pb-4 border-b border-light-gray/40">{section.titleNp}</p>
+          <h3 className="font-display font-bold text-2xl text-brand-secondary mb-2">{section?.title || activeSection}</h3>
+          <p className="text-sm text-mid-gray/60 mb-6 pb-4 border-b border-light-gray/40">{section?.titleNp || ""}</p>
           <div className="space-y-6">
-            {section.content.map((para, i) => (
+            {(section?.content || []).map((para, i) => (
               <div key={i}>
                 <p className="text-mid-gray leading-relaxed">{para.en}</p>
                 <p className="text-mid-gray/70 text-sm mt-2 leading-relaxed border-l-2 border-brand-primary/20 pl-3">{para.np}</p>
@@ -72,7 +89,7 @@ export default function VastuShastraGuide({ data }: { data: VastuConfig }) {
             ))}
           </div>
 
-          {section.customTopics && (
+          {section?.customTopics && (
             <div className="mt-8 grid md:grid-cols-2 gap-4">
               {section.customTopics.map((topic) => (
                 <div key={topic.title} className="rounded-xl border border-light-gray/50 bg-off-white p-4">
@@ -99,9 +116,9 @@ export default function VastuShastraGuide({ data }: { data: VastuConfig }) {
       {/* Quick Tools Section */}
       <div className="border-t border-light-gray/40 pt-16">
         <div className="text-center mb-10">
-          <span className="text-xs font-semibold tracking-[0.15em] uppercase text-brand-primary bg-brand-primary/5 px-3 py-1 rounded-full">Quick Tools</span>
-          <h3 className="mt-3 font-display font-bold text-3xl text-brand-dark">Vastu Analysis Tools</h3>
-          <p className="mt-2 text-mid-gray">Get instant Vastu guidance for any room or direction.</p>
+          {qt.badge && <span className="text-xs font-semibold tracking-[0.15em] uppercase text-brand-primary bg-brand-primary/5 px-3 py-1 rounded-full">{qt.badge}</span>}
+          <h3 className="mt-3 font-display font-bold text-3xl text-brand-dark">{qt.title || "Vastu Analysis Tools"}</h3>
+          {qt.description && <p className="mt-2 text-mid-gray">{qt.description}</p>}
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
@@ -110,8 +127,8 @@ export default function VastuShastraGuide({ data }: { data: VastuConfig }) {
             <div className="flex items-center gap-2 mb-4">
               <span className="text-lg">🛋️</span>
               <div>
-                <h4 className="font-display font-bold text-lg text-brand-dark">Room-Specific Vastu</h4>
-                <p className="text-xs text-mid-gray">कोठा-विशेष वास्तु</p>
+                <h4 className="font-display font-bold text-lg text-brand-dark">{qt.roomToolTitle || "Room-Specific Vastu"}</h4>
+                {qt.roomToolDesc && <p className="text-xs text-mid-gray">{qt.roomToolDesc}</p>}
               </div>
             </div>
             <div className="flex gap-2">
@@ -185,8 +202,8 @@ export default function VastuShastraGuide({ data }: { data: VastuConfig }) {
             <div className="flex items-center gap-2 mb-4">
               <span className="text-lg">🧭</span>
               <div>
-                <h4 className="font-display font-bold text-lg text-brand-dark">Directional Analysis</h4>
-                <p className="text-xs text-mid-gray">दिशा विश्लेषण</p>
+                <h4 className="font-display font-bold text-lg text-brand-dark">{qt.directionToolTitle || "Directional Analysis"}</h4>
+                {qt.directionToolDesc && <p className="text-xs text-mid-gray">{qt.directionToolDesc}</p>}
               </div>
             </div>
             <div className="flex gap-2">

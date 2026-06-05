@@ -1,5 +1,11 @@
+import axios, {
+    AxiosError,
+    AxiosInstance,
+    AxiosResponse,
+    InternalAxiosRequestConfig,
+} from 'axios';
 import { getCookie, setCookie, deleteCookie } from 'cookies-next';
-import getEnv from './envchema';
+import getEnv from './envschema';
 
 const env = getEnv();
 
@@ -10,37 +16,68 @@ const getServerCookie = async (name: string) => {
     return (await cookies()).get(name)?.value;
 };
 
-const setServerCookie = async (name: string, value: string, maxAge: number) => {
+const setServerCookie = async (
+    name: string,
+    value: string,
+    maxAge: number
+) => {
     const { cookies } = await import('next/headers');
-    (await cookies()).set(name, value, { maxAge });
+
+    (await cookies()).set(name, value, {
+        maxAge,
+        httpOnly: false,
+        sameSite: 'lax',
+        path: '/',
+    });
 };
 
-const refresh = async (): Promise<string | null> => {
-    if (refreshPromise) return refreshPromise;
-    return refreshPromise = (async () => {
+const deleteServerCookie = async (name: string) => {
+    const { cookies } = await import('next/headers');
+    (await cookies()).delete(name);
+};
+
+const refreshToken = async (): Promise<string | null> => {
+    if (refreshPromise) {
+        return refreshPromise;
+    }
+
+    refreshPromise = (async () => {
         try {
-            const refreshToken = typeof window === 'undefined'
-                ? await getServerCookie('refresh_token')
-                : getCookie('refresh_token');
+            const refresh =
+                typeof window === 'undefined'
+                    ? await getServerCookie('refresh_token')
+                    : getCookie('refresh_token');
 
-            if (!refreshToken) throw new Error('Missing refresh token');
+            if (!refresh) {
+                throw new Error('Missing refresh token');
+            }
 
-            const res = await fetch(`${env.NEXT_PUBLIC_API_URL}/v1/refresh-token`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ refresh: refreshToken }),
-                cache: 'no-store'
-            });
+            const response = await axios.post(
+                `${env.NEXT_PUBLIC_API_URL}/auth/refresh-token`,
+                {
+                    refresh,
+                }
+            );
 
-            if (!res.ok) throw new Error(`Refresh failed with ${res.status}`);
+            const { access, refresh: newRefresh } = response.data;
 
-            const { access } = await res.json();
-            if (!access) throw new Error('Missing access token');
+            if (!access) {
+                throw new Error('Missing access token');
+            }
 
             if (typeof window === 'undefined') {
                 await setServerCookie('access_token', access, 86400);
+                await setServerCookie('refresh_token', newRefresh, 86400);
             } else {
-                setCookie('access_token', access, { maxAge: 86400 });
+                setCookie('access_token', access, {
+                    maxAge: 86400,
+                    path: '/',
+                });
+
+                setCookie('refresh_token', newRefresh, {
+                    maxAge: 86400,
+                    path: '/',
+                });
             }
 
             return access;
@@ -50,83 +87,82 @@ const refresh = async (): Promise<string | null> => {
             refreshPromise = null;
         }
     })();
+
+    return refreshPromise;
 };
 
-interface FetchOptions extends RequestInit {
-    params?: Record<string, string | number | boolean>;
+interface RetryAxiosRequestConfig extends InternalAxiosRequestConfig {
+    _retry?: boolean;
 }
 
-type FetchResponse<T> = { data: T; status: number; headers: Headers };
-type LooseResponse = ReturnType<typeof JSON.parse>;
-
-type ApiError = Error & {
-    response?: {
-        status: number;
-        data: unknown;
-        headers: Record<string, string>;
-    };
-};
-
-const request = async <T>(baseUrl: string, isPrivate: boolean, path: string, init: FetchOptions = {}, retry = 0): Promise<FetchResponse<T>> => {
-    const url = new URL(path.startsWith('http') ? path : `${baseUrl.replace(/\/$/, '')}/${path.replace(/^\//, '')}`);
-    if (init.params) Object.entries(init.params).forEach(([k, v]) => v != null && url.searchParams.append(k, String(v)));
-
-    const headers = new Headers(init.headers);
-if (!(init.body instanceof FormData) && !headers.has('Content-Type')) {
-    headers.set('Content-Type', 'application/json');
-}
+const createAxiosClient = (isPrivate = false): AxiosInstance => {
+    const instance = axios.create({
+        baseURL: env.NEXT_PUBLIC_API_URL,
+        timeout: 30000,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
 
     if (isPrivate) {
-        const token = typeof window === 'undefined' 
-            ? await getServerCookie('access_token')
-            : getCookie('access_token');
-        if (token) headers.set('Authorization', `Bearer ${token}`);
+        instance.interceptors.request.use(async (config) => {
+            const token =
+                typeof window === 'undefined'
+                    ? await getServerCookie('access_token')
+                    : getCookie('access_token');
+
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+
+            return config;
+        });
     }
 
-    const res = await fetch(url.href, { ...init, headers});
+  instance.interceptors.response.use(
+    (response: AxiosResponse) => response,
+    async (error: AxiosError) => {
+        const originalRequest = error.config as RetryAxiosRequestConfig;
+        const status = error.response?.status;
 
-    if (res.status === 429 && retry < 3) {
-        await new Promise(r => setTimeout(r, 1000 * (retry + 1)));
-        return request(baseUrl, isPrivate, path, init, retry + 1);
-    }
+        if (isPrivate && status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
 
-    if (isPrivate && res.status === 401 && retry === 0) {
-        const token = await refresh();
-        if (token) {
-            headers.set('Authorization', `Bearer ${token}`);
-            return request(baseUrl, isPrivate, path, { ...init, headers }, 1);
+            const newAccessToken = await refreshToken();
+
+            if (newAccessToken) {
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                return instance(originalRequest);
+            }
         }
-    }
 
-    let data;
-    try {
-        data = await res.json();
-    } catch {
-        data = await res.text().catch(() => 'Unknown server error');
+        if (status === 401 || status === 403) {
+            if (typeof window === 'undefined') {
+                await deleteServerCookie('access_token');
+                await deleteServerCookie('refresh_token');
+            } else {
+                deleteCookie('access_token');
+                deleteCookie('refresh_token');
+
+                if (!window.location.pathname.startsWith('/admin')) {
+                    window.location.href = '/admin/login';
+                }
+            }
+        }
+
+        return Promise.reject(error);
     }
-    if (!res.ok) {
-        const err: ApiError = new Error(`HTTP ${res.status}`);
-        err.response = { status: res.status, data, headers: Object.fromEntries(res.headers) };
-        throw err;
-    }
-    return { data, status: res.status, headers: res.headers };
+);
+
+    return instance;
 };
 
-const getBody = (body: unknown) => {
-    if (body === undefined) return null;
-    if (body instanceof FormData) return body;
-    return JSON.stringify(body);
+export const apiPublic = createAxiosClient(false);
+
+export const apiPrivate = createAxiosClient(true);
+
+export type ApiResponse<T> = {
+    data: T;
 };
 
-const create = (baseUrl: string, isPrivate = false) => ({
-    get: <T = LooseResponse>(p: string, o?: FetchOptions) => request<T>(baseUrl, isPrivate, p, { ...o, method: 'GET' }),
-    post: <T = LooseResponse>(p: string, b?: unknown, o?: FetchOptions) => request<T>(baseUrl, isPrivate, p, { ...o, method: 'POST', body: getBody(b) }),
-    put: <T = LooseResponse>(p: string, b?: unknown, o?: FetchOptions) => request<T>(baseUrl, isPrivate, p, { ...o, method: 'PUT', body: getBody(b) }),
-    patch: <T = LooseResponse>(p: string, b?: unknown, o?: FetchOptions) => request<T>(baseUrl, isPrivate, p, { ...o, method: 'PATCH', body: getBody(b) }),
-    delete: <T = LooseResponse>(p: string, o?: FetchOptions) => request<T>(baseUrl, isPrivate, p, { ...o, method: 'DELETE' }),
-});
-
-export const apiPublic = create(env.NEXT_PUBLIC_API_URL);
-export const apiPrivate = create(env.NEXT_PUBLIC_API_URL, true);
-
-export { setCookie, deleteCookie, getCookie };
+export { getCookie, setCookie, deleteCookie };

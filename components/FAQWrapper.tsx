@@ -1,35 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Minus, Plus, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { useClientStore } from "@/stores/client-store";
 
-const faqs = [
-  {
-    q: "What services does Horizon Nepal offer?",
-    a: "We provide end-to-end architectural design, engineering, construction management, interior design, material consultation, and site supervision services for residential, commercial, and heritage projects across Nepal.",
-  },
-  {
-    q: "How long does a typical project take?",
-    a: "Timelines vary by scope. A standard residential project takes 6–12 months from design to completion. Commercial projects range from 12–24 months depending on complexity and size.",
-  },
-  {
-    q: "Do you handle government approvals and permits?",
-    a: "Yes, we manage all necessary municipal approvals, building permits, and environmental clearances as part of our full-service offering, ensuring a hassle-free experience for our clients.",
-  },
-  {
-    q: "What is the cost structure for your services?",
-    a: "Our pricing is transparent and project-specific. We offer fixed-fee, percentage-of-project, and phased payment models. A detailed quotation is provided after the initial consultation and site assessment.",
-  },
-  {
-    q: "Can I visit ongoing projects to see your work?",
-    a: "Absolutely. We encourage potential clients to visit our active project sites. Please contact us to schedule a visit at your convenience.",
-  },
+const fallback = [
+  { q: "What services does Horizon Nepal offer?", a: "We provide end-to-end architectural design, engineering, construction management, interior design, material consultation, and site supervision for residential, commercial, and heritage projects across Nepal." },
+  { q: "How long does a typical project take?", a: "Timelines vary by scope. A standard residential project takes 6–12 months from design to completion. Commercial projects range from 12–24 months depending on complexity and size." },
+  { q: "Do you handle government approvals and permits?", a: "Yes, we manage all necessary municipal approvals, building permits, and environmental clearances as part of our full-service offering, ensuring a hassle-free experience for our clients." },
+  { q: "What is the cost structure for your services?", a: "Our pricing is transparent and project-specific. We offer fixed-fee, percentage-of-project, and phased payment models. A detailed quotation is provided after the initial consultation and site assessment." },
+  { q: "Can I visit ongoing projects to see your work?", a: "Absolutely. We encourage potential clients to visit our active project sites. Please contact us to schedule a visit at your convenience." },
 ];
 
 export function FAQWrapper() {
   const [open, setOpen] = useState<number | null>(0);
+  const faqItems = useClientStore((s) => s.faqItems);
+  const fetchFaqs = useClientStore((s) => s.fetchFaqs);
+
+  useEffect(() => {
+    if (faqItems.length === 0) fetchFaqs();
+  }, [fetchFaqs, faqItems.length]);
+
+  const faqs = faqItems.length > 0
+    ? faqItems.map((f) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" }))
+    : fallback;
 
   return (
     <section className="py-16 sm:py-28 bg-off-white">

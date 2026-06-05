@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { Check } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { BannerCarousel } from "@/components/BannerCarousel";
 
 const categories = [
   {
@@ -60,9 +60,7 @@ export default function GreenCalculatorPage() {
   return (
     <>
       <section className="relative min-h-[50vh] flex items-center overflow-hidden bg-brand-dark">
-        <div className="absolute inset-0">
-          <Image src="https://images.unsplash.com/photo-1466611653917-95081537e5b7?auto=format&fit=crop&w=2000&q=80" alt="" fill priority sizes="100vw" className="object-cover opacity-30" />
-        </div>
+        <BannerCarousel slug="green-calculator-page-hero" imgClassName="object-cover opacity-30" />
         <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/60 to-brand-dark" />
         <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center">
           <span className="text-xs font-semibold tracking-[0.15em] uppercase text-white/60 bg-white/10 px-3 py-1 rounded-full border border-white/10 inline-block">Tools</span>
