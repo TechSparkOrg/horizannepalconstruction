@@ -18,7 +18,7 @@ export function AboutHero() {
       <div
         className="absolute inset-0"
         style={{
-          background: "linear-gradient(180deg, color-mix(in oklch, var(--color-brand-dark) 75%, transparent) 0%, var(--color-brand-dark) 100%)",
+          background: "linear-gradient(180deg, color-mix(in oklch, var(--color-brand-dark) 50%, transparent) 0%, color-mix(in oklch, var(--color-brand-dark) 80%, transparent) 100%)",
         }}
         aria-hidden="true"
       />

@@ -26,16 +26,16 @@ export default function BuildingPermitPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative min-h-[55vh] flex items-center overflow-hidden bg-brand-dark">
-        <BannerCarousel slug="building-permit-page-hero" imgClassName="object-cover opacity-35" />
-        <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/60 to-brand-dark" />
+      <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-brand-dark">
+        <BannerCarousel slug="building-permit-page-hero" imgClassName="object-cover opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/40 to-brand-dark/70" />
         <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-16">
           <div className="max-w-2xl">
             <span className="text-xs font-semibold tracking-[0.15em] uppercase text-white/60 bg-white/10 px-3 py-1 rounded-full border border-white/10 inline-block">Tools</span>
             <h1 className="font-display font-bold text-white mt-6 leading-[1.08]" style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}>
               Building Permit<br />Assistant
             </h1>
-            <p className="mt-4 text-white/60 text-lg max-w-[540px] leading-relaxed">Navigate Nepal&apos;s building permit process with confidence.</p>
+            <p className="mt-4 text-white/80 text-lg max-w-[540px] leading-relaxed font-semibold">Navigate Nepal&apos;s building permit process with confidence.</p>
             <div className="mt-8">
               <a href="#workflow" className="inline-flex items-center gap-2 px-6 py-3 bg-brand-primary text-white text-sm font-semibold rounded-xl hover:bg-brand-primary/90 transition-all shadow-lg shadow-brand-primary/30">
                 <FileText className="size-4" />

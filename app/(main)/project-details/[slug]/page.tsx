@@ -24,9 +24,9 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
       {/* Hero */}
       <section className="relative min-h-[50vh] flex items-end bg-brand-dark">
         <div className="absolute inset-0">
-          <Image src={project.images?.[0] || project.thumbnail || ""} alt={project.title} fill priority sizes="100vw" className="object-cover opacity-40" />
+          <Image src={project.images?.[0] || project.thumbnail || ""} alt={project.title} fill priority sizes="100vw" className="object-cover opacity-60" />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-brand-dark/40 to-transparent" />
         <div className="relative z-10 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full">
           <Link href="/design" className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-white mb-4 transition-colors">
             <ArrowLeft className="size-4" />

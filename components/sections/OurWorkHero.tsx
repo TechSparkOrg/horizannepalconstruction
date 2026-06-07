@@ -21,7 +21,7 @@ export function OurWorkHero() {
       <div className="absolute inset-0 grid grid-cols-3">
         {slides.length > 0 ? (
           slides.map((b) => (
-            <div key={b.id} className="relative h-full opacity-30">
+            <div key={b.id} className="relative h-full opacity-60">
               <Image src={b.url} alt={b.alt || ""} fill sizes="33vw" className="object-cover" />
             </div>
           ))
@@ -30,7 +30,7 @@ export function OurWorkHero() {
         )}
       </div>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/70 to-brand-dark/50" />
+      <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-brand-dark/50 to-brand-dark/30" />
 
       <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center">
         <span className="text-xs font-semibold tracking-[0.15em] uppercase text-white/60 bg-white/10 px-3 py-1 rounded-full border border-white/10 inline-block">

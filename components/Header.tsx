@@ -19,16 +19,17 @@ const NAV_ITEMS = [
   { href: "/",               label: "Home" },
   { href: "/about",          label: "About Us" },
   { href: "/our-work",       label: "Project" },
-  { href: "/design",         label: "Design" },
-  { href: "/cost-estimation",label: "Cost Estimation" },
+  // { href: "/design",         label: "Design" },
+  // { href: "/cost-estimation",label: "Cost Estimation" },
   { href: "/contact",        label: "Contact" },
+    { href: "/floor-planner",   label: "2D Floor Planner" },
 ];
 
 const TOOLS_ITEMS = [
   { href: "/vastu-shastra",   label: "Vastu Shastra Guide" },
   { href: "/building-permit", label: "Building Permit Assistant" },
-  { href: "/floor-planner",   label: "2D Floor Planner" },
-  { href: "/green-calculator",label: "Green Builder Calculator" },
+
+  // { href: "/green-calculator",label: "Green Builder Calculator" },
 ];
 
 export function Header() {
@@ -97,7 +98,7 @@ export function Header() {
                 alt="Horizon Nepal"
                 className="h-8 w-8 object-contain transition-transform duration-300 group-hover:scale-110"
               />
-              <span className="absolute -inset-1 rounded-full bg-brand-primary/20 scale-0 group-hover:scale-100 transition-transform duration-300" />
+              {/* <span className="absolute -inset-1 rounded-full bg-brand-primary/20 scale-0 group-hover:scale-100 transition-transform duration-300" /> */}
             </div>
             <span className="flex items-baseline leading-none">
               <span className="text-brand-primary font-extrabold text-xl sm:text-2xl tracking-tight">Horizon</span>
@@ -112,7 +113,7 @@ export function Header() {
                 <Link
                   href={item.href}
                   
-                  className="px-3 py-2 rounded-lg text-sm font-medium text-white/75 hover:text-white hover:bg-white/8 transition-colors duration-150"
+                  className="px-3 py-2 rounded-lg text-sm font-bold text-white hover:text-white hover:bg-white/8 transition-colors duration-150"
                 >
                   {item.label}
                 </Link>
@@ -125,7 +126,7 @@ export function Header() {
                 type="button"
                 onClick={() => setToolsOpen((v) => !v)}
                 onMouseEnter={() => setToolsOpen(true)}
-                className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium text-white/75 hover:text-white hover:bg-white/8 transition-colors duration-150"
+                className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold text-white hover:text-white hover:bg-white/8 transition-colors duration-150"
               >
                 Tools
                 <ChevronDown
@@ -150,7 +151,7 @@ export function Header() {
                       href={t.href}
                       
                       onClick={() => setToolsOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white/65 hover:text-white hover:bg-white/8 transition-colors duration-150"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-white hover:text-white hover:bg-white/8 transition-colors duration-150"
                     >
                       <ChevronRight className="size-3 opacity-40 flex-shrink-0" />
                       {t.label}
@@ -164,7 +165,7 @@ export function Header() {
           {/* Right actions */}
           <div className="flex items-center gap-2 flex-shrink-0 ml-auto lg:ml-0">
             {/* Language toggle */}
-            <button
+            {/* <button
               type="button"
               onClick={toggle}
               aria-label={lang === "en" ? "Switch to Nepali" : "Switch to English"}
@@ -178,10 +179,10 @@ export function Header() {
               <span className="text-[11px] font-semibold hidden sm:inline">
                 {lang === "en" ? "NP" : "EN"}
               </span>
-            </button>
+            </button> */}
 
             {/* WhatsApp */}
-            <a
+            {/* <a
               href={useWaHref()}
               target="_blank"
               rel="noopener noreferrer"
@@ -189,7 +190,7 @@ export function Header() {
               className="flex items-center justify-center size-8 rounded-lg bg-[#25D366]/12 text-[#25D366] border border-[#25D366]/25 hover:bg-[#25D366] hover:text-white hover:border-[#25D366] transition-all duration-150"
             >
               <MessageCircle className="size-4" />
-            </a>
+            </a> */}
 
             {/* CTA — desktop only */}
             <Link
@@ -268,7 +269,7 @@ export function Header() {
                   href={item.href}
                   
                   onClick={closeAll}
-                  className="flex items-center justify-between px-4 py-3 rounded-xl text-[15px] font-medium text-white/70 hover:text-white hover:bg-white/6 transition-colors duration-150"
+                  className="flex items-center justify-between px-4 py-3 rounded-xl text-[15px] font-bold text-white hover:text-white hover:bg-white/6 transition-colors duration-150"
                 >
                   {item.label}
                   <ChevronRight className="size-3.5 opacity-25" />
@@ -281,7 +282,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={() => setMobileToolsOpen((v) => !v)}
-                className="flex items-center justify-between w-full px-4 py-3 rounded-xl text-[15px] font-medium text-white/70 hover:text-white hover:bg-white/6 transition-colors duration-150"
+                className="flex items-center justify-between w-full px-4 py-3 rounded-xl text-[15px] font-bold text-white hover:text-white hover:bg-white/6 transition-colors duration-150"
               >
                 Tools
                 <ChevronDown
@@ -300,7 +301,7 @@ export function Header() {
                       href={t.href}
                       
                       onClick={closeAll}
-                      className="block px-3 py-2.5 rounded-lg text-sm font-medium text-white/55 hover:text-white hover:bg-white/6 transition-colors duration-150"
+                      className="block px-3 py-2.5 rounded-lg text-sm font-bold text-white hover:text-white hover:bg-white/6 transition-colors duration-150"
                     >
                       {t.label}
                     </Link>
@@ -313,7 +314,7 @@ export function Header() {
 
         {/* Drawer footer */}
         <div className="p-4 border-t border-white/8 flex-shrink-0 space-y-2.5">
-          <div className="grid grid-cols-2 gap-2">
+          {/* <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={toggle}
@@ -335,7 +336,7 @@ export function Header() {
               <MessageCircle className="size-4" />
               WhatsApp
             </a>
-          </div>
+          </div> */}
           <Link
             href="/contact"
             

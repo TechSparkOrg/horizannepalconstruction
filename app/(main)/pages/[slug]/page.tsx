@@ -49,9 +49,9 @@ export default function PageView() {
         <BannerCarousel
           slug={`${slug}-page-hero`}
           carousel
-          imgClassName="object-cover opacity-30"
+          imgClassName="object-cover opacity-60"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/60 to-brand-dark" />
+        <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/40 to-brand-dark/70" />
         <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center">
           <span className="text-xs font-semibold tracking-[0.15em] uppercase text-white/60 bg-white/10 px-3 py-1 rounded-full border border-white/10 inline-block">
             {page.title}

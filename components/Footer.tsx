@@ -29,7 +29,7 @@ export function Footer() {
       SettingsService.get().then((data) => useSettings.setState({ settings: data }));
     }
 
-    PageService.listPublic().then(setPages);
+    // PageService.listPublic().then(setPages);
   }, []);
 
   const social_links = settings?.social_links ?? [];

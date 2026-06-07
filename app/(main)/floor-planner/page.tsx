@@ -13,13 +13,13 @@ const benefits = [
 export default function FloorPlannerPage() {
   return (
     <>
-      <section className="relative min-h-[50vh] flex items-center overflow-hidden bg-brand-dark">
-        <BannerCarousel slug="floor-planner-page-hero" imgClassName="object-cover opacity-50 scale-105" />
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-dark/80 via-brand-dark/40 to-transparent">
-          <div className="absolute inset-0 opacity-30" style={{ background: "linear-gradient(135deg, rgba(215,30,41,0.15) 0%, transparent 50%)" }} />
+      <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-brand-dark">
+        <BannerCarousel slug="floor-planner-page-hero" imgClassName="object-cover opacity-60 scale-105" />
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-dark/60 via-brand-dark/30 to-transparent">
+          <div className="absolute inset-0 opacity-20" style={{ background: "linear-gradient(135deg, rgba(215,30,41,0.1) 0%, transparent 50%)" }} />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-brand-dark/80 via-brand-dark/40 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-brand-dark/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-dark/60 via-brand-dark/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/70 via-transparent to-brand-dark/20" />
         <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center">
           <span className="text-xs font-semibold tracking-[0.15em] uppercase text-white/60 bg-white/10 px-3 py-1 rounded-full border border-white/10 inline-block">Tools</span>
           <h1 className="font-display font-bold text-white mt-6 leading-[1.05] max-w-3xl mx-auto" style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}>2D Floor Planner</h1>

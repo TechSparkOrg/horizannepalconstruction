@@ -80,28 +80,28 @@ export function ConsultationForm({ faqCategorySlug = "consultation" }: { faqCate
           <h2 className="mt-3 font-display font-bold text-white text-3xl sm:text-4xl leading-tight">
             {heading}
           </h2>
-          <p className="mt-5 text-white/75 leading-relaxed max-w-md">
+          <p className="mt-5 text-white/85 leading-relaxed max-w-md font-semibold">
             {description}
           </p>
-          <div className="mt-8 rounded-xl overflow-hidden h-32 sm:h-36 bg-white/5 flex items-center justify-center text-white/20">
-            <Mail className="size-10" />
+          <div className="mt-8 rounded-xl overflow-hidden h-32 sm:h-36 bg-white/8 flex items-center justify-center text-white/30">
+            <Mail className="size-12" />
           </div>
-          <ul className="mt-6 space-y-4 text-white/85">
-            <li className="flex items-center gap-3">
-              <Phone className="size-5 text-brand-primary" />
-              <a href={`tel:${contactInfo?.phone}`} className="hover:text-brand-primary">
+          <ul className="mt-6 space-y-5 text-white/90">
+            <li className="flex items-center gap-3.5">
+              <Phone className="size-6 text-brand-primary" />
+              <a href={`tel:${contactInfo?.phone}`} className="hover:text-brand-primary font-semibold">
                 {contactInfo?.phone}
               </a>
             </li>
-            <li className="flex items-center gap-3">
-              <Mail className="size-5 text-brand-primary" />
-              <a href={`mailto:${contactInfo?.email}`} className="hover:text-brand-primary">
+            <li className="flex items-center gap-3.5">
+              <Mail className="size-6 text-brand-primary" />
+              <a href={`mailto:${contactInfo?.email}`} className="hover:text-brand-primary font-semibold">
                 {contactInfo?.email}
               </a>
             </li>
-            <li className="flex items-center gap-3">
-              <MapPin className="size-5 text-brand-primary" />
-              <span>{contactInfo?.address}</span>
+            <li className="flex items-center gap-3.5">
+              <MapPin className="size-6 text-brand-primary" />
+              <span className="font-semibold">{contactInfo?.address}</span>
             </li>
           </ul>
         </div>

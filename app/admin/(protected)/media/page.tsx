@@ -26,6 +26,18 @@ interface BatchImage {
   keywords: string;
 }
 
+interface GroupEditItem {
+  id: string;
+  url: string;
+  alt: string;
+  meta_title: string;
+  description: string;
+  keywords: string;
+  _deleted?: boolean;
+  _new?: boolean;
+  _file?: File;
+}
+
 interface FormState {
   file: File | null;
   url: string;
@@ -75,13 +87,21 @@ function fromApi(a: MediaItem): FormState {
 export default function AdminMediaPage() {
   const [items, setItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [tab, setTab] = useState<MediaTab>("images");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedGroupSlug, setSelectedGroupSlug] = useState<string | null>(null);
+  const [groupEditTitle, setGroupEditTitle] = useState("");
+  const [groupEditSlug, setGroupEditSlug] = useState("");
+  const [groupEditItems, setGroupEditItems] = useState<GroupEditItem[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const batchRef = useRef<HTMLInputElement>(null);
+  const groupEditFileRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState<FormState>(emptyForm(false));
 
   const [batchTitle, setBatchTitle] = useState("");
@@ -89,8 +109,10 @@ export default function AdminMediaPage() {
   const [batchImages, setBatchImages] = useState<BatchImage[]>([]);
 
   useEffect(() => {
-    MediaService.list().then((res) => {
+    MediaService.list(1).then((res) => {
       setItems(res.results ?? []);
+      setPage(1);
+      setHasMore(res.next !== null);
       setLoading(false);
     });
   }, []);
@@ -123,6 +145,45 @@ export default function AdminMediaPage() {
     resetForm();
     setEditingId(null);
     setSelectedId(null);
+    setSelectedGroupSlug(null);
+    setGroupEditItems([]);
+  };
+
+  const saveGroupEdit = async () => {
+    setSaving(true);
+    try {
+      for (const item of groupEditItems) {
+        if (item._deleted && !item._new) {
+          await MediaService.delete(item.id);
+        }
+      }
+      for (const item of groupEditItems) {
+        if (item._deleted) continue;
+        const payload = {
+          alt: item.alt,
+          meta_title: item.meta_title,
+          description: item.description,
+          keywords: item.keywords,
+          group_title: groupEditTitle,
+          project_link: groupEditSlug,
+          banner: true,
+        };
+        if (item._new && item._file) {
+          await MediaService.uploadImage(item._file, payload);
+        } else {
+          await MediaService.update(item.id, payload);
+        }
+      }
+      groupEditItems.forEach((item) => { if (item._new) URL.revokeObjectURL(item.url); });
+      const res = await MediaService.list(1);
+      setItems(res.results ?? []);
+      setPage(1);
+      setHasMore(res.next !== null);
+      setSelectedGroupSlug(null);
+      setGroupEditItems([]);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const create = async () => {
@@ -172,8 +233,10 @@ export default function AdminMediaPage() {
           group_title: batchTitle,
         });
       }
-      const res = await MediaService.list();
+      const res = await MediaService.list(1);
       setItems(res.results ?? []);
+      setPage(1);
+      setHasMore(res.next !== null);
       revokeBatchUrls();
       resetForm();
       setEditingId(null);
@@ -202,6 +265,21 @@ export default function AdminMediaPage() {
     if (batchRef.current) batchRef.current.value = "";
   };
 
+  const handleGroupEditFilePick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const newItems: GroupEditItem[] = Array.from(files).map((file, i) => ({
+      id: `_new_${Date.now()}_${i}`,
+      url: URL.createObjectURL(file),
+      alt: "", meta_title: "", description: "", keywords: "",
+      _new: true,
+      _file: file,
+      _deleted: false,
+    }));
+    setGroupEditItems((prev) => [...prev, ...newItems]);
+    if (groupEditFileRef.current) groupEditFileRef.current.value = "";
+  };
+
   const remove = async (id: string) => {
     await MediaService.delete(id);
     setItems((prev) => prev.filter((m) => m.id !== id));
@@ -220,10 +298,25 @@ export default function AdminMediaPage() {
       return next;
     });
 
+  const startGroupEdit = (slug: string) => {
+    const group = bannerGroups[slug];
+    if (!group) return;
+    setSelectedGroupSlug(slug);
+    setSelectedId(null);
+    setEditingId(null);
+    setGroupEditTitle(group.title);
+    setGroupEditSlug(slug);
+    setGroupEditItems(group.items.map((item) => ({ ...item, _deleted: false })));
+  };
+
   const switchTab = (t: MediaTab) => {
     setTab(t);
     setEditingId(null);
     setSelectedId(null);
+    setSelectedGroupSlug(null);
+    setGroupEditItems([]);
+    setPage(1);
+    setHasMore(false);
     resetForm();
   };
 
@@ -238,6 +331,18 @@ export default function AdminMediaPage() {
 
   const removeField = (i: number) =>
     setForm({ ...form, customFields: form.customFields.filter((_, j) => j !== i) });
+
+  const loadMore = async () => {
+    setLoadingMore(true);
+    try {
+      const res = await MediaService.list(page + 1);
+      setItems((prev) => [...prev, ...(res.results ?? [])]);
+      setPage((prev) => prev + 1);
+      setHasMore(res.next !== null);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   const bannerGroups: Record<string, { title: string; items: MediaItem[] }> = {};
   if (isBannerTab) {
@@ -305,20 +410,23 @@ export default function AdminMediaPage() {
                   </div>
                   <div className="flex gap-1.5 p-3 overflow-x-auto">
                     {group.items.map((item) => (
-                      <button
+                      <div
                         key={item.id}
-                        onClick={() => { setSelectedId(item.id); setEditingId(null); }}
-                        className={`relative shrink-0 size-20 sm:size-24 rounded-lg overflow-hidden border-2 bg-gray-100 group ${
-                          selectedId === item.id ? "border-brand-primary" : "border-transparent"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => { startGroupEdit(slug); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startGroupEdit(slug); } }}
+                        className={`relative shrink-0 size-20 sm:size-24 rounded-lg overflow-hidden border-2 bg-gray-100 group cursor-pointer ${
+                          selectedGroupSlug === slug ? "border-brand-primary" : "border-transparent"
                         }`}
                       >
                         <img src={item.url} alt={item.alt} className="size-full object-cover" />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100">
                           <button onClick={(e) => { e.stopPropagation(); setPreviewUrl(item.url); }} className="p-1 rounded bg-white/90 text-brand-dark"><Eye className="size-3" /></button>
-                          <button onClick={(e) => { e.stopPropagation(); startEdit(item); }} className="p-1 rounded bg-white/90 text-brand-dark"><Pencil className="size-3" /></button>
+                          <button onClick={(e) => { e.stopPropagation(); startGroupEdit(slug); }} className="p-1 rounded bg-white/90 text-brand-dark"><Pencil className="size-3" /></button>
                           <button onClick={(e) => { e.stopPropagation(); remove(item.id); }} className="p-1 rounded bg-white/90 text-red-500"><Trash2 className="size-3" /></button>
                         </div>
-                      </button>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -327,10 +435,13 @@ export default function AdminMediaPage() {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {scopedItems.map((item) => (
-                <button
+                <div
                   key={item.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => { setSelectedId(item.id); setEditingId(null); }}
-                  className={`relative aspect-video rounded-xl overflow-hidden border-2 bg-gray-100 group ${
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(item.id); setEditingId(null); } }}
+                  className={`relative aspect-video rounded-xl overflow-hidden border-2 bg-gray-100 group cursor-pointer ${
                     selectedId === item.id ? "border-brand-primary" : "border-transparent"
                   }`}
                 >
@@ -343,14 +454,27 @@ export default function AdminMediaPage() {
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
                     <p className="text-[11px] text-white truncate">{item.alt || "No alt text"}</p>
                   </div>
-                </button>
+                </div>
               ))}
+            </div>
+          )}
+
+          {hasMore && (
+            <div className="flex justify-center pt-2 pb-4">
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="h-10 px-6 rounded-lg border border-light-gray text-sm font-medium text-mid-gray hover:bg-gray-50 transition disabled:opacity-50 inline-flex items-center gap-2"
+              >
+                {loadingMore ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
+                {loadingMore ? "Loading..." : "Load More"}
+              </button>
             </div>
           )}
         </div>
 
         <div className="lg:col-span-2">
-          {isBannerTab && (editingId === null && selectedId === null) && (
+          {isBannerTab && selectedGroupSlug === null && editingId === null && selectedId === null && (
             <div className="bg-white rounded-xl border border-light-gray/40 p-5">
               <h2 className="font-bold text-brand-dark mb-4">New Banner Group</h2>
 
@@ -416,64 +540,127 @@ export default function AdminMediaPage() {
             </div>
           )}
 
-          {isBannerTab && editingId !== null && (
+          {isBannerTab && selectedGroupSlug !== null && (
             <div className="bg-white rounded-xl border border-light-gray/40 p-5">
-              <h2 className="font-bold text-brand-dark mb-4">Edit Banner</h2>
-              <div className="space-y-3 mb-5">
-                <div>
-                  <label className="block text-xs font-medium text-mid-gray mb-1 uppercase">Image</label>
-                  <div className="flex gap-2">
-                    <input
-                      value={!form.file ? form.url : ""}
-                      onChange={(e) => {
-                        if (form.file) URL.revokeObjectURL(form.url);
-                        setForm({ ...form, file: null, url: e.target.value });
-                      }}
-                      className="flex-1 h-10 px-3 rounded-md border border-light-gray text-sm"
-                      placeholder="URL or upload"
-                    />
-                    <input ref={fileRef} type="file" accept="image/*" onChange={handleFilePick} hidden />
-                    <button onClick={() => fileRef.current?.click()} className="h-10 px-3 rounded-md border border-light-gray text-mid-gray hover:bg-gray-50 text-sm shrink-0">
-                      <Upload className="size-4" />
-                    </button>
-                  </div>
-                </div>
-                {formPreviewUrl && (
-                  <div className="aspect-[21/9] rounded-lg overflow-hidden bg-gray-100 border border-light-gray">
-                    <img src={formPreviewUrl} alt="" className="size-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                  </div>
-                )}
+              <h2 className="font-bold text-brand-dark mb-4">Edit Banner Group</h2>
+
+              <div className="space-y-3 mb-4">
                 <div>
                   <label className="block text-xs font-medium text-mid-gray mb-1 uppercase">Group Title</label>
-                  <input value={form.groupTitle} onChange={(e) => setForm({ ...form, groupTitle: e.target.value })} className="w-full h-10 px-3 rounded-md border border-light-gray text-sm" />
+                  <input
+                    value={groupEditTitle}
+                    onChange={(e) => setGroupEditTitle(e.target.value)}
+                    className="w-full h-10 px-3 rounded-md border border-light-gray text-sm"
+                  />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-mid-gray mb-1 uppercase">Slug</label>
-                  <input value={form.projectLink} onChange={(e) => setForm({ ...form, projectLink: e.target.value })} className="w-full h-10 px-3 rounded-md border border-light-gray text-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-mid-gray mb-1 uppercase">Alt Text</label>
-                  <input value={form.alt} onChange={(e) => setForm({ ...form, alt: e.target.value })} className="w-full h-10 px-3 rounded-md border border-light-gray text-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-mid-gray mb-1 uppercase">Meta Title</label>
-                  <input value={form.metaTitle} onChange={(e) => setForm({ ...form, metaTitle: e.target.value })} className="w-full h-10 px-3 rounded-md border border-light-gray text-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-mid-gray mb-1 uppercase">Description</label>
-                  <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="w-full px-3 py-2 rounded-md border border-light-gray text-sm resize-none" />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-mid-gray mb-1 uppercase">Keywords</label>
-                  <input value={form.keywords} onChange={(e) => setForm({ ...form, keywords: e.target.value })} className="w-full h-10 px-3 rounded-md border border-light-gray text-sm" />
+                  <input
+                    value={groupEditSlug}
+                    onChange={(e) => setGroupEditSlug(toSlug(e.target.value))}
+                    className="w-full h-10 px-3 rounded-md border border-light-gray text-sm"
+                  />
                 </div>
               </div>
-              <div className="flex gap-2">
-                <button onClick={saveEdit} disabled={saving} className="flex-1 h-10 rounded-lg bg-brand-primary text-white text-sm font-semibold hover:brightness-110 transition disabled:opacity-60 inline-flex items-center justify-center gap-2">
-                  {saving && <Loader2 className="size-4 animate-spin" />}
-                  {saving ? "Saving..." : "Update"}
+
+              <div className="mb-4">
+                <label className="block text-xs font-medium text-mid-gray mb-1 uppercase">Add Images</label>
+                <input ref={groupEditFileRef} type="file" accept="image/*" multiple onChange={handleGroupEditFilePick} hidden />
+                <button
+                  onClick={() => groupEditFileRef.current?.click()}
+                  className="w-full h-20 rounded-lg border-2 border-dashed border-light-gray flex flex-col items-center justify-center gap-1 text-mid-gray hover:border-brand-primary/40 hover:text-brand-primary transition"
+                >
+                  <Upload className="size-5" />
+                  <span className="text-xs font-medium">Click to add more images</span>
                 </button>
-                <button onClick={() => { resetForm(); setEditingId(null); }} className="h-10 px-5 rounded-lg border border-light-gray text-sm text-mid-gray hover:bg-gray-50 transition">Cancel</button>
+              </div>
+
+              {groupEditItems.filter((item) => !item._deleted).length === 0 ? (
+                <p className="text-sm text-mid-gray py-4 text-center">No images in this group.</p>
+              ) : (
+                <div className="space-y-3 mb-4 max-h-96 overflow-y-auto">
+                  {groupEditItems.map((item) =>
+                    item._deleted ? null : (
+                      <div key={item.id} className="p-3 rounded-lg bg-gray-50 border border-light-gray/40">
+                        <div className="flex items-start gap-2 mb-2">
+                          <div className="size-14 shrink-0 rounded overflow-hidden bg-gray-200">
+                            <img src={item.url} alt="" className="size-full object-cover" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <input
+                              value={item.alt}
+                              onChange={(e) =>
+                                setGroupEditItems((prev) =>
+                                  prev.map((x) => (x.id === item.id ? { ...x, alt: e.target.value } : x))
+                                )
+                              }
+                              placeholder="Alt text"
+                              className="w-full h-8 px-2 rounded border border-light-gray text-xs mb-1"
+                            />
+                            <input
+                              value={item.meta_title}
+                              onChange={(e) =>
+                                setGroupEditItems((prev) =>
+                                  prev.map((x) => (x.id === item.id ? { ...x, meta_title: e.target.value } : x))
+                                )
+                              }
+                              placeholder="Meta title"
+                              className="w-full h-8 px-2 rounded border border-light-gray text-xs mb-1"
+                            />
+                          </div>
+                          <button
+                            onClick={() =>
+                              setGroupEditItems((prev) =>
+                                prev.map((x) => (x.id === item.id ? { ...x, _deleted: true } : x))
+                              )
+                            }
+                            className="p-1 text-red-400 hover:text-red-500"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                        </div>
+                        <textarea
+                          value={item.description}
+                          onChange={(e) =>
+                            setGroupEditItems((prev) =>
+                              prev.map((x) => (x.id === item.id ? { ...x, description: e.target.value } : x))
+                            )
+                          }
+                          placeholder="Description"
+                          rows={1}
+                          className="w-full px-2 py-1 rounded border border-light-gray text-xs resize-none mb-1"
+                        />
+                        <input
+                          value={item.keywords}
+                          onChange={(e) =>
+                            setGroupEditItems((prev) =>
+                              prev.map((x) => (x.id === item.id ? { ...x, keywords: e.target.value } : x))
+                            )
+                          }
+                          placeholder="Keywords (comma separated)"
+                          className="w-full h-8 px-2 rounded border border-light-gray text-xs"
+                        />
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+
+              <div className="flex gap-2">
+                <button
+                  onClick={saveGroupEdit}
+                  disabled={saving || groupEditItems.every((x) => x._deleted)}
+                  className="flex-1 h-10 rounded-lg bg-brand-primary text-white text-sm font-semibold hover:brightness-110 transition disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                >
+                  {saving && <Loader2 className="size-4 animate-spin" />}
+                  {saving ? "Saving..." : "Save Changes"}
+                </button>
+                <button
+                  onClick={() => { setSelectedGroupSlug(null); setGroupEditItems([]); }}
+                  className="h-10 px-5 rounded-lg border border-light-gray text-sm text-mid-gray hover:bg-gray-50 transition"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           )}
@@ -593,7 +780,7 @@ export default function AdminMediaPage() {
             </div>
           )}
 
-          {selected && editingId === null && (
+          {selected && editingId === null && !isBannerTab && (
             <div className="bg-white rounded-xl border border-light-gray/40 p-5">
               <h2 className="font-bold text-brand-dark mb-4">Details</h2>
               <div className={`rounded-lg overflow-hidden bg-gray-100 border border-light-gray mb-4 ${isBannerTab ? "aspect-[21/9]" : "aspect-video"}`}>

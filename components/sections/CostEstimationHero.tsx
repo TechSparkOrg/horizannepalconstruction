@@ -2,9 +2,9 @@ import { BannerCarousel } from "@/components/BannerCarousel";
 
 export function CostEstimationHero() {
   return (
-    <section className="relative min-h-[55vh] flex items-center overflow-hidden bg-brand-dark">
-      <BannerCarousel slug="cost-estimate-page-hero" imgClassName="object-cover opacity-30" />
-      <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/60 to-brand-dark" />
+    <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-brand-dark">
+      <BannerCarousel slug="cost-estimate-page-hero" imgClassName="object-cover opacity-60" />
+      <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/40 to-brand-dark/70" />
 
       <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center">
         <h1
@@ -14,7 +14,7 @@ export function CostEstimationHero() {
           Cost Estimate
         </h1>
 
-        <p className="mt-4 text-white/70 text-lg max-w-[600px] mx-auto leading-relaxed">
+        <p className="mt-4 text-white/80 font-semibold text-lg max-w-[600px] mx-auto leading-relaxed">
           Visualize and calculate your dream construction project in 3D
         </p>
       </div>

@@ -2,9 +2,9 @@ import { BannerCarousel } from "@/components/BannerCarousel";
 
 export function DesignHero() {
   return (
-    <section className="relative min-h-[55vh] flex items-center overflow-hidden bg-brand-dark">
-      <BannerCarousel slug="design-page-hero" imgClassName="object-cover opacity-30" />
-      <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/60 to-brand-dark" />
+    <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-brand-dark">
+      <BannerCarousel slug="design-page-hero" imgClassName="object-cover opacity-60" />
+      <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/40 to-brand-dark/70" />
 
       <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center">
         <span className="text-xs font-semibold tracking-[0.15em] uppercase text-white/60 bg-white/10 px-3 py-1 rounded-full border border-white/10 inline-block">

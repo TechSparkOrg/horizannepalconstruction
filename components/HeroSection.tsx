@@ -24,7 +24,7 @@ export function HeroSection() {
         slug="home-page-hero"
         carousel
         imgClassName="object-cover scale-[1.02]"
-        overlay="linear-gradient(105deg, var(--color-brand-dark) 0%, color-mix(in oklch, var(--color-brand-dark) 60%, transparent) 55%, color-mix(in oklch, var(--color-brand-dark) 25%, transparent) 100%)"
+        overlay="linear-gradient(105deg, color-mix(in oklch, var(--color-brand-dark) 80%, transparent) 0%, color-mix(in oklch, var(--color-brand-dark) 40%, transparent) 55%, color-mix(in oklch, var(--color-brand-dark) 10%, transparent) 100%)"
       />
 
       <div
@@ -36,7 +36,7 @@ export function HeroSection() {
       <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-36 pb-24 grid lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-7 max-w-[640px]">
           <div>
-            <SectionLabel>Architecture &amp; Design</SectionLabel>
+            <SectionLabel>Architecture &amp; Design &amp; Construction </SectionLabel>
           </div>
           <h1 className="font-display font-bold text-white leading-[1.05] mt-5" style={{ fontSize: "clamp(2.6rem, 5.5vw, 4.5rem)" }}>
             Building Dreams,<br />Shaping Nepal&apos;s Future
@@ -60,14 +60,14 @@ export function HeroSection() {
               View Our Works
             </Link>
           </div>
-          <div className="mt-10 flex items-center gap-5">
+          {/* <div className="mt-10 flex items-center gap-5">
             <div className="flex -space-x-2">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="w-8 h-8 rounded-full border-2 border-white/30 bg-white/10 backdrop-blur-sm" />
               ))}
             </div>
             <p className="text-white/55 text-sm">Trusted by 50+ clients across Nepal</p>
-          </div>
+          </div> */}
         </div>
         {/* {featuredImg && (
           <aside className="hidden lg:flex lg:col-span-5 justify-end">

@@ -7,6 +7,7 @@ const MESSAGE = "Hello! I'd like to know more about Horizon Nepal's services.";
 
 export function WhatsAppButton() {
   const contactInfo = useSettings((s) => s.settings?.contact_info);
+  // const whatappNum= 9851414147
   const waNumber = contactInfo?.whatsappNumber || contactInfo?.phone?.replace(/[^0-9]/g, "") || "";
   const href = waNumber ? `https://wa.me/${waNumber}?text=${encodeURIComponent(MESSAGE)}` : "#";
 

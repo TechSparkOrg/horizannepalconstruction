@@ -601,7 +601,7 @@ export function CostEstimator() {
       </section>
 
       {/* ── FAQ ── */}
-      <section className="bg-off-white py-16 sm:py-24">
+      {/* <section className="bg-off-white py-16 sm:py-24">
         <div className="max-w-[720px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <SectionLabel>FAQ</SectionLabel>
@@ -615,7 +615,7 @@ export function CostEstimator() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ── CTA ── */}
       <section className="bg-brand-dark py-16 sm:py-20">

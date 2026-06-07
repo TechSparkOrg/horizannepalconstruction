@@ -3,8 +3,8 @@ import type { MediaItem, MediaItemCreate, MediaItemUpdate } from '../types/media
 import type { PaginatedResponse } from '../types/consultation.types';
 
 export const MediaService = {
-  list: () =>
-    apiPrivate.get<PaginatedResponse<MediaItem>>('/admin/media/').then(r => r.data),
+  list: (page?: number) =>
+    apiPrivate.get<PaginatedResponse<MediaItem>>('/admin/media/', { params: page ? { page } : {} }).then(r => r.data),
 
   create: (data: MediaItemCreate) =>
     apiPrivate.post<MediaItem>('/admin/media/', data).then(r => r.data),
