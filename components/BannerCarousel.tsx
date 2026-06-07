@@ -38,7 +38,7 @@ export function BannerCarousel({ slug, children, overlay, carousel = true, class
           <div
             key={b.id}
             className={`absolute inset-0 transition-opacity duration-1000 ${className}`}
-            style={{ opacity: i === current ? 1 : 0 }}
+            style={{ opacity: i === current ? 1 : 0, position: "absolute" }}
           >
             <Image
               src={b.url}

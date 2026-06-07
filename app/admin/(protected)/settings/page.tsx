@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Save, Plus, Trash2, ChevronDown, Check } from "lucide-react";
 import { SettingsService } from "@/api/services/settings.service";
 import type { SiteSettings, SiteSettingsPayload } from "@/api/types/settings.types";
@@ -107,6 +107,7 @@ export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<SiteSettingsPayload | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const linkId = useRef(0);
 
   useEffect(() => {
     SettingsService.get()
@@ -217,7 +218,7 @@ export default function AdminSettingsPage() {
               update({
                 social_links: [
                   ...settings.social_links,
-                  { id: Date.now().toString(), platform: "", url: "", label: "" },
+                  { id: `new_${++linkId.current}`, platform: "", url: "", label: "" },
                 ],
               })
             }
