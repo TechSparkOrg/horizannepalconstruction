@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useParams, notFound } from "next/navigation";
+import { useParams } from "next/navigation";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import ModelViewerBlock from "@/components/ModelViewerBlock";
 import { Model3dService } from "@/api/services/model3d.service";
@@ -16,7 +16,7 @@ export default function ModelViewerPage() {
   useEffect(() => {
     Model3dService.publicGetBySlug(slug)
       .then(setModel)
-      .catch(() => notFound())
+      .catch(() => setModel(null))
       .finally(() => setLoading(false));
   }, [slug]);
 
@@ -30,7 +30,24 @@ export default function ModelViewerPage() {
     );
   }
 
-  if (!model) return null;
+  if (!model) {
+    return (
+      <section className="bg-off-white py-20 sm:py-28">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="size-16 mx-auto rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary mb-6">
+            <svg className="size-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            </svg>
+          </div>
+          <h1 className="font-display font-bold text-2xl text-brand-dark mb-2">Model Not Found</h1>
+          <p className="text-mid-gray text-sm mb-6">The 3D model you&apos;re looking for doesn&apos;t exist or has been removed.</p>
+          <a href="/design" className="inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-brand-primary text-white text-sm font-semibold hover:bg-brand-primary/90 transition-all">
+            Back to Design
+          </a>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <>

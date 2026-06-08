@@ -44,8 +44,7 @@ export function AboutGallery() {
 
   const images = items.filter((b) => b.url);
 
-  if (!loaded) return <Skeleton />;
-  if (images.length === 0) return null;
+  if (!loaded || images.length === 0) return <Skeleton />;
 
   return (
     <section className="py-16 sm:py-28">

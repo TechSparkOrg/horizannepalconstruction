@@ -43,10 +43,24 @@ export function BlogSection() {
         </div>
 
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {loading && posts.length === 0 ? (
-            <div className="col-span-full flex items-center justify-center py-20">
-              <div className="size-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
-            </div>
+          {posts.length === 0 ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex flex-col bg-white rounded-xl border border-light-gray/40 overflow-hidden">
+                <div className="h-44 bg-light-gray/30 animate-pulse" />
+                <div className="flex flex-col flex-1 p-5 sm:p-6 space-y-3">
+                  <div className="flex items-center gap-1.5">
+                    <div className="size-3.5 rounded bg-light-gray/30 animate-pulse" />
+                    <div className="h-3 w-24 rounded bg-light-gray/40 animate-pulse" />
+                  </div>
+                  <div className="h-5 w-3/4 rounded bg-light-gray/40 animate-pulse" />
+                  <div className="space-y-2">
+                    <div className="h-3 w-full rounded bg-light-gray/40 animate-pulse" />
+                    <div className="h-3 w-5/6 rounded bg-light-gray/40 animate-pulse" />
+                  </div>
+                  <div className="h-4 w-24 rounded bg-light-gray/30 animate-pulse" />
+                </div>
+              </div>
+            ))
           ) : (
             posts.map((post) => (
               <Link

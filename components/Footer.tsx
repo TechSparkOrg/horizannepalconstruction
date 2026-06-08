@@ -33,9 +33,7 @@ export function Footer() {
   }, []);
 
   const social_links = settings?.social_links ?? [];
-  const contact_info = settings?.contact_info;
-
-  if (!settings) return null;
+  const contact_info = settings?.contact_info ?? { address: "", phone: "", email: "" };
 
   const staticLinks = [
     { label: "Home",         href: "/" },

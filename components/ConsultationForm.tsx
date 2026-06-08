@@ -11,8 +11,19 @@ import type { ConsultationFormSettings } from "@/stores/admin-types";
 import type { Category } from "@/api/types/category.types";
 import type { FaqItem } from "@/api/types/faq.types";
 
+const FALLBACK_CONFIG: ConsultationFormSettings = {
+  sectionLabel: "Get in Touch",
+  heading: "Let's Build Together",
+  description: "Tell us about your project and we'll get back to you within 24 hours.",
+  formTitle: "Send Us a Message",
+  serviceOptions: [],
+  privacyText: "Your information is safe with us. We'll never share your details.",
+  successHeading: "Thank You!",
+  successMessage: "We've received your message and will get back to you shortly.",
+};
+
 export function ConsultationForm({ faqCategorySlug = "consultation" }: { faqCategorySlug?: string }) {
-  const [formConfig, setFormConfig] = useState<ConsultationFormSettings | null>(null);
+  const [formConfig, setFormConfig] = useState<ConsultationFormSettings>(FALLBACK_CONFIG);
   const contactInfo = useSettings((s) => s.settings?.contact_info);
 
   useEffect(() => {
@@ -30,7 +41,7 @@ export function ConsultationForm({ faqCategorySlug = "consultation" }: { faqCate
     });
   }, []);
 
-  const { sectionLabel, heading, description, formTitle, serviceOptions, privacyText, successHeading, successMessage } = formConfig ?? {};
+  const { sectionLabel, heading, description, formTitle, serviceOptions, privacyText, successHeading, successMessage } = formConfig;
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [faqItems, setFaqItems] = useState<FaqItem[]>([]);

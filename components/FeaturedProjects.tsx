@@ -63,10 +63,20 @@ export function FeaturedProjects() {
         </div>
 
         <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {loading && featured.length === 0 ? (
-            <div className="col-span-full flex items-center justify-center py-20">
-              <div className="size-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
-            </div>
+          {featured.length === 0 ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex flex-col bg-white rounded-xl border border-light-gray/40 overflow-hidden">
+                <div className="h-40 bg-light-gray/30 animate-pulse" />
+                <div className="flex flex-col flex-1 px-5 py-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="h-3 w-16 rounded bg-light-gray/40 animate-pulse" />
+                    <div className="h-5 w-20 rounded-full bg-light-gray/30 animate-pulse" />
+                  </div>
+                  <div className="h-4 w-3/4 rounded bg-light-gray/40 animate-pulse" />
+                  <div className="h-3 w-1/2 rounded bg-light-gray/30 animate-pulse" />
+                </div>
+              </div>
+            ))
           ) : (
             featured.map((p) => {
               const statusLabel = p.completion ? "Completed" : "Ongoing";

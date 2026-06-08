@@ -29,7 +29,45 @@ export function TestimonialsSection() {
   const prev = () => setI((v) => Math.max(0, v - 1));
   const next = () => setI((v) => Math.min(max, v + 1));
 
-  if (reviews.length === 0) return null;
+  if (reviews.length === 0) {
+    return (
+      <section className="bg-off-white py-16 sm:py-28" aria-label="Customer testimonials">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <div className="h-5 w-24 rounded-full bg-light-gray/50 animate-pulse mb-3" />
+              <div className="h-8 w-64 rounded-lg bg-light-gray/50 animate-pulse" />
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="size-11 rounded-full bg-light-gray/30 animate-pulse" />
+              <div className="size-11 rounded-full bg-light-gray/30 animate-pulse" />
+            </div>
+          </div>
+          <div className="mt-10 flex gap-6">
+            {[1,2,3].map((i) => (
+              <div key={i} className="shrink-0 w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] bg-white rounded-2xl p-6 border border-light-gray/40">
+                <div className="flex gap-1 mb-3">
+                  {[1,2,3,4,5].map((s) => <div key={s} className="size-4 rounded bg-light-gray/30 animate-pulse" />)}
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3 w-full rounded bg-light-gray/40 animate-pulse" />
+                  <div className="h-3 w-11/12 rounded bg-light-gray/40 animate-pulse" />
+                  <div className="h-3 w-3/4 rounded bg-light-gray/40 animate-pulse" />
+                </div>
+                <div className="mt-5 flex items-center gap-3">
+                  <div className="size-11 rounded-full bg-light-gray/30 animate-pulse" />
+                  <div className="space-y-1.5">
+                    <div className="h-3 w-24 rounded bg-light-gray/40 animate-pulse" />
+                    <div className="h-2.5 w-16 rounded bg-light-gray/30 animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-off-white py-16 sm:py-28" aria-label="Customer testimonials">

@@ -33,10 +33,21 @@ export function OurWorkSection() {
         </div>
 
         <div className="mt-12 space-y-4">
-          {loading && projects.length === 0 ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="size-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
-            </div>
+          {projects.length === 0 ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-4 bg-white rounded-xl border border-light-gray/40 p-3">
+                <div className="size-16 sm:size-20 rounded-lg bg-light-gray/30 animate-pulse shrink-0" />
+                <div className="flex-1 min-w-0 space-y-2">
+                  <div className="h-4 w-3/4 rounded bg-light-gray/40 animate-pulse" />
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                    <div className="h-3 w-24 rounded bg-light-gray/30 animate-pulse" />
+                    <div className="h-3 w-20 rounded bg-light-gray/30 animate-pulse" />
+                    <div className="h-5 w-16 rounded-full bg-light-gray/30 animate-pulse" />
+                  </div>
+                </div>
+                <div className="h-4 w-20 rounded bg-light-gray/30 animate-pulse shrink-0" />
+              </div>
+            ))
           ) : (
             projects.map((p) => {
               const statusLabel = p.completion ? "Completed" : "Ongoing";

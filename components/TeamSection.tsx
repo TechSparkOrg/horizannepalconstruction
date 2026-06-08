@@ -29,7 +29,46 @@ export function TeamSection() {
     });
   }, []);
 
-  if (teamMembers.length === 0) return null;
+  if (teamMembers.length === 0) {
+    return (
+      <section className="bg-off-white py-16 sm:py-28">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-end justify-between flex-wrap gap-4 mb-8">
+            <div>
+              <div className="h-5 w-24 rounded-full bg-light-gray/50 animate-pulse mb-3" />
+              <div className="h-8 w-64 rounded-lg bg-light-gray/50 animate-pulse" />
+            </div>
+            <div className="h-10 w-48 rounded bg-light-gray/50 animate-pulse" />
+          </div>
+          <div className="border border-light-gray rounded-xl overflow-hidden">
+            <div className="grid grid-cols-[2fr_1.5fr_1fr_1fr] gap-2 px-5 py-2.5 bg-light-gray/20 border-b border-light-gray">
+              {[1,2,3,4].map((i) => <div key={i} className="h-3 rounded bg-light-gray/40 animate-pulse" />)}
+            </div>
+            {[1,2,3,4,5].map((r) => (
+              <div key={r} className="grid grid-cols-[2fr_1.5fr_1fr_1fr] gap-2 items-center px-5 py-3.5 bg-white border-b border-light-gray">
+                <div className="flex items-center gap-2.5">
+                  <div className="size-8 rounded-lg bg-light-gray/30 animate-pulse" />
+                  <div className="space-y-1.5">
+                    <div className="h-3 w-28 rounded bg-light-gray/40 animate-pulse" />
+                    <div className="h-2.5 w-20 rounded bg-light-gray/30 animate-pulse" />
+                  </div>
+                </div>
+                <div className="h-3 w-24 rounded bg-light-gray/40 animate-pulse" />
+                <div className="h-3 w-16 rounded bg-light-gray/40 animate-pulse" />
+                <div className="flex gap-1.5">
+                  <div className="size-6 rounded-md bg-light-gray/30 animate-pulse" />
+                  <div className="size-6 rounded-md bg-light-gray/30 animate-pulse" />
+                </div>
+              </div>
+            ))}
+            <div className="flex items-center justify-between flex-wrap gap-2 px-5 py-3 bg-light-gray/20 border-t border-light-gray">
+              {[1,2,3].map((i) => <div key={i} className="h-3 w-32 rounded bg-light-gray/40 animate-pulse" />)}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-off-white py-16 sm:py-28">
