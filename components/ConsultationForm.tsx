@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { ArrowRight, MapPin, Mail, Phone, Minus, Plus } from "lucide-react";
-import { useShallow } from "zustand/react/shallow";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { ConsultationService } from "@/api/services/consultation.service";
+import { CategoryService } from "@/api/services/category.service";
+import { FaqService } from "@/api/services/faq.service";
 import { useSettings } from "@/stores/settings-store";
-import { useClientStore } from "@/stores/client-store";
 import type { ConsultationFormSettings } from "@/stores/admin-types";
+import type { Category } from "@/api/types/category.types";
+import type { FaqItem } from "@/api/types/faq.types";
 
 export function ConsultationForm({ faqCategorySlug = "consultation" }: { faqCategorySlug?: string }) {
   const [formConfig, setFormConfig] = useState<ConsultationFormSettings | null>(null);
@@ -30,14 +32,18 @@ export function ConsultationForm({ faqCategorySlug = "consultation" }: { faqCate
 
   const { sectionLabel, heading, description, formTitle, serviceOptions, privacyText, successHeading, successMessage } = formConfig ?? {};
 
-  const { categories, faqItems, fetchCategories, fetchFaqs } = useClientStore(useShallow((s) => ({
-    categories: s.categories, faqItems: s.faqItems, fetchCategories: s.fetchCategories, fetchFaqs: s.fetchFaqs,
-  })));
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
 
   useEffect(() => {
-    fetchCategories();
-    fetchFaqs();
-  }, [fetchCategories, fetchFaqs]);
+    Promise.all([
+      CategoryService.list(),
+      FaqService.list(),
+    ]).then(([catRes, faqRes]) => {
+      setCategories(catRes.results ?? []);
+      setFaqItems(faqRes.results ?? []);
+    }).catch(() => {});
+  }, []);
 
   const faqCategory = categories.find((c) => c.slug === faqCategorySlug);
   const consultationFaqs = faqCategory

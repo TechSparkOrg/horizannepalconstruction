@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ScriptInjector } from "@/components/ScriptInjector";
+import { AnalyticsTracker } from "@/hooks/useTrackAction";
+import { JsonLd } from "@/components/JsonLd";
+import { TrackingScripts } from "@/components/TrackingScripts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +34,10 @@ export const metadata: Metadata = {
     title: "Horizan Nepal — Building Nepal's Tomorrow",
     description: "Architecture, Engineering & Construction services across Nepal.",
   },
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -47,8 +53,10 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-          {children}
-        <ScriptInjector />
+        <TrackingScripts />
+        <AnalyticsTracker />
+        <JsonLd />
+        {children}
       </body>
     </html>
   );

@@ -1,5 +1,8 @@
+import type { Metadata } from "next";
 import FloorPlanner from "@/components/sections/FloorPlanner";
 import { BannerCarousel } from "@/components/BannerCarousel";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://horizannepal.com";
 
 const benefits = [
   { title: "Accurate Measurements", desc: "Scale-accurate layouts prevent costly errors during construction." },
@@ -10,9 +13,31 @@ const benefits = [
   { title: "Visualisation", desc: "See your home before it's built — walls, rooms, windows, and furniture placement." },
 ];
 
+export const metadata: Metadata = {
+  title: "Floor Planner | Horizan Nepal",
+  description:
+    "Design your dream floor plan online with Horizan Nepal's interactive 2D floor planner. Plan rooms, walls, stairs, and visualize your space before building.",
+  openGraph: {
+    title: "Floor Planner | Horizan Nepal",
+    description:
+      "Design your dream floor plan online with Horizan Nepal's interactive 2D floor planner.",
+    type: "website",
+  },
+  alternates: { canonical: `${siteUrl}/floor-planner` },
+};
+
+const breadcrumb = {
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+    { "@type": "ListItem", position: 2, name: "Floor Planner", item: `${siteUrl}/floor-planner` },
+  ],
+};
+
 export default function FloorPlannerPage() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-brand-dark">
         <BannerCarousel slug="floor-planner-page-hero" imgClassName="object-cover opacity-60 scale-105" />
         <div className="absolute inset-0 bg-gradient-to-br from-brand-dark/60 via-brand-dark/30 to-transparent">

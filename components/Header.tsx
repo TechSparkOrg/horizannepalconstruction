@@ -94,7 +94,7 @@ export function Header() {
           >
             <div className="relative">
               <img
-                src="/favicon.png"
+                src="/logo.png"
                 alt="Horizon Nepal"
                 className="h-8 w-8 object-contain transition-transform duration-300 group-hover:scale-110"
               />
@@ -244,7 +244,7 @@ export function Header() {
             onClick={closeAll}
             className="flex items-center gap-2"
           >
-            <img src="/favicon.png" alt="Horizon Nepal" className="h-7 w-7 object-contain" />
+            <img src="/logo.png" alt="Horizon Nepal" className="h-7 w-7 object-contain" />
             <span className="flex items-baseline leading-none">
               <span className="text-brand-primary font-extrabold text-lg">Horizon</span>
               <span className="text-white font-medium text-lg ml-1">Nepal</span>

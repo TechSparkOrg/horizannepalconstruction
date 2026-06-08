@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { BannerCarousel } from "@/components/BannerCarousel";
@@ -55,6 +56,18 @@ const comparison = [
   { factor: "Energy", conventional: "Grid-only", green: "Solar PV + grid hybrid" },
   { factor: "Water", conventional: "Municipal + tanker", green: "Municipal + rainwater harvesting" },
 ];
+
+export const metadata: Metadata = {
+  title: "Green Calculator | Horizan Nepal",
+  description:
+    "Compare eco-friendly building materials and methods with Horizan Nepal's Green Builder Calculator. Build sustainably with our green checklist and material comparison.",
+  openGraph: {
+    title: "Green Calculator | Horizan Nepal",
+    description:
+      "Compare eco-friendly building materials and methods with Horizan Nepal's Green Builder Calculator.",
+    type: "website",
+  },
+};
 
 export default function GreenCalculatorPage() {
   return (

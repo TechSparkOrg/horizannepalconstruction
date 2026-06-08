@@ -18,7 +18,22 @@ export function HomeGallery() {
 
   const images = items.filter((b) => b.url);
 
-  if (!loaded || images.length === 0) return null;
+  if (!loaded || images.length === 0) return (
+    <section className="py-16 sm:py-28 bg-off-white">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <div className="h-4 w-24 bg-gray-200 rounded-full animate-pulse mx-auto" />
+          <div className="mt-3 h-8 w-48 bg-gray-200 rounded-lg animate-pulse mx-auto" />
+          <div className="mt-3 h-4 w-64 bg-gray-200 rounded-full animate-pulse mx-auto" />
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className={`aspect-square rounded-xl bg-gray-200 animate-pulse ${i === 0 || i === 7 ? "md:col-span-2 md:row-span-2" : ""}`} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 
   return (
     <section className="py-16 sm:py-28 bg-off-white">

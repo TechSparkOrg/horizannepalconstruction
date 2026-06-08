@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import Image from "next/image";
 import { BannerService } from "@/api/services/banner.service";
+import { useTrackAction } from "@/hooks/useTrackAction";
 import type { MediaItem } from "@/api/types/media.types";
 
 interface Props {
@@ -17,6 +18,8 @@ interface Props {
 export function BannerCarousel({ slug, children, overlay, carousel = true, className = "", imgClassName = "object-cover" }: Props) {
   const [banners, setBanners] = useState<MediaItem[]>([]);
   const [current, setCurrent] = useState(0);
+  const track = useTrackAction();
+  const tracked = useRef(false);
 
   useEffect(() => {
     BannerService.getBySlug(slug).then(setBanners);
@@ -24,6 +27,11 @@ export function BannerCarousel({ slug, children, overlay, carousel = true, class
 
   const slides = banners.filter(b => b.url);
   const hasSlides = slides.length > 0;
+
+  useEffect(() => {
+    if (!tracked.current) { tracked.current = true; return; }
+    track("banner_slide", { slug, slide: current + 1, total: slides.length });
+  }, [current, slug, slides.length, track]);
 
   useEffect(() => {
     if (!carousel || slides.length <= 1) return;
@@ -45,6 +53,7 @@ export function BannerCarousel({ slug, children, overlay, carousel = true, class
               alt={b.alt || b.meta_title || ""}
               fill
               priority={i === 0}
+              loading={i === 0 ? undefined : "lazy"}
               sizes="100vw"
               className={imgClassName}
             />

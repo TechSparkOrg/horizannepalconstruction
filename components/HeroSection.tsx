@@ -1,23 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowRight, Play, Check } from "lucide-react";
+import { ArrowRight, Play } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { BannerCarousel } from "@/components/BannerCarousel";
-import { BannerService } from "@/api/services/banner.service";
 
 export function HeroSection() {
-  const [featuredImg, setFeaturedImg] = useState("");
-
-  useEffect(() => {
-    BannerService.getBySlug("home-page-hero").then((banners) => {
-      const b = banners.find((b) => b.url);
-      if (b) setFeaturedImg(b.url);
-    });
-  }, []);
-
   return (
     <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
       <BannerCarousel

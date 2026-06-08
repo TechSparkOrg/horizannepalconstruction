@@ -57,7 +57,7 @@ export function Footer() {
         <div className="sm:col-span-2 lg:col-span-1">
           <Link href="/" className="inline-flex items-center gap-2 mb-4 group">
             <img
-              src="/favicon.png"
+              src="/logo.png"
               alt="Horizon Nepal"
               className="h-7 w-7 object-contain transition-transform duration-300 group-hover:scale-110"
             />

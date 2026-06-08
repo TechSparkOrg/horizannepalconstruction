@@ -154,6 +154,41 @@ const createAxiosClient = (isPrivate = false): AxiosInstance => {
     }
 );
 
+    const responseCache = new Map<string, { data: unknown; ts: number }>();
+    const CACHE_TTL = 60_000;
+
+    instance.interceptors.response.use(
+      (response) => {
+        if (response.config.method?.toLowerCase() === "get") {
+          const key = `${response.config.url}${JSON.stringify(response.config.params || {})}`;
+          responseCache.set(key, { data: response.data, ts: Date.now() });
+        }
+        return response;
+      }
+    );
+
+    instance.interceptors.request.use((config) => {
+      if (config.method?.toLowerCase() !== "get") {
+        responseCache.clear();
+      }
+      if (config.method?.toLowerCase() === "get") {
+        const key = `${config.url}${JSON.stringify(config.params || {})}`;
+        const cached = responseCache.get(key);
+        if (cached && Date.now() - cached.ts < CACHE_TTL) {
+          config.adapter = () =>
+            Promise.resolve({
+              data: cached.data,
+              status: 200,
+              statusText: "OK",
+              headers: {},
+              config,
+              request: {},
+            } as any);
+        }
+      }
+      return config;
+    });
+
     return instance;
 };
 

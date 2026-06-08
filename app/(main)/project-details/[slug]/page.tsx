@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -11,6 +12,22 @@ function modelSrc(file: string) {
   if (!file) return "";
   if (file.startsWith("/") || file.startsWith("http")) return file;
   return `/glb/${file}`;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const slugTitle = slug
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return {
+    title: `${slugTitle} | Horizan Nepal`,
+    description: `View project details for ${slugTitle} by Horizan Nepal — architectural design, materials, cost estimation, and gallery.`,
+    openGraph: {
+      title: `${slugTitle} | Horizan Nepal`,
+      description: `View project details for ${slugTitle} by Horizan Nepal.`,
+      type: "website",
+    },
+  };
 }
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
