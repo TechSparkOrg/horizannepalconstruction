@@ -8,9 +8,8 @@ import { ScriptInjector } from "@/components/ScriptInjector";
 import { AnalyticsTracker } from "@/hooks/useTrackAction";
 import { JsonLd } from "@/components/JsonLd";
 import { StoreInitializer } from "@/components/StoreInitializer";
-import { SettingsService } from "@/api/services/settings.service";
+import { getSettings as getSettingsCached } from "@/api/cached/settings";
 import { Suspense } from "react";
-import { cacheLife } from "next/cache";
 import type { ReactNode } from "react";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
@@ -36,10 +35,8 @@ const baseOrgSchema = {
 };
 
 async function getSettings() {
-  "use cache";
-  cacheLife({ revalidate: 60 });
   try {
-    return await SettingsService.get();
+    return await getSettingsCached();
   } catch {
     return null;
   }

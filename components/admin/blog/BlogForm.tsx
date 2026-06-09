@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Loader2, ArrowLeft, Upload, X } from "lucide-react";
-import { BlogService } from "@/api/services/blog.service";
+import { BlogAdmin } from "@/api/services/blog.service";
 import { MediaService } from "@/api/services/media.service";
 import type { AdminCategory } from "@/stores/admin-types";
 import type { ContentBlock, BlogPost } from "@/api/types/blog.types";
@@ -107,7 +107,7 @@ export default function BlogForm({ editingSlug, categories, projects, onSaved, o
 
   useEffect(() => {
     if (!editingSlug) return;
-    BlogService.adminGet(editingSlug).then((post) => setForm(toForm(post)));
+    BlogAdmin.adminGet(editingSlug).then((post) => setForm(toForm(post)));
   }, [editingSlug]);
 
   const set = (patch: Partial<typeof form>) => setForm((prev) => ({ ...prev, ...patch }));
@@ -118,8 +118,8 @@ export default function BlogForm({ editingSlug, categories, projects, onSaved, o
     try {
       const payload = toPayload(form);
       const post = editingSlug
-        ? await BlogService.update(editingSlug, payload)
-        : await BlogService.create(payload);
+        ? await BlogAdmin.update(editingSlug, payload)
+        : await BlogAdmin.create(payload);
       onSaved(post);
     } finally {
       setSaving(false);

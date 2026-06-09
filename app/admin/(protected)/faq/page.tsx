@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Plus, Pencil, Trash2, GripVertical, Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { useAdminStore, type FaqItem } from "@/stores/admin-store";
-import { FaqService } from "@/api/services/faq.service";
+import { FaqAdmin } from "@/api/services/faq.service";
 import { toast } from "sonner";
 import type { FaqItem as ApiFaqItem } from "@/api/types/faq.types";
 
@@ -49,7 +49,7 @@ export default function AdminFaqPage() {
 
   const refresh = async () => {
     try {
-      const res = await FaqService.adminList();
+      const res = await FaqAdmin.list();
       setFaqItems((res.results ?? []).map(mapApiToForm));
     } catch {
       toast.error("Failed to refresh FAQ list");
@@ -61,9 +61,9 @@ export default function AdminFaqPage() {
     setSaving(true);
     try {
       if (editingId) {
-        await FaqService.update(editingId, formToApi(form));
+        await FaqAdmin.update(editingId, formToApi(form));
       } else {
-        await FaqService.create(formToApi(form));
+        await FaqAdmin.create(formToApi(form));
       }
       await refresh();
       resetForm();
@@ -78,7 +78,7 @@ export default function AdminFaqPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      await FaqService.delete(id);
+      await FaqAdmin.delete(id);
       await refresh();
       toast.success("FAQ deleted");
     } catch {

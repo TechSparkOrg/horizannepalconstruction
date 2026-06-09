@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { ProjectService } from "@/api/services/project.service";
-import { Model3dService } from "@/api/services/model3d.service";
+import { ProjectPublic } from "@/api/services/project.service";
+import { Model3dPublic } from "@/api/services/model3d.service";
 
 function ModelViewer({ src }: { src: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -45,14 +45,15 @@ interface ModelCard {
   href?: string;
 }
 
-export function Design3DShowcase() {
-  const [items, setItems] = useState<ModelCard[]>([]);
-  const [loading, setLoading] = useState(true);
+export function Design3DShowcase({ initialItems }: { initialItems?: ModelCard[] }) {
+  const [items, setItems] = useState<ModelCard[]>(initialItems ?? []);
+  const [loading, setLoading] = useState(!initialItems);
 
   useEffect(() => {
+    if (initialItems) return;
     Promise.allSettled([
-      ProjectService.list(),
-      Model3dService.publicList(),
+      ProjectPublic.list(),
+      Model3dPublic.list(),
     ]).then(([projectsRes, modelsRes]) => {
       const cards: ModelCard[] = [];
 
@@ -87,13 +88,30 @@ export function Design3DShowcase() {
 
       setItems(cards);
     }).finally(() => setLoading(false));
-  }, []);
+  }, [initialItems]);
 
   if (loading) {
     return (
       <section className="bg-off-white py-16 sm:py-28">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center py-20">
-          <Loader2 className="size-6 animate-spin text-mid-gray" />
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center space-y-3 mb-12">
+            <div className="mx-auto h-4 w-24 rounded-full bg-light-gray/40 animate-pulse" />
+            <div className="mx-auto h-8 w-64 rounded-lg bg-light-gray/40 animate-pulse" />
+            <div className="mx-auto h-4 w-72 rounded bg-light-gray/30 animate-pulse" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex flex-col bg-white rounded-xl border border-light-gray/40 overflow-hidden">
+                <div className="relative w-full" style={{ aspectRatio: "3/4" }}>
+                  <div className="absolute inset-0 bg-light-gray/30 animate-pulse" />
+                </div>
+                <div className="p-4 space-y-2">
+                  <div className="h-4 w-3/4 rounded bg-light-gray/40 animate-pulse" />
+                  <div className="h-3 w-1/2 rounded bg-light-gray/30 animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     );

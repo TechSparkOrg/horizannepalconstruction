@@ -3,23 +3,28 @@
 import { useState, useEffect } from "react";
 import VastuShastraGuide from "@/components/sections/VastuShastraGuide";
 import { BannerCarousel } from "@/components/BannerCarousel";
-import { VastuService } from "@/api/services/vastu.service";
+import { VastuPublic } from "@/api/services/vastu.service";
 import type { VastuConfig } from "@/stores/admin-types";
 
-export default function VastuShastraClient() {
-  const [data, setData] = useState<VastuConfig | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function VastuShastraClient({ initialData }: { initialData?: VastuConfig | null }) {
+  const [data, setData] = useState<VastuConfig | null>(initialData ?? null);
+  const [loading, setLoading] = useState(!initialData);
 
   useEffect(() => {
-    VastuService.getPublic()
+    if (initialData) return;
+    VastuPublic.get()
       .then(setData)
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) {
     return (
-      <section className="min-h-screen flex items-center justify-center bg-brand-dark">
-        <div className="size-10 rounded-full border-2 border-brand-primary/30 border-t-brand-primary animate-spin" />
+      <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-brand-dark">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center space-y-4">
+          <div className="mx-auto h-4 w-32 rounded-full bg-white/10 animate-pulse" />
+          <div className="mx-auto h-14 w-[550px] max-w-full rounded-lg bg-white/10 animate-pulse" />
+          <div className="mx-auto h-5 w-[400px] max-w-full rounded bg-white/10 animate-pulse" />
+        </div>
       </section>
     );
   }

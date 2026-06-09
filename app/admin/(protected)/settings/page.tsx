@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Save, Plus, Trash2, ChevronDown, Check } from "lucide-react";
-import { SettingsService } from "@/api/services/settings.service";
+import { getAdminSettings, revalidateAdminTag } from "@/app/actions/admin-cache";
+import { SettingsAdmin } from "@/api/services/settings.service";
 import type { SiteSettings, SiteSettingsPayload } from "@/api/types/settings.types";
 import { toast } from "sonner";
 
@@ -115,7 +116,7 @@ export default function AdminSettingsPage() {
   const linkId = useRef(0);
 
   useEffect(() => {
-    SettingsService.get()
+    getAdminSettings()
       .then((d) => setSettings(toPayload(d)))
       .catch(() => toast.error("Unable to load settings"))
       .finally(() => setIsLoading(false));
@@ -125,7 +126,8 @@ export default function AdminSettingsPage() {
     if (!settings) return;
     setIsSaving(true);
     try {
-      const d = await SettingsService.put(settings);
+      const d = await SettingsAdmin.put(settings);
+      await revalidateAdminTag('admin-settings');
       setSettings(toPayload(d));
       toast.success("Settings saved");
     } catch {

@@ -13,17 +13,19 @@ interface Props {
   carousel?: boolean;
   className?: string;
   imgClassName?: string;
+  initialBanners?: MediaItem[];
 }
 
-export function BannerCarousel({ slug, children, overlay, carousel = true, className = "", imgClassName = "object-cover" }: Props) {
-  const [banners, setBanners] = useState<MediaItem[]>([]);
+export function BannerCarousel({ slug, children, overlay, carousel = true, className = "", imgClassName = "object-cover", initialBanners }: Props) {
+  const [banners, setBanners] = useState<MediaItem[]>(initialBanners ?? []);
   const [current, setCurrent] = useState(0);
   const track = useTrackAction();
   const tracked = useRef(false);
 
   useEffect(() => {
+    if (initialBanners) return;
     BannerService.getBySlug(slug).then(setBanners);
-  }, [slug]);
+  }, [slug, initialBanners]);
 
   const slides = banners.filter(b => b.url);
   const hasSlides = slides.length > 0;

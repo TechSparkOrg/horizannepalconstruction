@@ -2,25 +2,22 @@ import { apiPublic, apiPrivate } from '../ServiceHelper/index';
 import type { ModelItem, ModelItemCreate, ModelItemUpdate } from '../types/model3d.types';
 import type { PaginatedResponse } from '../types/consultation.types';
 
-export const Model3dService = {
-  publicList: () =>
+export const Model3dPublic = {
+  list: () =>
     apiPublic.get<PaginatedResponse<ModelItem>>('/models/').then(r => r.data),
-
-  publicGetBySlug: (slug: string) =>
+  getBySlug: (slug: string) =>
     apiPublic.get<ModelItem>(`/models/${slug}/`).then(r => r.data),
+};
 
+export const Model3dAdmin = {
   list: () =>
     apiPrivate.get<PaginatedResponse<ModelItem>>('/admin/models/').then(r => r.data),
-
   create: (data: ModelItemCreate) =>
     apiPrivate.post<ModelItem>('/admin/models/', data).then(r => r.data),
-
   update: (id: string, data: ModelItemUpdate) =>
     apiPrivate.put<ModelItem>(`/admin/models/${id}/`, data).then(r => r.data),
-
   delete: (id: string) =>
     apiPrivate.delete<{ ok: boolean }>(`/admin/models/${id}/`).then(r => r.data),
-
   uploadModel: (file: File, metadata?: Partial<ModelItemCreate>) => {
     const fd = new FormData();
     fd.append('file', file);
@@ -36,3 +33,4 @@ export const Model3dService = {
     return apiPrivate.post<ModelItem>('/admin/models/upload/', fd, { headers: { 'Content-Type': null } }).then(r => r.data);
   },
 };
+

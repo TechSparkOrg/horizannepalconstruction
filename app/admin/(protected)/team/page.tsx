@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { Plus, Pencil, Trash2, ArrowLeft } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { useAdminStore, type TeamMember } from "@/stores/admin-store";
-import { TeamService } from "@/api/services/team.service";
+import { getAdminTeam, revalidateAdminTag } from "@/app/actions/admin-cache";
+import { TeamAdmin } from "@/api/services/team.service";
 
 function makeInitials(name: string): string {
   return name.split(" ").filter(Boolean).map((w) => w[0]).join("").toUpperCase().slice(0, 2);
@@ -31,7 +32,7 @@ export default function AdminTeamPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    TeamService.adminList().then((res) => {
+    getAdminTeam().then((res) => {
       useAdminStore.setState({ teamMembers: res.results ?? [] });
     });
   }, []);
@@ -62,12 +63,13 @@ export default function AdminTeamPage() {
     const payload = { ...form, initials };
     try {
       if (editingId) {
-        const updated = await TeamService.update(editingId, payload);
+        const updated = await TeamAdmin.update(editingId, payload);
         updateTeamMember(editingId, updated);
       } else {
-        const created = await TeamService.create(payload);
+        const created = await TeamAdmin.create(payload);
         addTeamMember(created);
       }
+      await revalidateAdminTag('admin-team');
       back();
     } catch {
       // Toast or error handling
@@ -78,7 +80,8 @@ export default function AdminTeamPage() {
 
   const confirmDelete = async (id: string) => {
     try {
-      await TeamService.delete(id);
+      await TeamAdmin.delete(id);
+      await revalidateAdminTag('admin-team');
       deleteTeamMember(id);
     } catch {
       // Toast or error handling

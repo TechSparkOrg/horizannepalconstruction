@@ -3,6 +3,10 @@ import { DesignHero } from "@/components/sections/DesignHero";
 import { DesignServices } from "@/components/sections/DesignServices";
 import { Design3DShowcase } from "@/components/sections/Design3DShowcase";
 import { ConsultationForm } from "@/components/ConsultationForm";
+import { getProjects } from "@/api/cached/project";
+import { getModels } from "@/api/cached/model3d";
+import { getCategories } from "@/api/cached/category";
+import { getFaqs } from "@/api/cached/faq";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -29,14 +33,63 @@ const breadcrumb = {
   ],
 };
 
-export default function DesignPage() {
+function modelSrc(file: string) {
+  if (!file) return "";
+  if (file.startsWith("/") || file.startsWith("http")) return file;
+  return `/glb/${file}`;
+}
+
+export default async function DesignPage() {
+  const [projectsRes, modelsRes, categoriesRes, faqRes] = await Promise.allSettled([
+    getProjects(),
+    getModels(),
+    getCategories(),
+    getFaqs(),
+  ]);
+  const categories = categoriesRes.status === "fulfilled" ? categoriesRes.value.results ?? [] : [];
+  const faqItems = faqRes.status === "fulfilled" ? faqRes.value.results ?? [] : [];
+
+  let modelCards: { key: string; src: string; title: string; subtitle: string; href?: string }[];
+  if (projectsRes.status === "fulfilled" || modelsRes.status === "fulfilled") {
+    const cards: { key: string; src: string; title: string; subtitle: string; href?: string }[] = [];
+    if (projectsRes.status === "fulfilled") {
+      for (const p of projectsRes.value.results ?? []) {
+        if (!p.file) continue;
+        cards.push({
+          key: `project-${p.slug}`,
+          src: modelSrc(p.file),
+          title: p.title,
+          subtitle: p.location,
+          href: `/project-details/${p.slug}`,
+        });
+      }
+    }
+    if (modelsRes.status === "fulfilled") {
+      const knownSlugs = new Set(cards.map((c) => c.key));
+      for (const m of modelsRes.value.results ?? []) {
+        if (!m.url) continue;
+        const key = `model-${m.slug || m.id}`;
+        if (knownSlugs.has(key)) continue;
+        cards.push({
+          key,
+          src: m.url,
+          title: m.title || "3D Model",
+          subtitle: m.description || "",
+          href: m.slug ? `/models/${m.slug}` : undefined,
+        });
+      }
+    }
+    modelCards = cards;
+  }
+  modelCards ??= [];
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <DesignHero />
       <DesignServices />
-      <Design3DShowcase />
-      <ConsultationForm />
+      <Design3DShowcase initialItems={modelCards} />
+      <ConsultationForm initialCategories={categories} initialFaqItems={faqItems} />
     </>
   );
 }

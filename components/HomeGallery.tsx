@@ -8,13 +8,14 @@ import type { MediaItem } from "@/api/types/media.types";
 
 const SLUG = "homepage-gallery-list";
 
-export function HomeGallery() {
-  const [items, setItems] = useState<MediaItem[]>([]);
-  const [loaded, setLoaded] = useState(false);
+export function HomeGallery({ initialImages }: { initialImages?: MediaItem[] }) {
+  const [items, setItems] = useState<MediaItem[]>(initialImages ?? []);
+  const [loaded, setLoaded] = useState(!!initialImages);
 
   useEffect(() => {
+    if (initialImages) return;
     BannerService.getBySlug(SLUG).then(setItems).catch(() => setItems([])).finally(() => setLoaded(true));
-  }, []);
+  }, [initialImages]);
 
   const images = items.filter((b) => b.url);
 

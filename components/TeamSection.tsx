@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Users, Mail, Clock, MapPin } from "lucide-react";
-import { TeamService } from "@/api/services/team.service";
+import { TeamPublic } from "@/api/services/team.service";
 import type { TeamMember } from "@/api/types/team.types";
 
 const LinkedInIcon = () => (
@@ -20,14 +20,15 @@ function avgExperience(team: { experience: string }[]): string {
   return avg.toFixed(1) + " yrs";
 }
 
-export function TeamSection() {
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+export function TeamSection({ initialMembers }: { initialMembers?: TeamMember[] }) {
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>(initialMembers ?? []);
 
   useEffect(() => {
-    TeamService.list().then((res) => {
+    if (initialMembers) return;
+    TeamPublic.list().then((res) => {
       setTeamMembers(res.results ?? []);
     });
-  }, []);
+  }, [initialMembers]);
 
   if (teamMembers.length === 0) {
     return (

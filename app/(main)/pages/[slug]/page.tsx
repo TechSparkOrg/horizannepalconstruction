@@ -1,46 +1,41 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { ArrowLeft, FileText } from "lucide-react";
 import Link from "next/link";
-import { PageService } from "@/api/services/page.service";
+import { getPageBySlug } from "@/api/cached/page";
+import { getBanners } from "@/api/cached/banner";
+import type { MediaItem } from "@/api/types/media.types";
 import { BannerCarousel } from "@/components/BannerCarousel";
-import type { Page } from "@/api/types/page.types";
 
-export default function PageView() {
-  const { slug } = useParams<{ slug: string }>();
-  const [page, setPage] = useState<Page | null>(null);
-  const [notFound, setNotFound] = useState(false);
-  const [banners, setBanners] = useState(0);
-
-  useEffect(() => {
-    if (!slug) return;
-    PageService.getBySlug(slug)
-      .then(setPage)
-      .catch(() => setNotFound(true));
-  }, [slug]);
-
-  if (notFound) {
-    return (
-      <div className="max-w-[700px] mx-auto px-4 py-24 text-center">
-        <FileText className="size-12 text-light-gray mx-auto mb-4" />
-        <h1 className="font-display text-2xl font-bold text-brand-dark mb-2">Page not found</h1>
-        <p className="text-mid-gray text-sm mb-6">The page you&apos;re looking for doesn&apos;t exist.</p>
-        <Link href="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-primary hover:underline">
-          <ArrowLeft className="size-3.5" /> Back to Home
-        </Link>
-      </div>
-    );
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  try {
+    const page = await getPageBySlug(slug);
+    if (!page) return { title: "Page Not Found" };
+    return {
+      title: page.meta_title || page.title,
+      description: page.meta_description || "",
+    };
+  } catch {
+    return { title: "Page Not Found" };
   }
+}
 
-  if (!page) {
-    return (
-      <div className="max-w-[700px] mx-auto px-4 py-24 text-center">
-        <div className="size-10 rounded-full border-2 border-brand-primary/30 border-t-brand-primary animate-spin mx-auto" />
-        <p className="text-sm text-mid-gray mt-4">Loading…</p>
-      </div>
-    );
+export default async function PageView({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  let page;
+  try {
+    page = await getPageBySlug(slug);
+  } catch {
+    notFound();
+  }
+  if (!page) notFound();
+
+  let banners: MediaItem[];
+  try {
+    banners = await getBanners(`${slug}-page-hero`);
+  } catch {
+    banners = [];
   }
 
   return (
@@ -50,6 +45,7 @@ export default function PageView() {
           slug={`${slug}-page-hero`}
           carousel
           imgClassName="object-cover opacity-60"
+          initialBanners={banners}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/40 to-brand-dark/70" />
         <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center">

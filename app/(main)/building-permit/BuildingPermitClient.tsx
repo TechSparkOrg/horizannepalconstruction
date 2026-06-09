@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { FileText, Building2, TriangleAlert, Wind, Flame, Clock } from "lucide-react";
 import { BannerCarousel } from "@/components/BannerCarousel";
-import { BuildingPermitService } from "@/api/services/building-permit.service";
+import { BuildingPermitPublic } from "@/api/services/building-permit.service";
 import type { BuildingPermitConfig } from "@/api/types/building-permit.types";
 
 const REG_ICONS = [Building2, TriangleAlert, Flame, Wind];
@@ -22,12 +22,13 @@ function SkeletonSection({ className }: { className?: string }) {
   );
 }
 
-export default function BuildingPermitClient() {
-  const [buildingPermitConfig, setBuildingPermitConfig] = useState<BuildingPermitConfig | null>(null);
-  const [loading, setLoading] = useState(true);
+export default function BuildingPermitClient({ initialConfig }: { initialConfig?: BuildingPermitConfig | null }) {
+  const [buildingPermitConfig, setBuildingPermitConfig] = useState<BuildingPermitConfig | null>(initialConfig ?? null);
+  const [loading, setLoading] = useState(!initialConfig);
 
   useEffect(() => {
-    BuildingPermitService.get()
+    if (initialConfig) return;
+    BuildingPermitPublic.get()
       .then(setBuildingPermitConfig)
       .catch(() => {})
       .finally(() => setLoading(false));

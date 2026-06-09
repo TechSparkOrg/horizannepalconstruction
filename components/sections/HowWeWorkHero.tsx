@@ -5,15 +5,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { BannerService } from "@/api/services/banner.service";
+import type { MediaItem } from "@/api/types/media.types";
 
-export function HowWeWorkHero() {
-  const [images, setImages] = useState<string[]>([]);
+export function HowWeWorkHero({ initialBanners }: { initialBanners?: MediaItem[] }) {
+  const [images, setImages] = useState<string[]>(
+    initialBanners ? initialBanners.filter(b => b.url).map(b => b.url) : []
+  );
 
   useEffect(() => {
+    if (initialBanners) return;
     BannerService.getBySlug("how-we-work-page-hero").then((banners) => {
       setImages(banners.filter(b => b.url).map(b => b.url));
     });
-  }, []);
+  }, [initialBanners]);
 
   const imgs = images.length > 0 ? images : [];
 

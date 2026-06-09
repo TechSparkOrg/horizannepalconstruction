@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { SettingsService } from "@/api/services/settings.service";
+import { SettingsPublic } from "@/api/services/settings.service";
 import type { SiteSettings } from "@/api/types/settings.types";
 
 let fetchPromise: Promise<void> | null = null;
@@ -15,7 +15,7 @@ export const useSettings = create<{
     if (fetchPromise) return fetchPromise;
     fetchPromise = (async () => {
       try {
-        const s = await SettingsService.get();
+        const s = await SettingsPublic.get();
         set({ settings: s, loaded: true });
       } catch {
         set({ loaded: true });

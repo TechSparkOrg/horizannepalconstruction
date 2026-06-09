@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { OurWorkHero } from "@/components/sections/OurWorkHero";
 import { ProjectGallery } from "@/components/ProjectGallery";
 import { ConsultationForm } from "@/components/ConsultationForm";
+import { getBanners } from "@/api/cached/banner";
+import { getCategories } from "@/api/cached/category";
+import { getFaqs } from "@/api/cached/faq";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -36,14 +39,23 @@ const collectionSchema = {
   url: `${siteUrl}/our-work`,
 };
 
-export default function OurWorkPage() {
+export default async function OurWorkPage() {
+  const [heroBannersRes, categoriesRes, faqRes] = await Promise.allSettled([
+    getBanners("our-work-page-hero"),
+    getCategories(),
+    getFaqs(),
+  ]);
+  const heroBanners = heroBannersRes.status === "fulfilled" ? heroBannersRes.value : [];
+  const categories = categoriesRes.status === "fulfilled" ? categoriesRes.value.results ?? [] : [];
+  const faqItems = faqRes.status === "fulfilled" ? faqRes.value.results ?? [] : [];
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
-      <OurWorkHero />
+      <OurWorkHero initialImages={heroBanners} />
       <ProjectGallery />
-      <ConsultationForm />
+      <ConsultationForm initialCategories={categories} initialFaqItems={faqItems} />
     </>
   );
 }

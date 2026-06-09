@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import BuildingPermitClient from "./BuildingPermitClient";
+import { getBuildingPermit } from "@/api/cached/building-permit";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -26,11 +27,18 @@ const breadcrumb = {
   ],
 };
 
-export default function BuildingPermitPage() {
+export default async function BuildingPermitPage() {
+  let initialConfig;
+  try {
+    initialConfig = await getBuildingPermit();
+  } catch {
+    initialConfig = null;
+  }
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <BuildingPermitClient />
+      <BuildingPermitClient initialConfig={initialConfig} />
     </>
   );
 }

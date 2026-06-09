@@ -2,16 +2,16 @@
 
 import { useEffect } from "react";
 import { useAdminStore } from "@/stores/admin-store";
-import { BlogService } from "@/api/services/blog.service";
-import { CategoryService } from "@/api/services/category.service";
-import { FaqService } from "@/api/services/faq.service";
+import { BlogAdmin } from "@/api/services/blog.service";
+import { CategoryAdmin } from "@/api/services/category.service";
+import { FaqAdmin } from "@/api/services/faq.service";
 import { MediaService } from "@/api/services/media.service";
-import { Model3dService } from "@/api/services/model3d.service";
-import { PageService } from "@/api/services/page.service";
-import { ProjectService } from "@/api/services/project.service";
-import { ReviewService } from "@/api/services/review.service";
-import { TeamService } from "@/api/services/team.service";
-import { CalculatorService } from "@/api/services/calculator.service";
+import { Model3dAdmin } from "@/api/services/model3d.service";
+import { PageAdmin } from "@/api/services/page.service";
+import { ProjectAdmin } from "@/api/services/project.service";
+import { ReviewAdmin } from "@/api/services/review.service";
+import { TeamAdmin } from "@/api/services/team.service";
+import { CalculatorAdmin } from "@/api/services/calculator.service";
 import type { AdminBlogPost, AdminCategory, FaqItem, MediaItem, ModelItem, AdminPagePolicy, AdminProject, Review, TeamMember, CalcMaterial } from "@/stores/admin-types";
 import type { BlogPost } from "@/api/types/blog.types";
 import type { Category } from "@/api/types/category.types";
@@ -85,16 +85,16 @@ export function AdminStoreHydrator() {
   useEffect(() => {
     if (hydrated) return;
     Promise.allSettled([
-      BlogService.adminList().then((r) => setBlogPosts((r.results ?? []).map(mapBlogPost))),
-      CategoryService.adminList().then((r) => setCategories((r.results ?? []).map(mapCategory))),
-      FaqService.adminList().then((r) => setFaqItems((r.results ?? []).map(mapFaqItem))),
+      BlogAdmin.list().then((r) => setBlogPosts((r.results ?? []).map(mapBlogPost))),
+      CategoryAdmin.list().then((r) => setCategories((r.results ?? []).map(mapCategory))),
+      FaqAdmin.list().then((r) => setFaqItems((r.results ?? []).map(mapFaqItem))),
       MediaService.list().then((r) => setMediaItems((r.results ?? []).map(mapMediaItem))),
-      Model3dService.list().then((r) => setModelItems((r.results ?? []).map(mapModelItem))),
-      PageService.adminList().then((r) => setPages((r.results ?? []).map(mapPage))),
-      ProjectService.adminList().then((r) => setProjects((r.results ?? []).map(mapProject))),
-      ReviewService.adminList().then((r) => setReviews((r.results ?? []).map(mapReview))),
-      TeamService.adminList().then((r) => setTeamMembers((r.results ?? []).map(mapTeamMember))),
-      CalculatorService.adminListMaterials().then((r) => setCalcMaterials((r.results ?? []).map(mapCalcMaterial))),
+      Model3dAdmin.list().then((r) => setModelItems((r.results ?? []).map(mapModelItem))),
+      PageAdmin.list().then((r) => setPages((r.results ?? []).map(mapPage))),
+      ProjectAdmin.list().then((r) => setProjects((r.results ?? []).map(mapProject))),
+      ReviewAdmin.list().then((r) => setReviews((r.results ?? []).map(mapReview))),
+      TeamAdmin.list().then((r) => setTeamMembers((r.results ?? []).map(mapTeamMember))),
+      CalculatorAdmin.listMaterials().then((r) => setCalcMaterials((r.results ?? []).map(mapCalcMaterial))),
     ]).finally(() => setHydrated());
   }, [
     hydrated, setHydrated,

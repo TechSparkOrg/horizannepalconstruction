@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { FAQHero } from "@/components/sections/FAQHero";
 import { FAQTimeline } from "@/components/sections/FAQTimeline";
 import { ConsultationForm } from "@/components/ConsultationForm";
+import { getCategories } from "@/api/cached/category";
+import { getFaqs } from "@/api/cached/faq";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -75,14 +77,21 @@ const faqSchema = {
   ],
 };
 
-export default function FAQPage() {
+export default async function FAQPage() {
+  const [categoriesRes, faqRes] = await Promise.allSettled([
+    getCategories(),
+    getFaqs(),
+  ]);
+  const categories = categoriesRes.status === "fulfilled" ? categoriesRes.value.results ?? [] : [];
+  const faqItems = faqRes.status === "fulfilled" ? faqRes.value.results ?? [] : [];
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <FAQHero />
-      <FAQTimeline />
-      <ConsultationForm />
+      <FAQTimeline initialCategories={categories} initialFaqItems={faqItems} />
+      <ConsultationForm initialCategories={categories} initialFaqItems={faqItems} />
     </>
   );
 }

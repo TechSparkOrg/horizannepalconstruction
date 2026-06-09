@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Save, Plus, Trash2, Globe, FileText, GripVertical, Loader2, Upload, X } from "lucide-react";
-import { PageService } from "@/api/services/page.service";
-import { PageSectionService } from "@/api/services/page-section.service";
+import { getAdminPages, getAdminPageSections, revalidateAdminTag } from "@/app/actions/admin-cache";
+import { PageAdmin } from "@/api/services/page.service";
+import { PageSectionAdmin } from "@/api/services/page-section.service";
 import { MediaService } from "@/api/services/media.service";
 import type { Page as ApiPage, PageSection, PageSectionCreate } from "@/api/types/page.types";
 import dynamic from "next/dynamic";
@@ -46,13 +47,13 @@ export default function AdminContentManagement() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    PageService.adminList().then((res) => setPages(res.results ?? []));
+    getAdminPages().then((res) => setPages(res.results ?? []));
   }, []);
 
   const loadPage = async (slug: string) => {
     if (!slug) return;
     try {
-      const page = await PageService.adminGet(slug);
+      const page = await PageAdmin.adminGet(slug);
       setPageForm({
         title: page.title, titleNp: page.title_np,
         content: page.content, contentNp: page.content_np,
@@ -60,7 +61,7 @@ export default function AdminContentManagement() {
         metaTitle: page.meta_title, metaTitleNp: page.meta_title_np,
         metaDescription: page.meta_description, metaDescriptionNp: page.meta_description_np,
       });
-      const res = await PageSectionService.adminList(slug);
+      const res = await getAdminPageSections(slug);
       setSections(res.results ?? []);
     } catch { setPageForm({
       title: "", titleNp: "", content: "", contentNp: "",
@@ -73,13 +74,14 @@ export default function AdminContentManagement() {
     if (!selectedSlug) return;
     setSaving(true);
     try {
-      await PageService.update(selectedSlug, {
+      await PageAdmin.update(selectedSlug, {
         title: pageForm.title, title_np: pageForm.titleNp,
         content: pageForm.content, content_np: pageForm.contentNp,
         icon_name: pageForm.iconName,
         meta_title: pageForm.metaTitle, meta_title_np: pageForm.metaTitleNp,
         meta_description: pageForm.metaDescription, meta_description_np: pageForm.metaDescriptionNp,
       });
+      await revalidateAdminTag('admin-pages');
     } finally { setSaving(false); }
   };
 
@@ -117,11 +119,12 @@ export default function AdminContentManagement() {
         sort_order: sectionForm.sortOrder,
       };
       if (editingSection) {
-        await PageSectionService.update(editingSection.id, payload);
+        await PageSectionAdmin.update(editingSection.id, payload);
       } else {
-        await PageSectionService.create(payload);
+        await PageSectionAdmin.create(payload);
       }
-      const res = await PageSectionService.adminList(selectedSlug);
+      await revalidateAdminTag('admin-page-sections');
+      const res = await getAdminPageSections(selectedSlug);
       setSections(res.results ?? []);
       resetSectionForm();
       setEditingSection(null);
@@ -147,7 +150,8 @@ export default function AdminContentManagement() {
 
   const deleteSection = async (id: string) => {
     try {
-      await PageSectionService.delete(id);
+      await PageSectionAdmin.delete(id);
+      await revalidateAdminTag('admin-page-sections');
       setSections((prev) => prev.filter((s) => s.id !== id));
       if (editingSection?.id === id) { resetSectionForm(); setEditingSection(null); }
     } catch {}

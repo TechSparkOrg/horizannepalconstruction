@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { Upload, ImageIcon, Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { useAdminStore } from "@/stores/admin-store";
-import { VastuService } from "@/api/services/vastu.service";
+import { getAdminVastu, revalidateAdminTag } from "@/app/actions/admin-cache";
+import { VastuAdmin } from "@/api/services/vastu.service";
 import { toBase64 } from "@/lib/utils";
 import type { VastuConfig, VastuBilingualText } from "@/stores/admin-types";
 
@@ -337,7 +338,7 @@ export default function AdminVastuPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    VastuService.getPublic()
+    getAdminVastu()
       .then((data) => {
         if (!data.section_keys?.length && data.sections) {
           data.section_keys = Object.keys(data.sections);
@@ -369,7 +370,8 @@ export default function AdminVastuPage() {
     if (!vastuConfig) return;
     setSaving(true);
     try {
-      const updated = await VastuService.update(vastuConfig);
+      const updated = await VastuAdmin.update(vastuConfig);
+      await revalidateAdminTag('admin-vastu');
       setVastuConfig(updated);
     } finally {
       setSaving(false);

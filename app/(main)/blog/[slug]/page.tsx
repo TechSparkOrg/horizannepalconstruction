@@ -1,50 +1,56 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, User, Quote } from "lucide-react";
-import { useClientStore } from "@/stores/client-store";
+import { getBlogBySlug, getBlogs } from "@/api/cached/blog";
+import { getCategories } from "@/api/cached/category";
 
-export default function BlogPostPage() {
-  const { slug } = useParams<{ slug: string }>();
-  const post = useClientStore((s) => s.blogDetail);
-  const loading = useClientStore((s) => s.blogsLoading);
-  const blogs = useClientStore((s) => s.blogs);
-  const categories = useClientStore((s) => s.categories);
-  const fetchBlogBySlug = useClientStore((s) => s.fetchBlogBySlug);
-  const fetchBlogs = useClientStore((s) => s.fetchBlogs);
-  const fetchCategories = useClientStore((s) => s.fetchCategories);
-
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    fetchBlogBySlug(slug);
-    if (blogs.length === 0) fetchBlogs();
-    if (categories.length === 0) fetchCategories();
-  }, [slug, fetchBlogBySlug, fetchBlogs, blogs.length, fetchCategories, categories.length]);
-
-  if (!mounted || (loading && !post)) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="size-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  try {
+    const post = await getBlogBySlug(slug);
+    if (!post) return { title: "Blog Not Found" };
+    return {
+      title: post.title,
+      description: post.excerpt || "",
+      openGraph: {
+        title: post.title,
+        description: post.excerpt || "",
+        type: "article",
+        ...(post.image && { images: [{ url: post.image }] }),
+      },
+    };
+  } catch {
+    return { title: "Blog Not Found" };
   }
+}
 
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  let post;
+  try {
+    post = await getBlogBySlug(slug);
+  } catch {
+    notFound();
+  }
   if (!post) notFound();
 
-  const catName = (id: string) => categories.find((c) => c.id === id)?.name;
+  const [blogsRes, categoriesRes] = await Promise.allSettled([
+    getBlogs(),
+    getCategories(),
+  ]);
+  const blogs = blogsRes.status === "fulfilled" ? blogsRes.value.results ?? [] : [];
+  const categories = categoriesRes.status === "fulfilled" ? categoriesRes.value.results ?? [] : [];
+
+  const catName = (id: string) => categories.find((c: { id: string }) => c.id === id)?.name;
 
   const related = blogs
-    .filter((p) => p.slug !== slug && p.category_id === post.category_id)
+    .filter((p: { slug: string; category_id: string }) => p.slug !== slug && p.category_id === post.category_id)
     .slice(0, 3);
 
   return (
     <>
-      {/* Hero */}
       <section className="relative min-h-[55vh] flex items-end bg-brand-dark">
         <div className="absolute inset-0">
           {post.image ? (
@@ -66,41 +72,44 @@ export default function BlogPostPage() {
             {post.title}
           </h1>
           <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-white/70">
-            <span className="flex items-center gap-1.5">
-              <User className="size-4" />
-              {post.author ?? ""}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Calendar className="size-4" />
-              {post.date ?? ""}
-            </span>
+            {post.author && (
+              <span className="flex items-center gap-1.5">
+                <User className="size-4" />
+                {post.author}
+              </span>
+            )}
+            {post.date && (
+              <span className="flex items-center gap-1.5">
+                <Calendar className="size-4" />
+                {post.date}
+              </span>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Content */}
       <article className="bg-white py-16 sm:py-24">
         <div className="max-w-[720px] mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Author Card */}
-          <div className="flex items-center gap-4 pb-8 mb-10 border-b border-light-gray/40">
-            <div className="relative size-14 rounded-full overflow-hidden shrink-0">
-              {post.author_image ? (
-                <Image src={post.author_image} alt={post.author} fill sizes="56px" className="object-cover" />
-              ) : (
-                <div className="size-full bg-gray-200 flex items-center justify-center text-mid-gray text-sm font-bold">
-                  {post.author?.charAt(0)?.toUpperCase()}
-                </div>
-              )}
+          {post.author && (
+            <div className="flex items-center gap-4 pb-8 mb-10 border-b border-light-gray/40">
+              <div className="relative size-14 rounded-full overflow-hidden shrink-0">
+                {post.author_image ? (
+                  <Image src={post.author_image} alt={post.author} fill sizes="56px" className="object-cover" />
+                ) : (
+                  <div className="size-full bg-gray-200 flex items-center justify-center text-mid-gray text-sm font-bold">
+                    {post.author?.charAt(0)?.toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div>
+                <p className="font-bold text-brand-dark">{post.author}</p>
+                {post.author_role && <p className="text-xs text-mid-gray">{post.author_role}</p>}
+              </div>
             </div>
-            <div>
-              <p className="font-bold text-brand-dark">{post.author}</p>
-              <p className="text-xs text-mid-gray">{post.author_role ?? ""}</p>
-            </div>
-          </div>
+          )}
 
-          {/* Content Blocks */}
           <div className="space-y-6">
-            {(post.content ?? []).map((block, i) => {
+            {(post.content ?? []).map((block: { type: string; value?: string; items?: string[]; src?: string; caption?: string }, i: number) => {
               switch (block.type) {
                 case "paragraph":
                   return (
@@ -124,7 +133,7 @@ export default function BlogPostPage() {
                 case "list":
                   return (
                     <ul key={i} className="space-y-3 my-6">
-                      {block.items?.map((item, j) => (
+                      {block.items?.map((item: string, j: number) => (
                         <li key={j} className="flex items-start gap-3 text-mid-gray">
                           <span className="size-1.5 rounded-full bg-brand-primary shrink-0 mt-2.5" />
                           <span className="leading-relaxed">{item}</span>
@@ -137,7 +146,7 @@ export default function BlogPostPage() {
                     <figure key={i} className="my-8">
                       <div className="relative aspect-[16/9] rounded-xl overflow-hidden">
                         {block.src ? (
-                          <Image src={block.src} alt={block.caption || ""} fill sizes="720px" className="object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                          <Image src={block.src} alt={block.caption || ""} fill sizes="720px" className="object-cover" />
                         ) : (
                           <div className="size-full bg-gray-200" />
                         )}
@@ -155,13 +164,12 @@ export default function BlogPostPage() {
         </div>
       </article>
 
-      {/* Related Posts */}
       {related.length > 0 && (
         <section className="bg-off-white py-16 sm:py-24">
           <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="font-display font-bold text-2xl sm:text-3xl text-brand-dark text-center">Related Articles</h2>
             <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {related.map((r) => (
+              {related.map((r: { slug: string; image?: string; title: string; category_id: string; date?: string }) => (
                 <Link
                   key={r.slug}
                   href={`/blog/${r.slug}`}
@@ -177,10 +185,12 @@ export default function BlogPostPage() {
                   <div className="p-5">
                     <span className="text-[11px] font-semibold uppercase tracking-wider text-brand-primary">{catName(r.category_id) || r.category_id}</span>
                     <h3 className="mt-1.5 font-display font-bold text-brand-dark group-hover:text-brand-primary transition-colors">{r.title}</h3>
-                    <p className="mt-1.5 text-xs text-mid-gray flex items-center gap-1">
-                      <Calendar className="size-3" />
-                      {r.date}
-                    </p>
+                    {r.date && (
+                      <p className="mt-1.5 text-xs text-mid-gray flex items-center gap-1">
+                        <Calendar className="size-3" />
+                        {r.date}
+                      </p>
+                    )}
                   </div>
                 </Link>
               ))}

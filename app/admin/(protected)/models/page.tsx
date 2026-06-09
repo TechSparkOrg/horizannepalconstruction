@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import "@google/model-viewer";
 import { Plus, Pencil, Trash2, Upload, Eye, X, Box, Loader2, ExternalLink, ChevronRight } from "lucide-react";
-import { Model3dService } from "@/api/services/model3d.service";
-import { ProjectService } from "@/api/services/project.service";
+import { getAdminModels, getAllProjects, revalidateAdminTag } from "@/app/actions/admin-cache";
+import { Model3dAdmin } from "@/api/services/model3d.service";
 import type { ModelItem, ModelItemCreate } from "@/api/types/model3d.types";
 import type { Project } from "@/api/types/project.types";
 
@@ -293,7 +293,7 @@ export default function AdminModelsPage() {
   const [form, setForm] = useState<FormState>(EMPTY);
 
   useEffect(() => {
-    Promise.all([Model3dService.list(), ProjectService.adminList()]).then(
+    Promise.all([getAdminModels(), getAllProjects()]).then(
       ([modelsRes, projsRes]) => {
         setItems(modelsRes.results ?? []);
         setProjects(projsRes.results ?? []);
@@ -348,8 +348,9 @@ export default function AdminModelsPage() {
     try {
       const payload = toSnake(form);
       const created = form.file
-        ? await Model3dService.uploadModel(form.file, payload)
-        : await Model3dService.create(payload);
+        ? await Model3dAdmin.uploadModel(form.file, payload)
+        : await Model3dAdmin.create(payload);
+      await revalidateAdminTag('admin-models');
       setItems((prev) => [...prev, created]);
       resetForm();
     } finally { setSaving(false); }
@@ -362,10 +363,11 @@ export default function AdminModelsPage() {
     try {
       let url = form.url;
       if (form.file) {
-        const uploaded = await Model3dService.uploadModel(form.file, { title: form.title, slug: form.slug || undefined });
+        const uploaded = await Model3dAdmin.uploadModel(form.file, { title: form.title, slug: form.slug || undefined });
         url = uploaded.url;
       }
-      const updated = await Model3dService.update(editingId, { ...toSnake(form), url });
+      const updated = await Model3dAdmin.update(editingId, { ...toSnake(form), url });
+      await revalidateAdminTag('admin-models');
       setItems((prev) => prev.map((m) => (m.id === editingId ? updated : m)));
       resetForm();
       setEditingId(null);
@@ -373,7 +375,8 @@ export default function AdminModelsPage() {
   };
 
   const remove = async (id: string) => {
-    await Model3dService.delete(id);
+    await Model3dAdmin.delete(id);
+    await revalidateAdminTag('admin-models');
     setItems((prev) => prev.filter((m) => m.id !== id));
     if (selectedId === id) setSelectedId(null);
     if (editingId === id) setEditingId(null);

@@ -34,13 +34,14 @@ function Skeleton() {
   );
 }
 
-export function ProjectGallery() {
-  const [items, setItems] = useState<MediaItem[]>([]);
-  const [loaded, setLoaded] = useState(false);
+export function ProjectGallery({ initialImages }: { initialImages?: MediaItem[] }) {
+  const [items, setItems] = useState<MediaItem[]>(initialImages ?? []);
+  const [loaded, setLoaded] = useState(!!initialImages);
 
   useEffect(() => {
+    if (initialImages) return;
     BannerService.getBySlug(SLUG).then(setItems).catch(() => setItems([])).finally(() => setLoaded(true));
-  }, []);
+  }, [initialImages]);
 
   const images = items.filter((b) => b.url);
 

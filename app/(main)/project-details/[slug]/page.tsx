@@ -5,8 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle, MapPin, Calendar, Share2, Music2, Video, Globe } from "lucide-react";
 import ModelViewerBlock from "@/components/ModelViewerBlock";
 import type { Project } from "@/api/types/project.types";
-
-const API = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+import { getProjectBySlug } from "@/api/cached/project";
 
 function modelSrc(file: string) {
   if (!file) return "";
@@ -16,27 +15,29 @@ function modelSrc(file: string) {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const slugTitle = slug
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-  return {
-    title: `${slugTitle} | Horizan Nepal`,
-    description: `View project details for ${slugTitle} by Horizan Nepal — architectural design, materials, cost estimation, and gallery.`,
-    openGraph: {
-      title: `${slugTitle} | Horizan Nepal`,
-      description: `View project details for ${slugTitle} by Horizan Nepal.`,
-      type: "website",
-    },
-  };
+  try {
+    const project = await getProjectBySlug(slug);
+    if (!project) return { title: "Project Not Found" };
+    return {
+      title: `${project.title} | Horizan Nepal`,
+      description: project.description?.slice(0, 160) || `View project details for ${project.title} by Horizan Nepal.`,
+      openGraph: {
+        title: `${project.title} | Horizan Nepal`,
+        description: project.description?.slice(0, 160) || `View project details for ${project.title} by Horizan Nepal.`,
+        type: "website",
+        ...(project.images?.[0] && { images: [{ url: project.images[0] }] }),
+      },
+    };
+  } catch {
+    return { title: "Project Not Found" };
+  }
 }
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   let project: Project | null = null;
   try {
-    const res = await fetch(`${API}/projects/${slug}/`, { cache: "no-store" });
-    if (!res.ok) notFound();
-    project = await res.json();
+    project = await getProjectBySlug(slug);
   } catch {
     notFound();
   }
@@ -44,11 +45,10 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
 
   const projectSchema = {
     "@context": "https://schema.org",
-    "@type": "Project",
+    "@type": "Product",
     name: project.title,
     description: project.description,
     ...(project.images?.length && { image: project.images }),
-    ...(project.location && { location: project.location }),
   };
 
   return (

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useAdminStore } from "@/stores/admin-store";
-import { BlogService } from "@/api/services/blog.service";
+import { BlogAdmin } from "@/api/services/blog.service";
 import type { BlogPost } from "@/api/types/blog.types";
 import BlogList from "@/components/admin/blog/BlogList";
 import BlogForm from "@/components/admin/blog/BlogForm";
@@ -26,7 +26,7 @@ export default function AdminBlogsPage() {
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
 
   const refetchList = () =>
-    BlogService.adminList().then((r) => setBlogPosts((r.results ?? []).map(toAdminBlogPost)));
+    BlogAdmin.list().then((r) => setBlogPosts((r.results ?? []).map(toAdminBlogPost)));
 
   const openNew = () => {
     setEditingSlug(null);
@@ -45,7 +45,7 @@ export default function AdminBlogsPage() {
   };
 
   const remove = async (slug: string) => {
-    await BlogService.delete(slug);
+    await BlogAdmin.delete(slug);
     deleteBlogPost(slug);
   };
 

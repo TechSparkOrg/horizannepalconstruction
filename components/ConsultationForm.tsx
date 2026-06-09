@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { ArrowRight, MapPin, Mail, Phone, Minus, Plus } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { ConsultationService } from "@/api/services/consultation.service";
-import { CategoryService } from "@/api/services/category.service";
-import { FaqService } from "@/api/services/faq.service";
+import { ConsultationPublic } from "@/api/services/consultation.service";
+import { CategoryPublic } from "@/api/services/category.service";
+import { FaqPublic } from "@/api/services/faq.service";
 import { useSettings } from "@/stores/settings-store";
 import type { Category } from "@/api/types/category.types";
 import type { FaqItem } from "@/api/types/faq.types";
@@ -19,16 +19,25 @@ const privacyText = "Your information is safe with us. We'll never share your de
 const successHeading = "Thank You!";
 const successMessage = "We've received your message and will get back to you shortly.";
 
-export function ConsultationForm({ faqCategorySlug = "consultation" }: { faqCategorySlug?: string }) {
+export function ConsultationForm({
+  faqCategorySlug = "consultation",
+  initialCategories,
+  initialFaqItems,
+}: {
+  faqCategorySlug?: string;
+  initialCategories?: Category[];
+  initialFaqItems?: FaqItem[];
+}) {
   const contactInfo = useSettings((s) => s.settings?.contact_info);
 
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
+  const [categories, setCategories] = useState<Category[]>(initialCategories ?? []);
+  const [faqItems, setFaqItems] = useState<FaqItem[]>(initialFaqItems ?? []);
 
   useEffect(() => {
+    if (initialCategories && initialFaqItems) return;
     Promise.all([
-      CategoryService.list(),
-      FaqService.list(),
+      CategoryPublic.list(),
+      FaqPublic.list(),
     ]).then(([catRes, faqRes]) => {
       setCategories(catRes.results ?? []);
       setFaqItems(faqRes.results ?? []);
@@ -55,7 +64,7 @@ export function ConsultationForm({ faqCategorySlug = "consultation" }: { faqCate
     if (submitting) return;
     setSubmitting(true);
     try {
-      await ConsultationService.submit({
+      await ConsultationPublic.submit({
         name,
         email,
         phone,

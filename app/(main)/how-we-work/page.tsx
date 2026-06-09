@@ -6,6 +6,8 @@ import { HowWeWorkProcess } from "@/components/sections/HowWeWorkProcess";
 import { HowWeWorkDesignGrid } from "@/components/sections/HowWeWorkDesignGrid";
 import { FAQWrapper } from "@/components/FAQWrapper";
 import { QuoteBannerSecondary } from "@/components/sections/QuoteBannerSecondary";
+import { getBanners } from "@/api/cached/banner";
+import type { MediaItem } from "@/api/types/media.types";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -32,11 +34,18 @@ const breadcrumb = {
   ],
 };
 
-export default function HowWeWorkPage() {
+export default async function HowWeWorkPage() {
+  let heroBanners: MediaItem[];
+  try {
+    heroBanners = await getBanners("how-we-work-page-hero");
+  } catch {
+    heroBanners = [];
+  }
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <HowWeWorkHero />
+      <HowWeWorkHero initialBanners={heroBanners} />
       <WelcomeText />
       <HowWeWorkProcess />
       <HowWeWorkDesignGrid />

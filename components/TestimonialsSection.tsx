@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Star, Languages } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { ReviewService } from "@/api/services/review.service";
+import { ReviewPublic } from "@/api/services/review.service";
 import type { Review } from "@/api/types/review.types";
 
 function Stars({ value }: { value: number }) {
@@ -16,13 +16,14 @@ function Stars({ value }: { value: number }) {
   );
 }
 
-export function TestimonialsSection() {
-  const [reviews, setReviews] = useState<Review[]>([]);
+export function TestimonialsSection({ initialReviews }: { initialReviews?: Review[] }) {
+  const [reviews, setReviews] = useState<Review[]>(initialReviews ?? []);
   const [i, setI] = useState(0);
 
   useEffect(() => {
-    ReviewService.list().then((res) => setReviews(res.results ?? []));
-  }, []);
+    if (initialReviews) return;
+    ReviewPublic.list().then((res) => setReviews(res.results ?? []));
+  }, [initialReviews]);
   const [lang, setLang] = useState<"en" | "np">("en");
   const perView = 3;
   const max = Math.max(0, reviews.length - perView);

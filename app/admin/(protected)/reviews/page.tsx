@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { Star, Plus, Trash2, Loader2, Pencil, Languages } from "lucide-react";
-import { ReviewService } from "@/api/services/review.service";
+import { getAdminReviews, revalidateAdminTag } from "@/app/actions/admin-cache";
+import { ReviewAdmin } from "@/api/services/review.service";
 import { cn } from "@/lib/utils";
 import type { Review, ReviewCreate } from "@/api/types/review.types";
 
@@ -48,7 +49,7 @@ export default function AdminReviewsPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
-    ReviewService.adminList().then((res) => setReviews(res.results ?? []));
+    getAdminReviews().then((res) => setReviews(res.results ?? []));
   }, []);
 
   const resetForm = () => { setForm({ ...emptyForm }); setShowForm(false); };
@@ -66,11 +67,12 @@ export default function AdminReviewsPage() {
       const initials = form.initials.trim() || makeInitials(form.name);
       const payload = { ...form, initials };
       if (editingId) {
-        await ReviewService.update(editingId, payload);
+        await ReviewAdmin.update(editingId, payload);
       } else {
-        await ReviewService.create(payload);
+        await ReviewAdmin.create(payload);
       }
-      const res = await ReviewService.adminList();
+      await revalidateAdminTag('admin-reviews');
+      const res = await getAdminReviews();
       setReviews(res.results ?? []);
       resetForm();
       setEditingId(null);
@@ -81,7 +83,8 @@ export default function AdminReviewsPage() {
   };
 
   const remove = async (id: string) => {
-    await ReviewService.delete(id);
+    await ReviewAdmin.delete(id);
+    await revalidateAdminTag('admin-reviews');
     setReviews((prev) => prev.filter((r) => r.id !== id));
   };
 

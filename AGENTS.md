@@ -31,6 +31,8 @@ Make the site fully production-ready: bilingual content (en/np) across all pages
 10. **Admin StoreHydrator**: hydrated flag + setHydrated action, skips all fetches if already hydrated.
 11. **Loading pages**: loading.tsx for /blog, /our-work, /faq, /about.
 12. **Build fixes**: Fixed DynamicIcon.tsx, admin/blogs/page.tsx (BlogPostForm + toPayload), admin/categories/page.tsx (AdminCategory init + updateCategory), admin/pages/page.tsx (PageForm + apiToForm + save payload). Build compiles with 0 TS errors across all 36 routes.
+13. **Spinner-to-skeleton (8 files)**: Replaced all `animate-spin`/`Loader2` with content-shaped `animate-pulse` skeletons — 5 page loading.tsx + 3 component spinners (FAQTimeline, Design3DShowcase, VastuShastraClient)
+14. **Admin caching**: Created `app/actions/admin-cache.ts` with 15 cached fetchers (`'use server'` → `'use cache'` + `cacheTag` + `cacheLife`). Updated 9 admin pages to use them. Added `updateTag()` cache invalidation after all create/update/delete operations.
 
 ## Not Yet Done
 - Analytics backend endpoint (POST /api/analytics/events/) does not exist yet

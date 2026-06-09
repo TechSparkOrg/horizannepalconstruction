@@ -5,12 +5,20 @@ const config: NextConfig = {
 
   // PPR + use cache — caches component output, data always fresh
   cacheComponents: true,
+  cacheLife: {
+    minutes: {
+      stale: 60,
+      revalidate: 60,
+      expire: 1800,
+    },
+  },
 
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "assets.horizonnepalconstruction.com" },
+            { protocol: "https", hostname: "assest.horizonnepalconstruction.com" },
       { protocol: "https", hostname: "pub-a19a6c84befd4048bbb715b4a6d4f307.r2.dev" },
     ],
   },

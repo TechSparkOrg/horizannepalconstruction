@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ArrowRight, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { useClientStore } from "@/stores/client-store";
+import { ProjectPublic } from "@/api/services/project.service";
+import type { Project } from "@/api/types/project.types";
 
 const statusConfig: Record<string, { label: string; bg: string; color: string; progress: string; width: string }> = {
   Completed: {
@@ -31,14 +32,15 @@ const statusConfig: Record<string, { label: string; bg: string; color: string; p
   },
 };
 
-export function FeaturedProjects() {
-  const projects = useClientStore((s) => s.projects);
-  const loading = useClientStore((s) => s.projectsLoading);
-  const fetchProjects = useClientStore((s) => s.fetchProjects);
+export function FeaturedProjects({ initialProjects }: { initialProjects?: Project[] }) {
+  const [projects, setProjects] = useState<Project[]>(initialProjects ?? []);
 
   useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
+    if (initialProjects) return;
+    ProjectPublic.list()
+      .then((res) => setProjects(res.results ?? []))
+      .catch(() => {});
+  }, [initialProjects]);
 
   const featured = projects.slice(0, 6);
 

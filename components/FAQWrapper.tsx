@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Minus, Plus, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { useClientStore } from "@/stores/client-store";
+import { FaqPublic } from "@/api/services/faq.service";
 
 const fallback = [
   { q: "What services does Horizon Nepal offer?", a: "We provide end-to-end architectural design, engineering, construction management, interior design, material consultation, and site supervision for residential, commercial, and heritage projects across Nepal." },
@@ -16,16 +16,17 @@ const fallback = [
 
 export function FAQWrapper() {
   const [open, setOpen] = useState<number | null>(0);
-  const faqItems = useClientStore((s) => s.faqItems);
-  const fetchFaqs = useClientStore((s) => s.fetchFaqs);
+  const [faqs, setFaqs] = useState(fallback);
 
   useEffect(() => {
-    if (faqItems.length === 0) fetchFaqs();
-  }, [fetchFaqs, faqItems.length]);
-
-  const faqs = faqItems.length > 0
-    ? faqItems.map((f) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" }))
-    : fallback;
+    FaqPublic.list()
+      .then((res) => {
+        if (res.results?.length > 0) {
+          setFaqs(res.results.map((f) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" })));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <section className="py-16 sm:py-28 bg-off-white">

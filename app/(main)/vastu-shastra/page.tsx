@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import VastuShastraClient from "./VastuShastraClient";
+import { getVastuConfig } from "@/api/cached/vastu";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -26,11 +27,18 @@ const breadcrumb = {
   ],
 };
 
-export default function VastuShastraPage() {
+export default async function VastuShastraPage() {
+  let initialData;
+  try {
+    initialData = await getVastuConfig();
+  } catch {
+    initialData = null;
+  }
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <VastuShastraClient />
+      <VastuShastraClient initialData={initialData} />
     </>
   );
 }

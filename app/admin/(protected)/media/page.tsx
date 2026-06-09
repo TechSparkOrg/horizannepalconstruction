@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Plus, Pencil, Trash2, ExternalLink, Upload, ImageIcon, Star, FolderOpen, X, Eye, Loader2 } from "lucide-react";
+import { getAdminMedia, revalidateAdminTag } from "@/app/actions/admin-cache";
 import { MediaService } from "@/api/services/media.service";
 import type { MediaItem } from "@/api/types/media.types";
 
@@ -109,7 +110,7 @@ export default function AdminMediaPage() {
   const [batchImages, setBatchImages] = useState<BatchImage[]>([]);
 
   useEffect(() => {
-    MediaService.list(1).then((res) => {
+    getAdminMedia(1).then((res) => {
       setItems(res.results ?? []);
       setPage(1);
       setHasMore(res.next !== null);
@@ -175,6 +176,7 @@ export default function AdminMediaPage() {
         }
       }
       groupEditItems.forEach((item) => { if (item._new) URL.revokeObjectURL(item.url); });
+      await revalidateAdminTag('admin-media');
       const res = await MediaService.list(1);
       setItems(res.results ?? []);
       setPage(1);
@@ -193,6 +195,7 @@ export default function AdminMediaPage() {
       const created = form.file
         ? await MediaService.uploadImage(form.file, toSnake(form))
         : await MediaService.create(toSnake(form));
+      await revalidateAdminTag('admin-media');
       setItems((prev) => [...prev, created]);
       resetForm();
     } finally {
@@ -210,6 +213,7 @@ export default function AdminMediaPage() {
         url = uploaded.url;
       }
       const updated = await MediaService.update(editingId, { ...toSnake(form), url });
+      await revalidateAdminTag('admin-media');
       setItems((prev) => prev.map((m) => (m.id === editingId ? updated : m)));
       resetForm();
       setEditingId(null);
@@ -233,6 +237,7 @@ export default function AdminMediaPage() {
           group_title: batchTitle,
         });
       }
+      await revalidateAdminTag('admin-media');
       const res = await MediaService.list(1);
       setItems(res.results ?? []);
       setPage(1);
@@ -282,6 +287,7 @@ export default function AdminMediaPage() {
 
   const remove = async (id: string) => {
     await MediaService.delete(id);
+    await revalidateAdminTag('admin-media');
     setItems((prev) => prev.filter((m) => m.id !== id));
     if (selectedId === id) setSelectedId(null);
   };
@@ -335,7 +341,7 @@ export default function AdminMediaPage() {
   const loadMore = async () => {
     setLoadingMore(true);
     try {
-      const res = await MediaService.list(page + 1);
+      const res = await getAdminMedia(page + 1);
       setItems((prev) => [...prev, ...(res.results ?? [])]);
       setPage((prev) => prev + 1);
       setHasMore(res.next !== null);

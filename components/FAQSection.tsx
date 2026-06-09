@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Minus, Plus, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { SectionLabel } from "@/components/ui/SectionLabel";
-import { FaqService } from "@/api/services/faq.service";
+import { FaqPublic } from "@/api/services/faq.service";
 
 const fallback = [
   { q: "What services does Horizon Nepal offer?", a: "We provide end-to-end architectural design, engineering, construction management, interior design, material consultation, and site supervision for residential, commercial, and heritage projects across Nepal." },
@@ -14,17 +14,18 @@ const fallback = [
   { q: "Can I visit ongoing projects to see your work?", a: "Absolutely. We encourage potential clients to visit our active project sites. Please contact us to schedule a visit at your convenience." },
 ];
 
-export function FAQSection() {
+export function FAQSection({ initialFaqs }: { initialFaqs?: { q: string; a: string }[] }) {
   const [open, setOpen] = useState<number | null>(0);
-  const [faqs, setFaqs] = useState(fallback);
+  const [faqs, setFaqs] = useState(initialFaqs ?? fallback);
 
   useEffect(() => {
-    FaqService.list().then((r) => {
+    if (initialFaqs) return;
+    FaqPublic.list().then((r) => {
       if (r.results?.length > 0) {
         setFaqs(r.results.map((f) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" })));
       }
     }).catch(() => {});
-  }, []);
+  }, [initialFaqs]);
 
   return (
     <section className="py-16 sm:py-28 bg-off-white">

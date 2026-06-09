@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Plus, Edit2, Trash2, ExternalLink, Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { useAdminStore, type AdminProject } from "@/stores/admin-store";
-import { ProjectService } from "@/api/services/project.service";
+import { ProjectAdmin } from "@/api/services/project.service";
 import type { Project } from "@/api/types/project.types";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -26,9 +26,9 @@ export default function AdminProjectsPage() {
   const remove = async (slug: string) => {
     setDeleting(slug);
     try {
-      await ProjectService.delete(slug);
+      await ProjectAdmin.delete(slug);
       toast.success("Project deleted");
-      const r = await ProjectService.adminList();
+      const r = await ProjectAdmin.list();
       setProjects((r.results ?? []).map(toAdminProject));
     } catch {
       toast.error("Failed to delete project");

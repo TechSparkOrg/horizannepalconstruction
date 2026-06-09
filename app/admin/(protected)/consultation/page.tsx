@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { MessageSquare, Inbox, Plus, Trash2, Loader2 } from "lucide-react";
-import { ConsultationService } from "@/api/services/consultation.service";
+import { getAdminConsultationSettings, getAdminConsultationSubmissions, revalidateAdminTag } from "@/app/actions/admin-cache";
+import { ConsultationAdmin } from "@/api/services/consultation.service";
 import type { ConsultationFormSettings, ConsultationSubmission } from "@/stores/admin-types";
 import type { ConsultationSettings } from "@/api/types/consultation.types";
 import { cn } from "@/lib/utils";
@@ -57,8 +58,8 @@ export default function AdminConsultationPage() {
 
   useEffect(() => {
     Promise.all([
-      ConsultationService.getSettings(),
-      ConsultationService.listSubmissions(),
+      getAdminConsultationSettings(),
+      getAdminConsultationSubmissions(),
     ]).then(([settings, subs]) => {
       setConsultationForm(toCamel(settings));
       setSubmissions((subs ?? []).map(toSubmissionCamel));
@@ -74,14 +75,16 @@ export default function AdminConsultationPage() {
   const saveSettings = async () => {
     setSaving(true);
     try {
-      await ConsultationService.updateSettings(toSnakePatch(consultationForm));
+      await ConsultationAdmin.updateSettings(toSnakePatch(consultationForm));
+      await revalidateAdminTag('admin-consultation-settings');
     } finally {
       setSaving(false);
     }
   };
 
   const deleteSubmission = async (id: string) => {
-    await ConsultationService.deleteSubmission(id);
+    await ConsultationAdmin.deleteSubmission(id);
+    await revalidateAdminTag('admin-consultation-submissions');
     setSubmissions((prev) => prev.filter((s) => s.id !== id));
   };
 

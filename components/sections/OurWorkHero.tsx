@@ -7,12 +7,13 @@ import Link from "next/link";
 import { BannerService } from "@/api/services/banner.service";
 import type { MediaItem } from "@/api/types/media.types";
 
-export function OurWorkHero() {
-  const [images, setImages] = useState<MediaItem[]>([]);
+export function OurWorkHero({ initialImages }: { initialImages?: MediaItem[] }) {
+  const [images, setImages] = useState<MediaItem[]>(initialImages ?? []);
 
   useEffect(() => {
+    if (initialImages) return;
     BannerService.getBySlug("our-work-page-hero").then(setImages);
-  }, []);
+  }, [initialImages]);
 
   const slides = images.filter(b => b.url).slice(0, 3);
 

@@ -5,7 +5,8 @@ import {
   ClipboardList, ListChecks, Shield, Building2, Plus, Trash2, Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { BuildingPermitService } from "@/api/services/building-permit.service";
+import { getAdminBuildingPermit, revalidateAdminTag } from "@/app/actions/admin-cache";
+import { BuildingPermitAdmin } from "@/api/services/building-permit.service";
 import type { BuildingPermitConfig as ApiBuildingPermitConfig } from "@/api/types/building-permit.types";
 import type { BuildingPermitConfig, BPStep, BPDocCategory, BPRegulation, BPMunicipality, BPText } from "@/stores/admin-types";
 
@@ -100,7 +101,7 @@ export default function AdminBuildingPermitPage() {
   const [tab, setTab] = useState<Tab>("Workflow");
 
   useEffect(() => {
-    BuildingPermitService.adminGet()
+    getAdminBuildingPermit()
       .then((data) => setConfig(fromApiResponse(data)))
       .catch(() => toast.error("Failed to load building permit config"))
       .finally(() => setLoading(false));
@@ -114,7 +115,8 @@ export default function AdminBuildingPermitPage() {
     if (!config) return;
     setSaving(true);
     try {
-      const res = await BuildingPermitService.adminUpdate(toApiPayload(config));
+      const res = await BuildingPermitAdmin.update(toApiPayload(config));
+      await revalidateAdminTag('admin-building-permit');
       setConfig(fromApiResponse(res));
       toast.success("Building permit config saved");
     } catch {

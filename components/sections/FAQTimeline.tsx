@@ -1,26 +1,34 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Minus, Plus, HelpCircle, DollarSign, Settings, Shield, FileText, Building2, Loader2 } from "lucide-react";
-import { useShallow } from "zustand/react/shallow";
-import { useClientStore } from "@/stores/client-store";
+import { Minus, Plus, HelpCircle, DollarSign, Settings, Shield, FileText, Building2 } from "lucide-react";
+import { FaqPublic } from "@/api/services/faq.service";
+import { CategoryPublic } from "@/api/services/category.service";
+import type { Category } from "@/api/types/category.types";
+import type { FaqItem } from "@/api/types/faq.types";
 
 const CATEGORY_ICONS = [HelpCircle, DollarSign, Settings, Shield, FileText, Building2];
 
-export function FAQTimeline() {
-  const { categories, faqItems, fetchCategories, fetchFaqs, faqsLoading, categoriesLoading } = useClientStore(useShallow((s) => ({
-    categories: s.categories,
-    faqItems: s.faqItems,
-    fetchCategories: s.fetchCategories,
-    fetchFaqs: s.fetchFaqs,
-    faqsLoading: s.faqsLoading,
-    categoriesLoading: s.categoriesLoading,
-  })));
+interface FaqDisplay {
+  q: string;
+  a: string;
+}
+
+export function FAQTimeline({ initialCategories, initialFaqItems }: { initialCategories?: Category[]; initialFaqItems?: FaqItem[] }) {
+  const [categories, setCategories] = useState<Category[]>(initialCategories ?? []);
+  const [faqItems, setFaqItems] = useState<FaqItem[]>(initialFaqItems ?? []);
+  const [loading, setLoading] = useState(!(initialCategories && initialFaqItems));
 
   useEffect(() => {
-    fetchCategories();
-    fetchFaqs();
-  }, [fetchCategories, fetchFaqs]);
+    if (initialCategories && initialFaqItems) return;
+    Promise.all([
+      CategoryPublic.list(),
+      FaqPublic.list(),
+    ]).then(([catRes, faqRes]) => {
+      setCategories(catRes.results ?? []);
+      setFaqItems(faqRes.results ?? []);
+    }).catch(() => {}).finally(() => setLoading(false));
+  }, [initialCategories, initialFaqItems]);
 
   const grouped = categories
     .map((cat, idx) => ({
@@ -28,14 +36,12 @@ export function FAQTimeline() {
       title: cat.name,
       items: faqItems
         .filter((item) => item.category_id === cat.id)
-        .map((item) => ({ q: item.question?.en ?? "", a: item.answer?.en ?? "" })),
+        .map((item): FaqDisplay => ({ q: item.question?.en ?? "", a: item.answer?.en ?? "" })),
     }))
     .filter((g) => g.items.length > 0);
 
   const [openCategory, setOpenCategory] = useState<number | null>(null);
   const [openItems, setOpenItems] = useState<Record<string, number | null>>({});
-
-  const loading = faqsLoading || categoriesLoading;
 
   const toggleItem = (catIdx: number, itemIdx: number) => {
     setOpenItems((prev) => ({
@@ -60,8 +66,32 @@ export function FAQTimeline() {
           <div className="absolute left-1/2 -translate-x-px top-0 bottom-0 w-0.5 bg-light-gray hidden lg:block" />
 
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="size-6 animate-spin text-mid-gray" />
+            <div className="space-y-14">
+              {Array.from({ length: 3 }).map((_, catIdx) => (
+                <div key={catIdx} className={`relative flex items-start gap-6 lg:gap-0 pb-14 last:pb-0 ${catIdx % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"}`}>
+                  <div className="hidden lg:block w-1/2 pr-14">
+                    <div className="bg-white rounded-2xl border border-light-gray/40 overflow-hidden animate-pulse">
+                      <div className="flex items-center gap-4 p-6">
+                        <div className="size-12 rounded-full bg-light-gray/30" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-5 w-40 rounded bg-light-gray/40" />
+                        </div>
+                      </div>
+                      <div className="border-t border-light-gray/40 divide-y divide-light-gray/20">
+                        {Array.from({ length: 3 }).map((_, i) => (
+                          <div key={i} className="px-6 py-3.5">
+                            <div className="h-4 w-3/4 rounded bg-light-gray/30" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="shrink-0 relative z-10 hidden lg:flex items-center justify-center">
+                    <div className="size-12 rounded-full bg-white border-2 border-light-gray/30 animate-pulse" />
+                  </div>
+                  <div className="w-1/2 hidden lg:block" />
+                </div>
+              ))}
             </div>
           ) : grouped.length === 0 ? (
             <p className="text-sm text-mid-gray py-10 text-center">No FAQs available yet.</p>

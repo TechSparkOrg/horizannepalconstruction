@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Plus, Pencil, Trash2, ChevronRight, ChevronDown, GripVertical, Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { useAdminStore, type AdminCategory, type SubService } from "@/stores/admin-store";
-import { CategoryService } from "@/api/services/category.service";
+import { CategoryAdmin } from "@/api/services/category.service";
 import { toSlug } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -57,7 +57,7 @@ export default function AdminCategoriesPage() {
   }
 
   const refetchList = () =>
-    CategoryService.adminList().then((r) =>
+    CategoryAdmin.list().then((r) =>
       setCategories(
         (r.results ?? []).map((c) => ({
           id: c.id,
@@ -76,10 +76,10 @@ export default function AdminCategoriesPage() {
     setSaving(true);
     try {
       if (editingId) {
-        await CategoryService.update(editingId, toPayload());
+        await CategoryAdmin.update(editingId, toPayload());
         toast.success("Category updated");
       } else {
-        await CategoryService.create(toPayload());
+        await CategoryAdmin.create(toPayload());
         toast.success("Category created");
       }
       await refetchList();
@@ -95,7 +95,7 @@ export default function AdminCategoriesPage() {
   const remove = async (id: string) => {
     setSaving(true);
     try {
-      await CategoryService.delete(id);
+      await CategoryAdmin.delete(id);
       await refetchList();
       toast.success("Category deleted");
     } catch {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Plus, Pencil, Trash2, FileText, ArrowLeft, Loader2 } from "lucide-react";
-import { PageService } from "@/api/services/page.service";
+import { PageAdmin } from "@/api/services/page.service";
 import type { Page as ApiPage } from "@/api/types/page.types";
 import dynamic from "next/dynamic";
 
@@ -46,10 +46,10 @@ export default function AdminPagesPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    PageService.adminList().then((res) => setPages(res.results ?? []));
+    PageAdmin.list().then((res) => setPages(res.results ?? []));
   }, []);
 
-  const refetch = () => PageService.adminList().then((res) => setPages(res.results ?? []));
+  const refetch = () => PageAdmin.list().then((res) => setPages(res.results ?? []));
 
   const openNew = () => { setForm(EMPTY); setEditingSlug(null); setView("new"); };
   const openEdit = (item: ApiPage) => { setForm(apiToForm(item)); setEditingSlug(item.slug); setView("edit"); };
@@ -61,9 +61,9 @@ export default function AdminPagesPage() {
     try {
       const payload = { title: form.title, title_np: form.titleNp, content: form.content, content_np: form.contentNp, icon_name: form.iconName, meta_title: form.metaTitle, meta_title_np: form.metaTitleNp, meta_description: form.metaDescription, meta_description_np: form.metaDescriptionNp };
       if (editingSlug) {
-        await PageService.update(editingSlug, payload);
+        await PageAdmin.update(editingSlug, payload);
       } else {
-        await PageService.create(payload);
+        await PageAdmin.create(payload);
       }
       await refetch();
       back();
@@ -73,7 +73,7 @@ export default function AdminPagesPage() {
   };
 
   const remove = async (slug: string) => {
-    await PageService.delete(slug);
+    await PageAdmin.delete(slug);
     setPages((prev) => prev.filter((p) => p.slug !== slug));
   };
 

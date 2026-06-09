@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Save, ArrowLeft, Plus, Trash2, Upload, ImageIcon, Eye, Box, X } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { useAdminStore, type AdminProject } from "@/stores/admin-store";
-import { ProjectService } from "@/api/services/project.service";
+import { ProjectAdmin } from "@/api/services/project.service";
 import type { Project } from "@/api/types/project.types";
 import { toBase64, toDateInput } from "@/lib/utils";
 import { toast } from "sonner";
@@ -84,9 +84,9 @@ export default function NewProjectPage() {
     if (!form.title?.trim()) return;
     setSaving(true);
     try {
-      const project = await ProjectService.create(toPayload(form));
+      const project = await ProjectAdmin.create(toPayload(form));
       toast.success("Project created");
-      const r = await ProjectService.adminList();
+      const r = await ProjectAdmin.list();
       setProjects((r.results ?? []).map(toAdminProject));
       router.push("/admin/projects");
     } catch {
