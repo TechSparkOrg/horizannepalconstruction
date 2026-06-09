@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
-const SITE_URL = API_URL.replace(/\/api\/?$/, "");
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
 const PAGES = [
   { path: "", priority: 1.0 },

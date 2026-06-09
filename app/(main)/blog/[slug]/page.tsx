@@ -47,7 +47,11 @@ export default function BlogPostPage() {
       {/* Hero */}
       <section className="relative min-h-[55vh] flex items-end bg-brand-dark">
         <div className="absolute inset-0">
-          <Image src={post.image} alt={post.title} fill priority sizes="100vw" className="object-cover opacity-60" />
+          {post.image ? (
+            <Image src={post.image} alt={post.title} fill priority sizes="100vw" className="object-cover opacity-60" />
+          ) : (
+            <div className="absolute inset-0 bg-brand-dark" />
+          )}
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-brand-dark/40 to-transparent" />
         <div className="relative z-10 max-w-[800px] mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full">
@@ -64,11 +68,11 @@ export default function BlogPostPage() {
           <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-white/70">
             <span className="flex items-center gap-1.5">
               <User className="size-4" />
-              {post.author}
+              {post.author ?? ""}
             </span>
             <span className="flex items-center gap-1.5">
               <Calendar className="size-4" />
-              {post.date}
+              {post.date ?? ""}
             </span>
           </div>
         </div>
@@ -90,13 +94,13 @@ export default function BlogPostPage() {
             </div>
             <div>
               <p className="font-bold text-brand-dark">{post.author}</p>
-              <p className="text-xs text-mid-gray">{post.author_role}</p>
+              <p className="text-xs text-mid-gray">{post.author_role ?? ""}</p>
             </div>
           </div>
 
           {/* Content Blocks */}
           <div className="space-y-6">
-            {post.content.map((block, i) => {
+            {(post.content ?? []).map((block, i) => {
               switch (block.type) {
                 case "paragraph":
                   return (
@@ -132,7 +136,11 @@ export default function BlogPostPage() {
                   return (
                     <figure key={i} className="my-8">
                       <div className="relative aspect-[16/9] rounded-xl overflow-hidden">
-                        <Image src={block.src || ""} alt={block.caption || ""} fill sizes="720px" className="object-cover" />
+                        {block.src ? (
+                          <Image src={block.src} alt={block.caption || ""} fill sizes="720px" className="object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                        ) : (
+                          <div className="size-full bg-gray-200" />
+                        )}
                       </div>
                       {block.caption && (
                         <figcaption className="mt-2 text-center text-xs text-mid-gray">{block.caption}</figcaption>
@@ -160,7 +168,11 @@ export default function BlogPostPage() {
                   className="group bg-white rounded-xl border border-light-gray/40 overflow-hidden hover:shadow-md transition-all"
                 >
                   <div className="relative h-44">
-                    <Image src={r.image} alt={r.title} fill sizes="400px" className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                    {r.image ? (
+                      <Image src={r.image} alt={r.title} fill sizes="400px" className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                    ) : (
+                      <div className="h-44 bg-gray-200" />
+                    )}
                   </div>
                   <div className="p-5">
                     <span className="text-[11px] font-semibold uppercase tracking-wider text-brand-primary">{catName(r.category_id) || r.category_id}</span>

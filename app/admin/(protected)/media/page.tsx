@@ -80,7 +80,7 @@ function fromApi(a: MediaItem): FormState {
     projectLink: a.project_link,
     banner: a.banner,
     groupTitle: a.group_title,
-    customFields: a.custom_fields,
+    customFields: a.custom_fields ?? [],
   };
 }
 

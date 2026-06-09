@@ -92,18 +92,18 @@ export default function BuildingPermitClient() {
                           <div className="sm:hidden flex size-8 items-center justify-center rounded-full bg-brand-primary text-white font-bold text-xs">
                             {step.num}
                           </div>
-                          <h3 className="font-display font-bold text-xl text-brand-dark">{step.title.en}</h3>
+                          <h3 className="font-display font-bold text-xl text-brand-dark">{step.title?.en ?? ""}</h3>
                         </div>
                         <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-primary bg-brand-primary/10 px-3 py-1 rounded-full shrink-0">
                           <Clock className="size-3" />
                           {step.duration}
                         </span>
                       </div>
-                      <p className="text-mid-gray text-sm leading-relaxed">{step.desc.en}</p>
+                      <p className="text-mid-gray text-sm leading-relaxed">{step.desc?.en ?? ""}</p>
                       <div className="mt-4 pt-4 border-t border-light-gray/40">
                         <p className="text-xs font-semibold text-mid-gray/70 uppercase tracking-wide mb-2">Required:</p>
                         <div className="flex flex-wrap gap-1.5">
-                          {step.docs.map((doc) => (
+                          {(step.docs ?? []).map((doc) => (
                             <span key={doc} className="text-xs text-brand-dark bg-white px-2.5 py-1 rounded-lg border border-light-gray/30">
                               {doc}
                             </span>
@@ -128,9 +128,9 @@ export default function BuildingPermitClient() {
               <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 {docCategories.map((cat) => (
                   <div key={cat.label.en} className="bg-white rounded-2xl p-6 border border-light-gray/40">
-                    <h3 className="font-display font-bold text-base text-brand-primary mb-4 pb-3 border-b border-light-gray/30">{cat.label.en}</h3>
+                    <h3 className="font-display font-bold text-base text-brand-primary mb-4 pb-3 border-b border-light-gray/30">{cat.label?.en ?? ""}</h3>
                     <ul className="space-y-2.5">
-                      {cat.items.map((item) => (
+                      {(cat.items ?? []).map((item) => (
                         <li key={item.en} className="flex items-start gap-2 text-sm text-mid-gray">
                           <span className="size-1.5 rounded-full bg-brand-secondary/40 shrink-0 mt-1.5" />
                           {item.en}
@@ -160,10 +160,10 @@ export default function BuildingPermitClient() {
                         <div className="size-10 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0">
                           <Icon className="size-5" />
                         </div>
-                        <h3 className="font-display font-bold text-lg text-brand-dark">{reg.title.en}</h3>
+                        <h3 className="font-display font-bold text-lg text-brand-dark">{reg.title?.en ?? ""}</h3>
                       </div>
                       <ul className="space-y-2">
-                        {reg.items.map((item) => (
+                        {(reg.items ?? []).map((item) => (
                           <li key={item.en} className="flex items-start gap-2 text-sm text-mid-gray">
                             <span className="size-1 rounded-full bg-brand-primary/40 shrink-0 mt-2" />
                             {item.en}

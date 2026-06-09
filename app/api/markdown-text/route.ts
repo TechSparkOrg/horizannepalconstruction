@@ -1,5 +1,5 @@
-const API = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || API.replace(/\/api\/?$/, "");
+const API = process.env.NEXT_PUBLIC_API_URL || (() => { throw new Error("NEXT_PUBLIC_API_URL is not set"); })();
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
 interface Paginated<T> { results: T[] }
 interface Bilingual { en: string; np: string }
@@ -43,7 +43,7 @@ async function getBlogs(lang: "en" | "np"): Promise<string> {
     const title = lang === "np" ? b.title_np || b.title : b.title;
     const content = lang === "np" ? b.content_np || b.content : b.content;
     const excerpt = lang === "np" ? b.excerpt_np || b.excerpt : b.excerpt;
-    const blocks = Array.isArray(content) ? content as ContentBlock[] : [];
+    const blocks = Array.isArray(content) ? content as ContentBlock[] : typeof content === "string" ? [{ type: "paragraph", value: content }] : [];
     return `### [${title}](${SITE_URL}/blog/${b.slug})\n\n${excerpt || ""}\n\n${blocksToMd(blocks)}`;
   }).join("\n\n---\n\n");
 }
@@ -152,49 +152,50 @@ async function getTeam(): Promise<string> {
   return members.map((m) => `- **${m.name}** — ${m.role} (${m.specialisation}, ${m.experience})`).join("\n");
 }
 
+const FETCHERS: Record<string, (lang: "en" | "np") => Promise<string>> = {
+  blog: (l) => getBlogs(l),
+  pages: (l) => getPages(l),
+  faq: (l) => getFaqs(l),
+  vastu: (l) => getVastu(l),
+  "building-permit": (l) => getBuildingPermit(l),
+  reviews: (l) => getReviews(l),
+  projects: () => getProjects(),
+  team: () => getTeam(),
+};
+
+const SECTION_HEADERS: Record<string, string> = {
+  blog: "Blog Posts",
+  pages: "Pages",
+  faq: "Frequently Asked Questions",
+  vastu: "Vastu Shastra Guide",
+  "building-permit": "Building Permit Assistant",
+  reviews: "Client Reviews",
+  projects: "Projects",
+  team: "Team",
+};
+
 export async function GET(req: Request): Promise<Response> {
   const url = new URL(req.url);
   const type = url.searchParams.get("type") || "all";
   const lang = (url.searchParams.get("lang") || "en") as "en" | "np";
 
-  const parts: string[] = [];
+  const keys = type === "all" ? Object.keys(FETCHERS) : [type];
 
-  parts.push(`# Horizan Nepal — Content Archive\n\nSource: [${SITE_URL}](${SITE_URL})  \nLanguage: ${lang.toUpperCase()}  \nGenerated: ${new Date().toISOString()}\n\n`);
+  const results = await Promise.all(
+    keys.map(async (k) => {
+      const fetcher = FETCHERS[k];
+      if (!fetcher) return "";
+      const content = await fetcher(lang);
+      return content ? section(SECTION_HEADERS[k] || k, content) : "";
+    })
+  );
 
-  if (type === "all" || type === "blog") {
-    const blogs = await getBlogs(lang);
-    if (blogs) parts.push(section("Blog Posts", blogs));
-  }
-  if (type === "all" || type === "pages") {
-    const pages = await getPages(lang);
-    if (pages) parts.push(section("Pages", pages));
-  }
-  if (type === "all" || type === "faq") {
-    const faqs = await getFaqs(lang);
-    if (faqs) parts.push(section("Frequently Asked Questions", faqs));
-  }
-  if (type === "all" || type === "vastu") {
-    const vastu = await getVastu(lang);
-    if (vastu) parts.push(section("Vastu Shastra Guide", vastu));
-  }
-  if (type === "all" || type === "building-permit") {
-    const bp = await getBuildingPermit(lang);
-    if (bp) parts.push(section("Building Permit Assistant", bp));
-  }
-  if (type === "all" || type === "reviews") {
-    const reviews = await getReviews(lang);
-    if (reviews) parts.push(section("Client Reviews", reviews));
-  }
-  if (type === "all" || type === "projects") {
-    const projects = await getProjects();
-    if (projects) parts.push(section("Projects", projects));
-  }
-  if (type === "all" || type === "team") {
-    const team = await getTeam();
-    if (team) parts.push(section("Team", team));
-  }
+  const parts = [
+    `# Horizan Nepal — Content Archive\n\nSource: [${SITE_URL}](${SITE_URL})  \nLanguage: ${lang.toUpperCase()}\n\n`,
+    ...results.filter(Boolean),
+  ];
 
-  const body = parts.join("\n\n");
+  const body = parts.join("\n");
 
   return new Response(body, {
     headers: {

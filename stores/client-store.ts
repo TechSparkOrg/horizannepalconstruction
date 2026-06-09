@@ -8,6 +8,7 @@ import { ReviewService } from "@/api/services/review.service";
 import { SettingsService } from "@/api/services/settings.service";
 import { VastuService } from "@/api/services/vastu.service";
 import { BuildingPermitService } from "@/api/services/building-permit.service";
+import { Model3dService } from "@/api/services/model3d.service";
 import type { BlogPost } from "@/api/types/blog.types";
 import type { Project } from "@/api/types/project.types";
 import type { Category } from "@/api/types/category.types";
@@ -193,9 +194,8 @@ export const useClientStore = create<ClientStore>()((set) => ({
   fetchModels: async () => {
     set({ modelsLoading: true });
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api'}/admin/models/`);
-      const data = await res.json();
-      set({ modelItems: data.results ?? data ?? [], modelsLoading: false });
+      const res = await Model3dService.publicList();
+      set({ modelItems: res.results ?? [], modelsLoading: false });
     } catch {
       set({ modelsLoading: false });
     }

@@ -3,7 +3,7 @@ import { ContactHero } from "@/components/sections/ContactHero";
 import { ConsultationForm } from "@/components/ConsultationForm";
 import { LocationSection } from "@/components/LocationSection";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://horizannepal.com";
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
 export const metadata: Metadata = {
   title: "Contact | Horizan Nepal",
@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 };
 
 const breadcrumb = {
+  "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
@@ -27,6 +28,7 @@ const breadcrumb = {
 };
 
 const faqPageSchema = {
+  "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
     {

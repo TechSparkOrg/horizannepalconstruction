@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { SettingsService } from '@/api/services/settings.service';
-import type { SiteSettings } from '@/api/types/settings.types';
+import { create } from "zustand";
+import { SettingsService } from "@/api/services/settings.service";
+import type { SiteSettings } from "@/api/types/settings.types";
 
 let fetchPromise: Promise<void> | null = null;
 

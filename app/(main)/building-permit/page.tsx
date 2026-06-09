@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import BuildingPermitClient from "./BuildingPermitClient";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://horizannepal.com";
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
 export const metadata: Metadata = {
   title: "Building Permit Assistant | Horizan Nepal",
@@ -12,11 +12,13 @@ export const metadata: Metadata = {
     description:
       "Navigate Nepal's building permit process with confidence. Step-by-step workflow guide, document checklist, and municipality directory.",
     type: "website",
+    url: `${siteUrl}/building-permit`,
   },
   alternates: { canonical: `${siteUrl}/building-permit` },
 };
 
 const breadcrumb = {
+  "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },

@@ -57,6 +57,8 @@ const comparison = [
   { factor: "Water", conventional: "Municipal + tanker", green: "Municipal + rainwater harvesting" },
 ];
 
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+
 export const metadata: Metadata = {
   title: "Green Calculator | Horizan Nepal",
   description:
@@ -66,12 +68,24 @@ export const metadata: Metadata = {
     description:
       "Compare eco-friendly building materials and methods with Horizan Nepal's Green Builder Calculator.",
     type: "website",
+    url: `${siteUrl}/green-calculator`,
   },
+  alternates: { canonical: `${siteUrl}/green-calculator` },
+};
+
+const breadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+    { "@type": "ListItem", position: 2, name: "Green Calculator", item: `${siteUrl}/green-calculator` },
+  ],
 };
 
 export default function GreenCalculatorPage() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <section className="relative min-h-[50vh] flex items-center overflow-hidden bg-brand-dark">
         <BannerCarousel slug="green-calculator-page-hero" imgClassName="object-cover opacity-60" />
         <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/40 to-brand-dark/70" />

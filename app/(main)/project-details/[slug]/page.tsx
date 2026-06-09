@@ -32,16 +32,34 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const res = await fetch(`${API}/projects/${slug}/`, { cache: "no-store" });
-  if (!res.ok) notFound();
-  const project: Project = await res.json();
+  let project: Project | null = null;
+  try {
+    const res = await fetch(`${API}/projects/${slug}/`, { cache: "no-store" });
+    if (!res.ok) notFound();
+    project = await res.json();
+  } catch {
+    notFound();
+  }
+  if (!project) notFound();
+
+  const projectSchema = {
+    "@context": "https://schema.org",
+    "@type": "Project",
+    name: project.title,
+    description: project.description,
+    ...(project.images?.length && { image: project.images }),
+    ...(project.location && { location: project.location }),
+  };
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(projectSchema) }} />
       {/* Hero */}
       <section className="relative min-h-[50vh] flex items-end bg-brand-dark">
         <div className="absolute inset-0">
-          <Image src={project.images?.[0] || project.thumbnail || ""} alt={project.title} fill priority sizes="100vw" className="object-cover opacity-60" />
+          {(project.images?.[0] || project.thumbnail) ? (
+            <Image src={project.images?.[0] || project.thumbnail} alt={project.title} fill priority sizes="100vw" className="object-cover opacity-60" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+          ) : null}
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-brand-dark/40 to-transparent" />
         <div className="relative z-10 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full">
@@ -87,7 +105,11 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
             )}
           </div>
           <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
-            <Image src={project.images?.[1] || project.images?.[0] || project.thumbnail || ""} alt={project.title} fill sizes="600px" className="object-cover" />
+            {(project.images?.[1] || project.images?.[0] || project.thumbnail) ? (
+              <Image src={project.images?.[1] || project.images?.[0] || project.thumbnail} alt={project.title} fill sizes="600px" className="object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+            ) : (
+              <div className="size-full bg-gray-200" />
+            )}
           </div>
         </div>
       </section>
@@ -121,17 +143,17 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
             <p className="mt-2 text-mid-gray text-center max-w-xl mx-auto">Detailed breakdown of project costs.</p>
             <div className="mt-10 max-w-2xl mx-auto">
               <div className="bg-off-white rounded-2xl border border-light-gray/40 overflow-hidden">
-                {project.cost_estimation.map((c, i) => (
-                  <div key={c.item} className={`flex items-center justify-between px-6 py-4 ${i < project.cost_estimation.length - 1 ? "border-b border-light-gray/40" : ""}`}>
+                {(project.cost_estimation ?? []).map((c, i) => (
+                  <div key={c.item ?? i} className={`flex items-center justify-between px-6 py-4 ${i < project.cost_estimation.length - 1 ? "border-b border-light-gray/40" : ""}`}>
                     <span className="text-sm font-medium text-brand-dark">{c.item}</span>
-                    <span className="text-sm font-bold text-brand-primary">{c.amount}</span>
+                    <span className="text-sm font-bold text-brand-primary">{c.amount ?? ""}</span>
                   </div>
                 ))}
                 <div className="flex items-center justify-between px-6 py-4 bg-brand-dark text-white">
                   <span className="text-sm font-bold">Total Estimated Cost</span>
                   <span className="text-sm font-bold">
                     NPR {project.cost_estimation.reduce((sum, c) => {
-                      const num = parseInt(c.amount.replace(/[^0-9]/g, ""));
+                      const num = parseInt((c.amount ?? "").replace(/[^0-9]/g, "") || "0");
                       return sum + num;
                     }, 0).toLocaleString("en-IN")}
                   </span>
@@ -166,7 +188,7 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
               <p className="mt-2 text-mid-gray">Photos from the project site and completed work.</p>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {project.gallery.map((src, i) => (
+              {project.gallery.filter(Boolean).map((src, i) => (
                 <div key={i} className="relative aspect-[4/3] rounded-xl overflow-hidden group cursor-pointer">
                   <Image
                     src={src}
@@ -205,7 +227,7 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
                     className={`${colors[s.platform] || "bg-brand-primary"} text-white inline-flex items-center gap-2.5 h-12 px-6 rounded-full font-semibold text-sm hover:brightness-110 transition-all active:scale-[0.97]`}
                   >
                     <Icon className="size-4" />
-                    {s.platform.charAt(0).toUpperCase() + s.platform.slice(1)}
+                    {(s.platform?.charAt(0)?.toUpperCase() ?? "") + (s.platform?.slice(1) ?? "")}
                   </a>
                 );
               })}

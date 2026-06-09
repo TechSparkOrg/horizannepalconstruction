@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import FloorPlanner from "@/components/sections/FloorPlanner";
 import { BannerCarousel } from "@/components/BannerCarousel";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://horizannepal.com";
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
 const benefits = [
   { title: "Accurate Measurements", desc: "Scale-accurate layouts prevent costly errors during construction." },
@@ -22,11 +22,13 @@ export const metadata: Metadata = {
     description:
       "Design your dream floor plan online with Horizan Nepal's interactive 2D floor planner.",
     type: "website",
+    url: `${siteUrl}/floor-planner`,
   },
   alternates: { canonical: `${siteUrl}/floor-planner` },
 };
 
 const breadcrumb = {
+  "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },

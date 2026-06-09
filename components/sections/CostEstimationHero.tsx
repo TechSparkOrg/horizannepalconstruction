@@ -7,6 +7,7 @@ export function CostEstimationHero() {
       <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/40 to-brand-dark/70" />
 
       <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center">
+        <h1 className="sr-only">Cost Estimation Service</h1>
         <h1
           className="font-display font-bold text-white leading-[1.05] max-w-3xl mx-auto"
           style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}

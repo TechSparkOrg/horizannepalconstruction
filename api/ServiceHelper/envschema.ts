@@ -11,15 +11,12 @@ const getEnv = () => {
     try {
         return envSchema.validateSync({
             NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-            // NEXT_PUBLIC_API_KEY: process.env.NEXT_PUBLIC_API_KEY,
-            // NEXT_PUBLIC_API_N8N_URL: process.env.NEXT_PUBLIC_API_N8N_URL,
         });
     } catch (err: any) {
-        return {
-            NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL as string,
-            // NEXT_PUBLIC_API_KEY: process.env.NEXT_PUBLIC_API_KEY as string,
-            // NEXT_PUBLIC_API_N8N_URL: process.env.NEXT_PUBLIC_API_N8N_URL as string,
-        };
+        throw new Error(
+            `Environment validation failed: ${err.message || err}. ` +
+            `Make sure NEXT_PUBLIC_API_URL is set in your .env file.`
+        );
     }
 };
 

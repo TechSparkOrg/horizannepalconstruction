@@ -20,7 +20,7 @@ export function FAQSection() {
 
   useEffect(() => {
     FaqService.list().then((r) => {
-      if (r.results.length > 0) {
+      if (r.results?.length > 0) {
         setFaqs(r.results.map((f) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" })));
       }
     }).catch(() => {});

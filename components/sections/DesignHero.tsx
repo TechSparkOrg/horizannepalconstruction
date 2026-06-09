@@ -11,6 +11,7 @@ export function DesignHero() {
           Design
         </span>
 
+        <h1 className="sr-only">Architectural Design Services</h1>
         <h1
           className="font-display font-bold text-white mt-6 leading-[1.05] max-w-3xl mx-auto"
           style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}

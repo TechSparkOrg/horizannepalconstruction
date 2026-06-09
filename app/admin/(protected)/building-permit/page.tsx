@@ -28,10 +28,10 @@ function toApiPayload(c: BuildingPermitConfig) {
 
 function fromApiResponse(data: ApiBuildingPermitConfig): BuildingPermitConfig {
   return {
-    workflowSteps: data.workflow_steps,
-    docCategories: data.doc_categories,
-    regulations: data.regulations,
-    municipalities: data.municipalities,
+    workflowSteps: data.workflow_steps ?? [],
+    docCategories: data.doc_categories ?? [],
+    regulations: data.regulations ?? [],
+    municipalities: data.municipalities ?? [],
   };
 }
 

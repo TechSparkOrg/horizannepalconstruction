@@ -78,13 +78,13 @@ export default function PageView() {
           <ArrowLeft className="size-3.5" /> Back to Home
         </Link>
 
-        <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl text-brand-dark font-bold leading-tight mb-8">
+        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl text-brand-dark font-bold leading-tight mb-8">
           {page.title}
-        </h1>
+        </h2>
 
         <div
           className="prose prose-lg max-w-none prose-headings:font-display prose-headings:text-brand-dark prose-a:text-brand-primary prose-img:rounded-xl"
-          dangerouslySetInnerHTML={{ __html: page.content }}
+          dangerouslySetInnerHTML={{ __html: page.content ?? "" }}
         />
       </article>
     </>

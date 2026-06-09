@@ -9,7 +9,7 @@ import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { ConsultationForm } from "@/components/ConsultationForm";
 import { LocationSection } from "@/components/LocationSection";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://horizannepal.com";
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
 export const metadata: Metadata = {
   title: "About | Horizan Nepal",
@@ -20,11 +20,13 @@ export const metadata: Metadata = {
     description:
       "Learn about Horizan Nepal — our team, mission, and portfolio. A trusted name in architectural design and construction across Nepal.",
     type: "website",
+    url: `${siteUrl}/about`,
   },
   alternates: { canonical: `${siteUrl}/about` },
 };
 
 const breadcrumb = {
+  "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
@@ -33,6 +35,7 @@ const breadcrumb = {
 };
 
 const aboutPageSchema = {
+  "@context": "https://schema.org",
   "@type": "AboutPage",
   name: "About Horizan Nepal",
   description: "Architecture, Engineering & Construction services across Nepal since 1999.",

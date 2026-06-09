@@ -89,16 +89,17 @@ export function Header() {
           {/* Logo */}
           <Link
             href="/"
-            
+            prefetch={false}
             className="flex items-center gap-2 flex-shrink-0 group"
           >
-            <div className="relative">
-              <img
+            <div className="relative size-8">
+              <Image
                 src="/logo.png"
                 alt="Horizon Nepal"
-                className="h-8 w-8 object-contain transition-transform duration-300 group-hover:scale-110"
+                fill
+                sizes="32px"
+                className="object-contain transition-transform duration-300 group-hover:scale-110"
               />
-              {/* <span className="absolute -inset-1 rounded-full bg-brand-primary/20 scale-0 group-hover:scale-100 transition-transform duration-300" /> */}
             </div>
             <span className="flex items-baseline leading-none">
               <span className="text-brand-primary font-extrabold text-xl sm:text-2xl tracking-tight">Horizon</span>
@@ -112,7 +113,7 @@ export function Header() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  
+                  prefetch={false}
                   className="px-3 py-2 rounded-lg text-sm font-bold text-white hover:text-white hover:bg-white/8 transition-colors duration-150"
                 >
                   {item.label}
@@ -121,7 +122,7 @@ export function Header() {
             ))}
 
             {/* Tools dropdown */}
-            <li ref={toolsRef} className="relative">
+            <li ref={toolsRef} className="relative" data-nav-tools>
               <button
                 type="button"
                 onClick={() => setToolsOpen((v) => !v)}
@@ -149,7 +150,7 @@ export function Header() {
                     <Link
                       key={t.href}
                       href={t.href}
-                      
+                      prefetch={false}
                       onClick={() => setToolsOpen(false)}
                       className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-white hover:text-white hover:bg-white/8 transition-colors duration-150"
                     >
@@ -195,7 +196,7 @@ export function Header() {
             {/* CTA — desktop only */}
             <Link
               href="/contact"
-              
+              prefetch={false}
               className="hidden sm:inline-flex items-center gap-1.5 h-8 px-4 rounded-full bg-brand-primary text-white text-sm font-bold tracking-wide shadow-md shadow-brand-primary/20 hover:shadow-lg hover:shadow-brand-primary/35 hover:-translate-y-px active:translate-y-0 active:scale-[0.97] transition-all duration-200"
             >
               Get a Quote
@@ -240,11 +241,11 @@ export function Header() {
         <div className="flex items-center justify-between h-16 px-5 border-b border-white/8 flex-shrink-0">
           <Link
             href="/"
-            
+            prefetch={false}
             onClick={closeAll}
             className="flex items-center gap-2"
           >
-            <img src="/logo.png" alt="Horizon Nepal" className="h-7 w-7 object-contain" />
+            <Image src="/logo.png" alt="Horizon Nepal" width={28} height={28} className="object-contain" />
             <span className="flex items-baseline leading-none">
               <span className="text-brand-primary font-extrabold text-lg">Horizon</span>
               <span className="text-white font-medium text-lg ml-1">Nepal</span>
@@ -267,7 +268,7 @@ export function Header() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  
+                  prefetch={false}
                   onClick={closeAll}
                   className="flex items-center justify-between px-4 py-3 rounded-xl text-[15px] font-bold text-white hover:text-white hover:bg-white/6 transition-colors duration-150"
                 >
@@ -278,7 +279,7 @@ export function Header() {
             ))}
 
             {/* Tools accordion */}
-            <li>
+            <li data-nav-tools>
               <button
                 type="button"
                 onClick={() => setMobileToolsOpen((v) => !v)}
@@ -299,7 +300,7 @@ export function Header() {
                     <Link
                       key={t.href}
                       href={t.href}
-                      
+                      prefetch={false}
                       onClick={closeAll}
                       className="block px-3 py-2.5 rounded-lg text-sm font-bold text-white hover:text-white hover:bg-white/6 transition-colors duration-150"
                     >
@@ -339,7 +340,7 @@ export function Header() {
           </div> */}
           <Link
             href="/contact"
-            
+            prefetch={false}
             onClick={closeAll}
             className="flex items-center justify-center gap-2 w-full h-11 rounded-full bg-brand-primary text-white text-sm font-bold tracking-wide shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/35 active:scale-[0.98] transition-all duration-200"
           >

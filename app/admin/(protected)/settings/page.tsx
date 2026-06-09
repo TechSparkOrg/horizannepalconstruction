@@ -31,12 +31,17 @@ const SOCIAL_PLATFORMS = [
   { value: "Other",     label: "Other"       },
 ] as const;
 
-const toPayload = (s: SiteSettings): SiteSettingsPayload => ({
-  social_links: s.social_links || [],
-  contact_info: s.contact_info || { phone: "", email: "", address: "", mapEmbed: "", whatsappNumber: "" },
-  seo: s.seo || { title: "", description: "", keywords: "" },
-  scripts: s.scripts || { head: "", body: "" },
-});
+const toPayload = (s: SiteSettings): SiteSettingsPayload => {
+  const ci = s.contact_info ?? {};
+  const seo = s.seo ?? {};
+  const scripts = s.scripts ?? {};
+  return {
+    social_links: s.social_links ?? [],
+    contact_info: { phone: ci.phone ?? "", email: ci.email ?? "", address: ci.address ?? "", mapEmbed: ci.mapEmbed ?? "", whatsappNumber: ci.whatsappNumber ?? "" },
+    seo: { title: seo.title ?? "", description: seo.description ?? "", keywords: seo.keywords ?? "" },
+    scripts: { head: scripts.head ?? "", body: scripts.body ?? "" },
+  };
+};
 
 const field = "flex flex-col gap-1.5";
 const lbl   = "text-xs font-medium text-mid-gray";
@@ -340,7 +345,7 @@ export default function AdminSettingsPage() {
           {(settings.seo.title || settings.seo.description) && (
             <div className="p-3 rounded-lg border border-light-gray">
               <p className="text-xs text-mid-gray mb-2">Search preview</p>
-              <p className="text-[12px] text-green-700 mb-0.5">horizonnepal.com</p>
+              <p className="text-[12px] text-green-700 mb-0.5">{(process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/^https?:\/\//, "")}</p>
               <p className="text-[15px] text-blue-700 font-medium leading-snug mb-0.5 truncate">
                 {settings.seo.title || "Page title"}
               </p>

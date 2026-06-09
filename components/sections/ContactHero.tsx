@@ -9,11 +9,12 @@ import { BannerCarousel } from "@/components/BannerCarousel";
 export function ContactHero() {
   const settings = useSettings((s) => s.settings);
   const social_links = settings?.social_links ?? [];
-  const contact_info = settings?.contact_info ?? {
+  const contact_info = {
     phone: "",
     email: "",
     address: "",
     mapEmbed: "",
+    ...(settings?.contact_info ?? {}),
   };
 
   const contactPaths = [
@@ -21,33 +22,33 @@ export function ContactHero() {
       Icon: Phone,
       label: "Call us",
       value: contact_info.phone,
-      href: `tel:${contact_info.phone}`,
+      href: `tel:${contact_info.phone ?? ""}`,
     },
     {
       Icon: MessageCircle,
       label: "WhatsApp",
       value: "Quick response",
-      href: `https://wa.me/${contact_info.phone.replace(/[^0-9]/g, "")}?text=Hello!%20I'd%20like%20to%20know%20more%20about%20Horizon%20Nepal's%20services.`,
+      href: `https://wa.me/${(contact_info.phone ?? "").replace(/[^0-9]/g, "")}?text=Hello!%20I'd%20like%20to%20know%20more%20about%20Horizon%20Nepal's%20services.`,
     },
     {
       Icon: Mail,
       label: "Email us",
       value: contact_info.email,
-      href: `mailto:${contact_info.email}`,
+      href: `mailto:${contact_info.email ?? ""}`,
     },
     {
       Icon: MapPin,
       label: "Visit us",
       value: contact_info.address,
-      href: `https://maps.google.com/?q=${encodeURIComponent(contact_info.address)}`,
+      href: `https://maps.google.com/?q=${encodeURIComponent(contact_info.address ?? "")}`,
     },
   ];
 
   const socialLinks = social_links.map((link) => ({
-    label: link.label,
-    handle: `@${link.platform.toLowerCase()}`,
-    href: link.url,
-    Icon: getSocialIcon(link.platform),
+    label: link.label ?? "",
+    handle: `@${(link.platform ?? "").toLowerCase()}`,
+    href: link.url ?? "#",
+    Icon: getSocialIcon(link.platform ?? ""),
   }));
 
   return (
@@ -65,6 +66,7 @@ export function ContactHero() {
         <p className="text-blue-400 text-xs font-bold uppercase tracking-[0.2em] mb-4">
           Horizon Nepal
         </p>
+        <h1 className="sr-only">Contact Horizan Nepal</h1>
         <h1
           className="font-display font-bold text-white leading-[1.06]"
           style={{ fontSize: "clamp(2.8rem, 6vw, 5rem)" }}

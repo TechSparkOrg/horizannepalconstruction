@@ -28,7 +28,7 @@ export function FAQTimeline() {
       title: cat.name,
       items: faqItems
         .filter((item) => item.category_id === cat.id)
-        .map((item) => ({ q: item.question.en, a: item.answer.en })),
+        .map((item) => ({ q: item.question?.en ?? "", a: item.answer?.en ?? "" })),
     }))
     .filter((g) => g.items.length > 0);
 

@@ -29,16 +29,17 @@ function ListEditor({ items, onChange }: {
   items: VastuBilingualText[];
   onChange: (items: VastuBilingualText[]) => void;
 }) {
-  const add = () => onChange([...items, { en: "", np: "" }]);
-  const remove = (i: number) => onChange(items.filter((_, idx) => idx !== i));
+  const safe = items ?? [];
+  const add = () => onChange([...safe, { en: "", np: "" }]);
+  const remove = (i: number) => onChange(safe.filter((_, idx) => idx !== i));
   const update = (i: number, v: VastuBilingualText) => {
-    const next = [...items];
+    const next = [...safe];
     next[i] = v;
     onChange(next);
   };
   return (
     <div className="space-y-2">
-      {items.map((item, i) => (
+      {safe.map((item, i) => (
         <div key={i} className="flex gap-1.5 items-start">
           <div className="flex-1 space-y-1">
             <input value={item.en} onChange={(e) => update(i, { ...item, en: e.target.value })} placeholder="English" className="w-full h-8 px-2 rounded border border-light-gray text-xs" />

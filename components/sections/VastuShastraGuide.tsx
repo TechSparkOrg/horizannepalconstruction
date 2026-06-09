@@ -153,20 +153,20 @@ export default function VastuShastraGuide({ data }: { data: VastuConfig }) {
               <div className="mt-6 space-y-5">
                 <div className="bg-brand-secondary/5 rounded-xl p-4 border border-brand-secondary/10">
                   <p className="text-xs font-semibold text-brand-secondary uppercase tracking-wide mb-1">Ideal Direction</p>
-                  <p className="text-sm text-mid-gray">{rooms[selectedRoom].idealDirection.en}</p>
-                  <p className="text-xs text-mid-gray/70 mt-1 border-l-2 border-brand-secondary/20 pl-2">{rooms[selectedRoom].idealDirection.np}</p>
+                  <p className="text-sm text-mid-gray">{rooms[selectedRoom]?.idealDirection?.en ?? ""}</p>
+                  <p className="text-xs text-mid-gray/70 mt-1 border-l-2 border-brand-secondary/20 pl-2">{rooms[selectedRoom]?.idealDirection?.np ?? ""}</p>
                 </div>
                 <div className="bg-brand-primary/5 rounded-xl p-4 border border-brand-primary/10">
                   <p className="text-xs font-semibold text-brand-primary uppercase tracking-wide mb-1">Facing Direction</p>
-                  <p className="text-sm text-mid-gray">{rooms[selectedRoom].facingDirection.en}</p>
-                  <p className="text-xs text-mid-gray/70 mt-1 border-l-2 border-brand-primary/20 pl-2">{rooms[selectedRoom].facingDirection.np}</p>
+                  <p className="text-sm text-mid-gray">{rooms[selectedRoom]?.facingDirection?.en ?? ""}</p>
+                  <p className="text-xs text-mid-gray/70 mt-1 border-l-2 border-brand-primary/20 pl-2">{rooms[selectedRoom]?.facingDirection?.np ?? ""}</p>
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-green-700 uppercase tracking-wide mb-2 flex items-center gap-1">
                     <span>✓</span> Tips (Do&apos;s)
                   </p>
                   <div className="space-y-1.5">
-                    {rooms[selectedRoom].tips.map((t, i) => (
+                    {(rooms[selectedRoom]?.tips ?? []).map((t, i) => (
                       <div key={i} className="flex items-start gap-2 text-sm">
                         <span className="size-4 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">✓</span>
                         <div>
@@ -182,7 +182,7 @@ export default function VastuShastraGuide({ data }: { data: VastuConfig }) {
                     <span>✗</span> Avoid (Don&apos;ts)
                   </p>
                   <div className="space-y-1.5">
-                    {rooms[selectedRoom].avoid.map((a, i) => (
+                    {(rooms[selectedRoom]?.avoid ?? []).map((a, i) => (
                       <div key={i} className="flex items-start gap-2 text-sm">
                         <span className="size-4 rounded-full bg-red-50 text-red-500 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">✗</span>
                         <div>
@@ -231,8 +231,8 @@ export default function VastuShastraGuide({ data }: { data: VastuConfig }) {
                     <span><strong className="text-brand-dark">Deity:</strong> {directions[selectedDirection].deity}</span>
                     <span><strong className="text-brand-dark">Element:</strong> {directions[selectedDirection].element}</span>
                   </div>
-                  <p className="text-sm text-mid-gray">{directions[selectedDirection].description.en}</p>
-                  <p className="text-xs text-mid-gray/70 mt-1 border-l-2 border-brand-secondary/20 pl-2">{directions[selectedDirection].description.np}</p>
+                  <p className="text-sm text-mid-gray">{directions[selectedDirection]?.description?.en ?? ""}</p>
+                  <p className="text-xs text-mid-gray/70 mt-1 border-l-2 border-brand-secondary/20 pl-2">{directions[selectedDirection]?.description?.np ?? ""}</p>
                 </div>
 
                 <div>
@@ -240,7 +240,7 @@ export default function VastuShastraGuide({ data }: { data: VastuConfig }) {
                     <span>✓</span> Recommended (Do&apos;s)
                   </p>
                   <div className="space-y-1.5">
-                    {directions[selectedDirection].recommended.map((r, i) => (
+                    {(directions[selectedDirection]?.recommended ?? []).map((r, i) => (
                       <div key={i} className="flex items-start gap-2 text-sm">
                         <span className="size-4 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">✓</span>
                         <div>
@@ -256,7 +256,7 @@ export default function VastuShastraGuide({ data }: { data: VastuConfig }) {
                     <span>✗</span> Avoid (Don&apos;ts)
                   </p>
                   <div className="space-y-1.5">
-                    {directions[selectedDirection].avoid.map((a, i) => (
+                    {(directions[selectedDirection]?.avoid ?? []).map((a, i) => (
                       <div key={i} className="flex items-start gap-2 text-sm">
                         <span className="size-4 rounded-full bg-red-50 text-red-500 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">✗</span>
                         <div>

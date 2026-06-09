@@ -7,6 +7,8 @@ import { HowWeWorkDesignGrid } from "@/components/sections/HowWeWorkDesignGrid";
 import { FAQWrapper } from "@/components/FAQWrapper";
 import { QuoteBannerSecondary } from "@/components/sections/QuoteBannerSecondary";
 
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+
 export const metadata: Metadata = {
   title: "How We Work | Horizan Nepal",
   description:
@@ -16,12 +18,24 @@ export const metadata: Metadata = {
     description:
       "Discover Horizan Nepal's step-by-step design and construction process from consultation to handover.",
     type: "website",
+    url: `${siteUrl}/how-we-work`,
   },
+  alternates: { canonical: `${siteUrl}/how-we-work` },
+};
+
+const breadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+    { "@type": "ListItem", position: 2, name: "How We Work", item: `${siteUrl}/how-we-work` },
+  ],
 };
 
 export default function HowWeWorkPage() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
       <HowWeWorkHero />
       <WelcomeText />
       <HowWeWorkProcess />

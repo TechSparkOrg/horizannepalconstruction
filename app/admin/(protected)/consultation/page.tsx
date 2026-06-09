@@ -16,7 +16,7 @@ function toCamel(s: ConsultationSettings): ConsultationFormSettings {
     heading: s.heading,
     description: s.description,
     formTitle: s.form_title,
-    serviceOptions: s.service_options,
+    serviceOptions: s.service_options ?? [],
     privacyText: s.privacy_text,
     successHeading: s.success_heading,
     successMessage: s.success_message,
@@ -61,7 +61,7 @@ export default function AdminConsultationPage() {
       ConsultationService.listSubmissions(),
     ]).then(([settings, subs]) => {
       setConsultationForm(toCamel(settings));
-      setSubmissions(subs.map(toSubmissionCamel));
+      setSubmissions((subs ?? []).map(toSubmissionCamel));
     });
   }, []);
 

@@ -74,7 +74,11 @@ export default function ModelViewerPage() {
       <section className="bg-brand-dark pb-16 sm:pb-24">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative w-full aspect-[16/9] max-h-[600px] rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-brand-dark/80">
-            <ModelViewerBlock src={model.url} />
+            {model.url ? (
+              <ModelViewerBlock src={model.url} />
+            ) : (
+              <div className="size-full flex items-center justify-center text-white/40 text-sm">No model file available</div>
+            )}
           </div>
         </div>
       </section>

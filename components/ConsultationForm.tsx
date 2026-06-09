@@ -7,41 +7,20 @@ import { ConsultationService } from "@/api/services/consultation.service";
 import { CategoryService } from "@/api/services/category.service";
 import { FaqService } from "@/api/services/faq.service";
 import { useSettings } from "@/stores/settings-store";
-import type { ConsultationFormSettings } from "@/stores/admin-types";
 import type { Category } from "@/api/types/category.types";
 import type { FaqItem } from "@/api/types/faq.types";
 
-const FALLBACK_CONFIG: ConsultationFormSettings = {
-  sectionLabel: "Get in Touch",
-  heading: "Let's Build Together",
-  description: "Tell us about your project and we'll get back to you within 24 hours.",
-  formTitle: "Send Us a Message",
-  serviceOptions: [],
-  privacyText: "Your information is safe with us. We'll never share your details.",
-  successHeading: "Thank You!",
-  successMessage: "We've received your message and will get back to you shortly.",
-};
+const sectionLabel = "Get in Touch";
+const heading = "Let's Build Together";
+const description = "Tell us about your project and we'll get back to you within 24 hours.";
+const formTitle = "Send Us a Message";
+const serviceOptions: string[] = [];
+const privacyText = "Your information is safe with us. We'll never share your details.";
+const successHeading = "Thank You!";
+const successMessage = "We've received your message and will get back to you shortly.";
 
 export function ConsultationForm({ faqCategorySlug = "consultation" }: { faqCategorySlug?: string }) {
-  const [formConfig, setFormConfig] = useState<ConsultationFormSettings>(FALLBACK_CONFIG);
   const contactInfo = useSettings((s) => s.settings?.contact_info);
-
-  useEffect(() => {
-    ConsultationService.getSettings().then((res) => {
-      setFormConfig({
-        sectionLabel: res.section_label,
-        heading: res.heading,
-        description: res.description,
-        formTitle: res.form_title,
-        serviceOptions: res.service_options,
-        privacyText: res.privacy_text,
-        successHeading: res.success_heading,
-        successMessage: res.success_message,
-      });
-    });
-  }, []);
-
-  const { sectionLabel, heading, description, formTitle, serviceOptions, privacyText, successHeading, successMessage } = formConfig;
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
@@ -69,18 +48,25 @@ export function ConsultationForm({ faqCategorySlug = "consultation" }: { faqCate
   const [service, setService] = useState("");
   const [desc, setDesc] = useState("");
   const [preferredDate, setPreferredDate] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await ConsultationService.submit({
-      name,
-      email,
-      phone,
-      service,
-      description: desc,
-      preferred_date: preferredDate,
-    });
-    setSubmitted(true);
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      await ConsultationService.submit({
+        name,
+        email,
+        phone,
+        service,
+        description: desc,
+        preferred_date: preferredDate,
+      });
+      setSubmitted(true);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -106,19 +92,19 @@ export function ConsultationForm({ faqCategorySlug = "consultation" }: { faqCate
           <ul className="mt-6 space-y-5 text-white/90">
             <li className="flex items-center gap-3.5">
               <Phone className="size-6 text-brand-primary" />
-              <a href={`tel:${contactInfo?.phone}`} className="hover:text-brand-primary font-semibold">
-                {contactInfo?.phone}
+              <a href={`tel:${contactInfo?.phone ?? ""}`} className="hover:text-brand-primary font-semibold">
+                {contactInfo?.phone ?? ""}
               </a>
             </li>
             <li className="flex items-center gap-3.5">
               <Mail className="size-6 text-brand-primary" />
-              <a href={`mailto:${contactInfo?.email}`} className="hover:text-brand-primary font-semibold">
-                {contactInfo?.email}
+              <a href={`mailto:${contactInfo?.email ?? ""}`} className="hover:text-brand-primary font-semibold">
+                {contactInfo?.email ?? ""}
               </a>
             </li>
             <li className="flex items-center gap-3.5">
               <MapPin className="size-6 text-brand-primary" />
-              <span className="font-semibold">{contactInfo?.address}</span>
+              <span className="font-semibold">{contactInfo?.address ?? ""}</span>
             </li>
           </ul>
         </div>
@@ -229,9 +215,10 @@ export function ConsultationForm({ faqCategorySlug = "consultation" }: { faqCate
 
               <button
                 type="submit"
-                className="mt-6 w-full h-[52px] rounded-md bg-brand-primary text-white font-semibold inline-flex items-center justify-center gap-2 hover:brightness-110 transition"
+                disabled={submitting}
+                className="mt-6 w-full h-[52px] rounded-md bg-brand-primary text-white font-semibold inline-flex items-center justify-center gap-2 hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Send Message <ArrowRight className="size-4" />
+                {submitting ? "Sending..." : "Send Message"} <ArrowRight className="size-4" />
               </button>
               <p className="mt-3 text-xs text-mid-gray">
                 {privacyText}
@@ -256,14 +243,14 @@ export function ConsultationForm({ faqCategorySlug = "consultation" }: { faqCate
                       onClick={() => setOpenFaq(isOpen ? null : i)}
                       className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left"
                     >
-                      <span className="text-sm font-medium text-brand-dark flex-1">{faq.question.en}</span>
+                      <span className="text-sm font-medium text-brand-dark flex-1">{faq.question?.en ?? ""}</span>
                       <span className={`shrink-0 size-6 rounded-full flex items-center justify-center transition-colors ${isOpen ? "bg-brand-primary/10 text-brand-primary" : "bg-light-gray/30 text-mid-gray"}`}>
                         {isOpen ? <Minus className="size-3.5" /> : <Plus className="size-3.5" />}
                       </span>
                     </button>
                     <div className="grid transition-all duration-300 ease-out" style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}>
                       <div className="overflow-hidden">
-                        <p className="px-5 pb-4 text-sm text-mid-gray leading-relaxed">{faq.answer.en}</p>
+                        <p className="px-5 pb-4 text-sm text-mid-gray leading-relaxed">{faq.answer?.en ?? ""}</p>
                       </div>
                     </div>
                   </div>
