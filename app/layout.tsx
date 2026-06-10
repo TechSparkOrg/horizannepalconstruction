@@ -37,9 +37,29 @@ export const metadata: Metadata = {
     images: [{ url: `${siteUrl}/twitter-image`, width: 1200, height: 600 }],
   },
   icons: {
-    icon: "/favicon.png",
-    apple: "/logo.png",
-  },
+  icon: [
+    {
+      url: "/favicon.png",
+      sizes: "16x16",
+      type: "image/png",
+    },
+    {
+      url: "/favicon.png",
+      sizes: "32x32",
+      type: "image/png",
+    },
+    {
+      url: "/favicon.ico",
+    },
+  ],
+  apple: [
+    {
+      url: "/logo.png",
+      sizes: "180x180",
+      type: "image/png",
+    },
+  ],
+},
 };
 
 const apiOrigin = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/api\/?$/, "");
