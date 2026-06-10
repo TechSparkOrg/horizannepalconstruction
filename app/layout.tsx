@@ -25,41 +25,27 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    siteName: "Horizan Nepal",
+    siteName: "Horizan Nepal Construction",
     title: "Horizan Nepal — Building Nepal's Tomorrow",
     description: "Architecture, Engineering & Construction services across Nepal.",
     images: [{ url: `${siteUrl}/opengraph-image`, width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Horizan Nepal — Building Nepal's Tomorrow",
+    title: "Horizan Nepal Construction — Building Nepal's Tomorrow",
     description: "Architecture, Engineering & Construction services across Nepal.",
     images: [{ url: `${siteUrl}/twitter-image`, width: 1200, height: 600 }],
   },
   icons: {
-  icon: [
-    {
-      url: "/favicon.png",
-      sizes: "16x16",
-      type: "image/png",
-    },
-    {
-      url: "/favicon.png",
-      sizes: "32x32",
-      type: "image/png",
-    },
-    {
-      url: "/favicon.ico",
-    },
-  ],
-  apple: [
-    {
-      url: "/logo.png",
-      sizes: "180x180",
-      type: "image/png",
-    },
-  ],
-},
+    icon: [
+      { url: "/favicon.png", sizes: "48x48", type: "image/png" },
+      { url: "/favicon.png", sizes: "96x96", type: "image/png" },
+      { url: "/favicon.png", sizes: "144x144", type: "image/png" },
+    ],
+    apple: [
+      { url: "/favicon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
 };
 
 const apiOrigin = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/api\/?$/, "");

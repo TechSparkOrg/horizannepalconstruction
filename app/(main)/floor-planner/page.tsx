@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import FloorPlanner from "@/components/sections/FloorPlanner";
 import { BannerCarousel } from "@/components/BannerCarousel";
+import { LdJson } from "@/components/JsonLd";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -39,7 +40,7 @@ const breadcrumb = {
 export default function FloorPlannerPage() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+      <LdJson data={breadcrumb} />
       <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-brand-dark">
         <BannerCarousel slug="floor-planner-page-hero" imgClassName="object-cover opacity-60 scale-105" />
         <div className="absolute inset-0 bg-gradient-to-br from-brand-dark/60 via-brand-dark/30 to-transparent">

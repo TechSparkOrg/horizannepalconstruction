@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import BuildingPermitClient from "./BuildingPermitClient";
 import { getBuildingPermit } from "@/api/cached/building-permit";
+import { LdJson } from "@/components/JsonLd";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -37,7 +38,7 @@ export default async function BuildingPermitPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+      <LdJson data={breadcrumb} />
       <BuildingPermitClient initialConfig={initialConfig} />
     </>
   );

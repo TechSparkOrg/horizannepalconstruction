@@ -7,6 +7,7 @@ import { getProjects } from "@/api/cached/project";
 import { getModels } from "@/api/cached/model3d";
 import { getCategories } from "@/api/cached/category";
 import { getFaqs } from "@/api/cached/faq";
+import { LdJson } from "@/components/JsonLd";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -85,7 +86,7 @@ export default async function DesignPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+      <LdJson data={breadcrumb} />
       <DesignHero />
       <DesignServices />
       <Design3DShowcase initialItems={modelCards} />

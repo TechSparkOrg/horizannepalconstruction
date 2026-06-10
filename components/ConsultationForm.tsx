@@ -14,7 +14,6 @@ const sectionLabel = "Get in Touch";
 const heading = "Let's Build Together";
 const description = "Tell us about your project and we'll get back to you within 24 hours.";
 const formTitle = "Send Us a Message";
-const serviceOptions: string[] = [];
 const privacyText = "Your information is safe with us. We'll never share your details.";
 const successHeading = "Thank You!";
 const successMessage = "We've received your message and will get back to you shortly.";
@@ -190,8 +189,8 @@ export function ConsultationForm({
                     className="w-full h-11 px-3 rounded-md border border-light-gray bg-white text-brand-dark text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                   >
                     <option value="">Select a service</option>
-                    {serviceOptions?.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
+                    {categories?.map((cat) => (
+                      <option key={cat.id} value={  cat.name ?? ""}>{cat.name ?? ""}</option>
                     ))}
                   </select>
                 </div>

@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { WhatsAppButton } from "@/components/WhatsAppButton";
+import dynamic from "next/dynamic";
 import { SettingsLoader } from "@/components/SettingsLoader";
-import { TrackingScripts } from "@/components/TrackingScripts";
-import { ScriptInjector } from "@/components/ScriptInjector";
-import { AnalyticsTracker } from "@/hooks/useTrackAction";
-import { JsonLd } from "@/components/JsonLd";
-import { StoreInitializer } from "@/components/StoreInitializer";
-import { getSettings as getSettingsCached } from "@/api/cached/settings";
+import { JsonLd, LdJson } from "@/components/JsonLd";
 import { Suspense } from "react";
 import type { ReactNode } from "react";
+
+const TrackingScripts = dynamic(() => import("@/components/TrackingScripts").then((m) => ({ default: m.TrackingScripts })));
+const ScriptInjector = dynamic(() => import("@/components/ScriptInjector").then((m) => ({ default: m.ScriptInjector })));
+const AnalyticsTracker = dynamic(() => import("@/hooks/useTrackAction").then((m) => ({ default: m.AnalyticsTracker })));
+const Header = dynamic(() => import("@/components/Header").then((m) => ({ default: m.Header })));
+const WhatsAppButton = dynamic(() => import("@/components/WhatsAppButton").then((m) => ({ default: m.WhatsAppButton })));
+const Footer = dynamic(() => import("@/components/Footer").then((m) => ({ default: m.Footer })));
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -34,21 +34,11 @@ const baseOrgSchema = {
   url: siteUrl,
 };
 
-async function getSettings() {
-  try {
-    return await getSettingsCached();
-  } catch {
-    return null;
-  }
-}
-
-export default async function MainLayout({
+export default function MainLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const settings = await getSettings();
-
   return (
     <>
       <TrackingScripts />
@@ -59,18 +49,8 @@ export default async function MainLayout({
       <main id="main-content">{children}</main>
       <WhatsAppButton />
       <Footer />
-      <StoreInitializer settings={settings} />
-      <Suspense
-        fallback={
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(baseOrgSchema),
-            }}
-          />
-        }
-      >
-        <JsonLd settings={settings} />
+      <Suspense fallback={<LdJson data={baseOrgSchema} />}>
+        <JsonLd settings={null} />
       </Suspense>
     </>
   );

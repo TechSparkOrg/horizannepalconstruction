@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CostEstimationHero } from "@/components/sections/CostEstimationHero";
 import { CostEstimationContent } from "@/components/sections/CostEstimationContent";
 import { CostEstimator } from "@/components/sections/CostEstimator";
+import { LdJson } from "@/components/JsonLd";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -31,7 +32,7 @@ const breadcrumb = {
 export default function CostEstimationPage() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+      <LdJson data={breadcrumb} />
       <CostEstimationHero />
       <CostEstimationContent />
       <CostEstimator />

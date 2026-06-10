@@ -1,26 +1,28 @@
 import type { Metadata } from "next";
-import { OurWorkHero } from "@/components/sections/OurWorkHero";
-import { ProjectGallery } from "@/components/ProjectGallery";
-import { ConsultationForm } from "@/components/ConsultationForm";
-import { getBanners } from "@/api/cached/banner";
-import { getCategories } from "@/api/cached/category";
-import { getFaqs } from "@/api/cached/faq";
+import dynamic from "next/dynamic";
+import { LdJson } from "@/components/JsonLd";
+
+const OurWorkHero = dynamic(() => import("@/components/sections/OurWorkHero").then((m) => ({ default: m.OurWorkHero })));
+const ProjectGallery = dynamic(() => import("@/components/ProjectGallery").then((m) => ({ default: m.ProjectGallery })));
+const ConsultationForm = dynamic(() => import("@/components/ConsultationForm").then((m) => ({ default: m.ConsultationForm })));
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
-export const metadata: Metadata = {
-  title: "Our Work | Horizan Nepal",
-  description:
-    "Browse Horizan Nepal's portfolio of completed architectural and construction projects. See our finest work in residential and commercial design across Nepal.",
-  openGraph: {
+export async function generateMetadata(): Promise<Metadata> {
+  return {
     title: "Our Work | Horizan Nepal",
     description:
-      "Browse Horizan Nepal's portfolio of completed architectural and construction projects across Nepal.",
-    type: "website",
-    url: `${siteUrl}/our-work`,
-  },
-  alternates: { canonical: `${siteUrl}/our-work` },
-};
+      "Browse Horizan Nepal's portfolio of completed architectural and construction projects. See our finest work in residential and commercial design across Nepal.",
+    openGraph: {
+      title: "Our Work | Horizan Nepal",
+      description:
+        "Browse Horizan Nepal's portfolio of completed architectural and construction projects across Nepal.",
+      type: "website",
+      url: `${siteUrl}/our-work`,
+    },
+    alternates: { canonical: `${siteUrl}/our-work` },
+  };
+}
 
 const breadcrumb = {
   "@context": "https://schema.org",
@@ -39,23 +41,14 @@ const collectionSchema = {
   url: `${siteUrl}/our-work`,
 };
 
-export default async function OurWorkPage() {
-  const [heroBannersRes, categoriesRes, faqRes] = await Promise.allSettled([
-    getBanners("our-work-page-hero"),
-    getCategories(),
-    getFaqs(),
-  ]);
-  const heroBanners = heroBannersRes.status === "fulfilled" ? heroBannersRes.value : [];
-  const categories = categoriesRes.status === "fulfilled" ? categoriesRes.value.results ?? [] : [];
-  const faqItems = faqRes.status === "fulfilled" ? faqRes.value.results ?? [] : [];
-
+export default function OurWorkPage() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
-      <OurWorkHero initialImages={heroBanners} />
+      <LdJson data={breadcrumb} />
+      <LdJson data={collectionSchema} />
+      <OurWorkHero />
       <ProjectGallery />
-      <ConsultationForm initialCategories={categories} initialFaqItems={faqItems} />
+      <ConsultationForm />
     </>
   );
 }

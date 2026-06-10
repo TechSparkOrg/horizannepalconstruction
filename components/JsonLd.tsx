@@ -1,6 +1,6 @@
 import type { SiteSettings } from "@/api/types/settings.types";
 
-function LdJson({ data }: { data: Record<string, unknown> }) {
+export function LdJson({ data }: { data: Record<string, unknown> }) {
   return (
     <script
       type="application/ld+json"

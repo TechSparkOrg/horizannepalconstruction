@@ -5,6 +5,7 @@ import { ArrowRight, Calendar } from "lucide-react";
 import { BlogHero } from "@/components/sections/BlogHero";
 import { getBlogs } from "@/api/cached/blog";
 import { getCategories } from "@/api/cached/category";
+import { LdJson } from "@/components/JsonLd";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -43,7 +44,7 @@ export default async function BlogPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+      <LdJson data={breadcrumb} />
       <BlogHero />
       <section className="bg-off-white py-16 sm:py-28">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">

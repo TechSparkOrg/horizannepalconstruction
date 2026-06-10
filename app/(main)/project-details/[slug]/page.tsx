@@ -6,6 +6,7 @@ import { ArrowLeft, CheckCircle, MapPin, Calendar, Share2, Music2, Video, Globe 
 import ModelViewerBlock from "@/components/ModelViewerBlock";
 import type { Project } from "@/api/types/project.types";
 import { getProjectBySlug } from "@/api/cached/project";
+import { LdJson } from "@/components/JsonLd";
 
 function modelSrc(file: string) {
   if (!file) return "";
@@ -53,7 +54,7 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(projectSchema) }} />
+      <LdJson data={projectSchema} />
       {/* Hero */}
       <section className="relative min-h-[50vh] flex items-end bg-brand-dark">
         <div className="absolute inset-0">

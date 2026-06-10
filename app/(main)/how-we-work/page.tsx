@@ -1,29 +1,31 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { HowWeWorkHero } from "@/components/sections/HowWeWorkHero";
-import { WelcomeText } from "@/components/sections/WelcomeText";
-import { HowWeWorkProcess } from "@/components/sections/HowWeWorkProcess";
-import { HowWeWorkDesignGrid } from "@/components/sections/HowWeWorkDesignGrid";
-import { FAQWrapper } from "@/components/FAQWrapper";
-import { QuoteBannerSecondary } from "@/components/sections/QuoteBannerSecondary";
-import { getBanners } from "@/api/cached/banner";
-import type { MediaItem } from "@/api/types/media.types";
+import dynamic from "next/dynamic";
+import { LdJson } from "@/components/JsonLd";
+
+const HowWeWorkHero = dynamic(() => import("@/components/sections/HowWeWorkHero").then((m) => ({ default: m.HowWeWorkHero })));
+const WelcomeText = dynamic(() => import("@/components/sections/WelcomeText").then((m) => ({ default: m.WelcomeText })));
+const HowWeWorkProcess = dynamic(() => import("@/components/sections/HowWeWorkProcess").then((m) => ({ default: m.HowWeWorkProcess })));
+const HowWeWorkDesignGrid = dynamic(() => import("@/components/sections/HowWeWorkDesignGrid").then((m) => ({ default: m.HowWeWorkDesignGrid })));
+const FAQWrapper = dynamic(() => import("@/components/FAQWrapper").then((m) => ({ default: m.FAQWrapper })));
+const QuoteBannerSecondary = dynamic(() => import("@/components/sections/QuoteBannerSecondary").then((m) => ({ default: m.QuoteBannerSecondary })));
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
-export const metadata: Metadata = {
-  title: "How We Work | Horizan Nepal",
-  description:
-    "Discover Horizan Nepal's step-by-step design and construction process. From consultation to handover, see how we bring your dream project to life.",
-  openGraph: {
+export async function generateMetadata(): Promise<Metadata> {
+  return {
     title: "How We Work | Horizan Nepal",
     description:
-      "Discover Horizan Nepal's step-by-step design and construction process from consultation to handover.",
-    type: "website",
-    url: `${siteUrl}/how-we-work`,
-  },
-  alternates: { canonical: `${siteUrl}/how-we-work` },
-};
+      "Discover Horizan Nepal's step-by-step design and construction process. From consultation to handover, see how we bring your dream project to life.",
+    openGraph: {
+      title: "How We Work | Horizan Nepal",
+      description:
+        "Discover Horizan Nepal's step-by-step design and construction process from consultation to handover.",
+      type: "website",
+      url: `${siteUrl}/how-we-work`,
+    },
+    alternates: { canonical: `${siteUrl}/how-we-work` },
+  };
+}
 
 const breadcrumb = {
   "@context": "https://schema.org",
@@ -34,26 +36,15 @@ const breadcrumb = {
   ],
 };
 
-export default async function HowWeWorkPage() {
-  let heroBanners: MediaItem[];
-  try {
-    heroBanners = await getBanners("how-we-work-page-hero");
-  } catch {
-    heroBanners = [];
-  }
-
+export default function HowWeWorkPage() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <HowWeWorkHero initialBanners={heroBanners} />
+      <LdJson data={breadcrumb} />
+      <HowWeWorkHero />
       <WelcomeText />
       <HowWeWorkProcess />
       <HowWeWorkDesignGrid />
-
-      <Suspense fallback={<div className="min-h-[400px]" />}>
-        <FAQWrapper />
-      </Suspense>
-
+      <FAQWrapper />
       <QuoteBannerSecondary />
     </>
   );

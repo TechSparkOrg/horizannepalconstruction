@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { BannerCarousel } from "@/components/BannerCarousel";
+import { LdJson } from "@/components/JsonLd";
 
 const categories = [
   {
@@ -85,7 +86,7 @@ const breadcrumb = {
 export default function GreenCalculatorPage() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+      <LdJson data={breadcrumb} />
       <section className="relative min-h-[50vh] flex items-center overflow-hidden bg-brand-dark">
         <BannerCarousel slug="green-calculator-page-hero" imgClassName="object-cover opacity-60" />
         <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/40 to-brand-dark/70" />
