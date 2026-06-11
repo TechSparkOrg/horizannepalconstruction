@@ -5,8 +5,9 @@ import { ArrowRight, Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import { useSettings } from "@/stores/settings-store";
 import { getSocialIcon } from "@/lib/social-icons";
 import { BannerCarousel } from "@/components/BannerCarousel";
+import type { MediaItem } from "@/api/types/media.types";
 
-export function ContactHero() {
+export function ContactHero({ initialBanners }: { initialBanners?: MediaItem[] }) {
   const settings = useSettings((s) => s.settings);
   const social_links = settings?.social_links ?? [];
   const contact_info = {
@@ -56,6 +57,7 @@ export function ContactHero() {
       <BannerCarousel
         slug="contact-us-page-hero"
         imgClassName="object-cover opacity-50"
+        initialBanners={initialBanners}
       />
 
       {/* Gradient overlay — fades image into dark at bottom */}

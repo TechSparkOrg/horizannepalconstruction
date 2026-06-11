@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { LdJson } from "@/components/JsonLd";
 import { ContactHero } from "@/components/sections/ContactHero";
-import { ConsultationForm } from "@/components/ConsultationForm";
-import { LocationSection } from "@/components/LocationSection";
 import { getCategories } from "@/api/cached/category";
 import { getFaqs } from "@/api/cached/faq";
+import { getBanners } from "@/api/cached/banner";
+
+const ConsultationForm = dynamic(() => import("@/components/ConsultationForm").then(m => ({ default: m.ConsultationForm })));
+const LocationSection = dynamic(() => import("@/components/LocationSection").then(m => ({ default: m.LocationSection })));
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -53,12 +56,16 @@ export default async function ContactPage() {
     })),
   } : null;
 
+  const banners = await getBanners("contact-us-page-hero").catch(() => null);
   return (
     <>
+      {banners?.map((b) =>
+        b.url ? <link rel="preload" as="image" href={b.url} key={b.id} /> : null
+      )}
       <LdJson data={breadcrumb} />
       {faqPageSchema && <LdJson data={faqPageSchema} />}
-      <ContactHero />
-      <ConsultationForm initialCategories={categories} initialFaqItems={faqItems} />
+      <ContactHero initialBanners={banners ?? undefined} />
+      <ConsultationForm initialCategories={categories} />
       <LocationSection />
     </>
   );

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { HeroSection } from "@/components/HeroSection";
 import { LdJson } from "@/components/JsonLd";
+import { getBanners } from "@/api/cached/banner";
 
 const WhyChooseUs = dynamic(() => import("@/components/WhyChooseUs").then((m) => ({ default: m.WhyChooseUs })));
 const HomeGallery = dynamic(() => import("@/components/HomeGallery").then((m) => ({ default: m.HomeGallery })));
@@ -42,11 +43,16 @@ const websiteSchema = {
 };
 
 export default async function Home() {
+  const banners = await getBanners("home-page-hero").catch(() => null);
+
   return (
     <>
+      {banners?.map((b) =>
+        b.url ? <link rel="preload" as="image" href={b.url} key={b.id} /> : null
+      )}
       <LdJson data={breadcrumb} />
       <LdJson data={websiteSchema} />
-      <HeroSection />
+      <HeroSection initialBanners={banners ?? undefined} />
       <WhyChooseUs />
       <HomeGallery />
       <FAQSection />

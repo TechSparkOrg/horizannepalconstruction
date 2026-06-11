@@ -1,0 +1,113 @@
+{
+  "name": "Horizon Nepal",
+  "description": "Architecture, engineering, and construction firm in Nepal. Published agents provide project information, blog content, 3D models, and building permit guidance.",
+  "organization": {
+    "name": "Horizan Nepal Construction",
+    "url": "https://horizonnepalconstruction.com",
+    "contact": {
+      "email": "info@horizonnepalconstruction.com",
+      "phone": "+977-1-4XXXXXX"
+    }
+  },
+  "protocols": {
+    "a2a": {
+      "version": "1.0",
+      "endpoint": "https://horizonnepalconstruction.com/.well-known/agent-card.json",
+      "description": "General website information and content discovery"
+    },
+    "mcp": {
+      "version": "1.0",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/",
+      "description": "REST API for structured data access"
+    }
+  },
+  "capabilities": [
+    {
+      "id": "project-portfolio",
+      "name": "Project Portfolio",
+      "description": "Browse construction projects with details, images, and 3D models",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/projects/"
+    },
+    {
+      "id": "blog-content",
+      "name": "Blog & Insights",
+      "description": "Articles and guides on construction, architecture, and engineering in Nepal",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/blog/"
+    },
+    {
+      "id": "building-permit",
+      "name": "Building Permit Assistant",
+      "description": "Step-by-step workflow, document checklist, and municipality directory for Nepal's building permit process",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/building-permit/"
+    },
+    {
+      "id": "cost-estimation",
+      "name": "Cost Estimation",
+      "description": "Construction cost calculator with material pricing and labor rates",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/calculator/materials/"
+    },
+    {
+      "id": "vastu-shastra",
+      "name": "Vastu Shastra Guide",
+      "description": "Vastu-compliant building design principles and configuration data",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/vastu/"
+    },
+    {
+      "id": "faq",
+      "name": "FAQ",
+      "description": "Frequently asked questions about the company and services",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/faq/"
+    },
+    {
+      "id": "3d-models",
+      "name": "3D Models",
+      "description": "Interactive 3D building models viewable in the browser",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/models/"
+    },
+    {
+      "id": "banners",
+      "name": "Banners & Images",
+      "description": "Hero banners and featured images grouped by page slug",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/banners/{slug}/"
+    },
+    {
+      "id": "consultation",
+      "name": "Consultation Form",
+      "description": "Submit consultation requests on behalf of users",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/consultation/"
+    },
+    {
+      "id": "page-content",
+      "name": "Page Content",
+      "description": "CMS-managed page content with bilingual (en/np) support",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/pages/"
+    },
+    {
+      "id": "page-sections",
+      "name": "Page Sections",
+      "description": "Structured content sections by page, bilingual",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/pages/sections/"
+    },
+    {
+      "id": "reviews",
+      "name": "Client Reviews",
+      "description": "Client testimonials and social proof",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/reviews/"
+    },
+    {
+      "id": "site-settings",
+      "name": "Site Settings",
+      "description": "Site configuration, contact information, social links, and analytics settings",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/settings/"
+    },
+    {
+      "id": "team",
+      "name": "Team Members",
+      "description": "Company team member directory with roles and bios",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/team/"
+    }
+  ],
+  "wellKnown": {
+    "apiCatalog": "https://horizonnepalconstruction.com/.well-known/api-catalog.json"
+  }
+}

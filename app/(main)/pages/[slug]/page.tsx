@@ -40,6 +40,9 @@ export default async function PageView({ params }: { params: Promise<{ slug: str
 
   return (
     <>
+      {banners?.map((b) =>
+        b.url ? <link rel="preload" as="image" href={b.url} key={b.id} /> : null
+      )}
       <section className="relative min-h-[55vh] flex items-center overflow-hidden bg-brand-dark">
         <BannerCarousel
           slug={`${slug}-page-hero`}

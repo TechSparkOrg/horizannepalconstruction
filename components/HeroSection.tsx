@@ -4,8 +4,9 @@ import Link from "next/link";
 import { ArrowRight, Play } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { BannerCarousel } from "@/components/BannerCarousel";
+import type { MediaItem } from "@/api/types/media.types";
 
-export function HeroSection() {
+export function HeroSection({ initialBanners }: { initialBanners?: MediaItem[] }) {
   return (
     <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
       <BannerCarousel
@@ -13,6 +14,7 @@ export function HeroSection() {
         carousel
         imgClassName="object-cover scale-[1.02]"
         overlay="linear-gradient(105deg, color-mix(in oklch, var(--color-brand-dark) 80%, transparent) 0%, color-mix(in oklch, var(--color-brand-dark) 40%, transparent) 55%, color-mix(in oklch, var(--color-brand-dark) 10%, transparent) 100%)"
+        initialBanners={initialBanners}
       />
 
       <div

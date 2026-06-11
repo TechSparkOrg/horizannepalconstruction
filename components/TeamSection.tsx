@@ -92,7 +92,7 @@ export function TeamSection({ initialMembers }: { initialMembers?: TeamMember[] 
         <div className="border border-light-gray rounded-xl overflow-hidden">
           <div className="grid grid-cols-[2fr_1.5fr_1fr_1fr] gap-2 px-5 py-2.5 bg-light-gray/20 border-b border-light-gray">
             {["Team member", "Specialisation", "Experience", "Contact"].map((h) => (
-              <span key={h} className="text-xs font-semibold uppercase tracking-wider text-mid-gray/70">{h}</span>
+              <span key={h} className="text-xs font-semibold uppercase tracking-wider text-mid-gray">{h}</span>
             ))}
           </div>
 
@@ -107,7 +107,7 @@ export function TeamSection({ initialMembers }: { initialMembers?: TeamMember[] 
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-brand-dark">{m.name}</p>
-                  <p className="text-xs text-mid-gray/70 mt-0.5">{m.role}</p>
+                  <p className="text-xs text-mid-gray mt-0.5">{m.role}</p>
                 </div>
               </div>
               <span className="text-sm text-mid-gray">{m.specialisation}</span>

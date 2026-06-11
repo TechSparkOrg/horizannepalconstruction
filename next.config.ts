@@ -52,7 +52,7 @@ const config: NextConfig = {
           { key: "Cache-Control", value: "public, max-age=0, s-maxage=60, stale-while-revalidate=300" },
           {
             key: "Link",
-            value: "<https://assets.horizonnepalconstruction.com>; rel=preconnect",
+            value: "<https://assets.horizonnepalconstruction.com>; rel=preconnect, </sitemap.xml>; rel=\"sitemap\", </.well-known/api-catalog>; rel=\"api-catalog\"",
           },
         ],
       },

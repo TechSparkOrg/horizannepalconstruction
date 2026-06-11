@@ -55,6 +55,7 @@ export function BannerCarousel({ slug, children, overlay, carousel = true, class
               alt={b.alt || b.meta_title || ""}
               fill
               priority={i === 0}
+              fetchPriority={i === 0 ? "high" : "auto"}
               loading={i === 0 ? undefined : "lazy"}
               sizes="100vw"
               className={imgClassName}
@@ -78,13 +79,17 @@ export function BannerCarousel({ slug, children, overlay, carousel = true, class
               key={i}
               type="button"
               onClick={() => setCurrent(i)}
-              className={`rounded-full transition-all duration-300 ${
-                i === current
-                  ? "w-6 h-2 bg-brand-primary"
-                  : "w-2 h-2 bg-white/40 hover:bg-white/70"
+              className={`flex items-center justify-center size-6 rounded-full transition-opacity duration-300 ${
+                i === current ? "" : "hover:opacity-60"
               }`}
               aria-label={`Go to slide ${i + 1}`}
-            />
+            >
+              <span className={`rounded-full transition-transform duration-300 w-6 h-2 ${
+                i === current
+                  ? "bg-brand-primary scale-x-100 opacity-100"
+                  : "bg-white/40 scale-x-[0.33] opacity-100"
+              }`} />
+            </button>
           ))}
         </div>
       )}

@@ -74,7 +74,7 @@ export function HowWeWorkDesignGrid() {
                         {item.num} &mdash; {item.label}
                       </p>
                       <div className="mt-6 mx-auto w-20 h-px bg-brand-primary/20" />
-                      <p className="mt-4 text-sm text-mid-gray/60 italic max-w-[200px] mx-auto">
+                      <p className="mt-4 text-sm text-mid-gray italic max-w-[200px] mx-auto">
                         &ldquo;{item.title}&rdquo;
                       </p>
                     </div>

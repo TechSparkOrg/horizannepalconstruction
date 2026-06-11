@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import FloorPlanner from "@/components/sections/FloorPlanner";
 import { BannerCarousel } from "@/components/BannerCarousel";
 import { LdJson } from "@/components/JsonLd";
+import { getBanners } from "@/api/cached/banner";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -37,12 +38,16 @@ const breadcrumb = {
   ],
 };
 
-export default function FloorPlannerPage() {
+export default async function FloorPlannerPage() {
+  const banners = await getBanners("floor-planner-page-hero").catch(() => null);
   return (
     <>
+      {banners?.map((b) =>
+        b.url ? <link rel="preload" as="image" href={b.url} key={b.id} /> : null
+      )}
       <LdJson data={breadcrumb} />
       <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-brand-dark">
-        <BannerCarousel slug="floor-planner-page-hero" imgClassName="object-cover opacity-60 scale-105" />
+        <BannerCarousel slug="floor-planner-page-hero" imgClassName="object-cover opacity-60 scale-105" initialBanners={banners ?? undefined} />
         <div className="absolute inset-0 bg-gradient-to-br from-brand-dark/60 via-brand-dark/30 to-transparent">
           <div className="absolute inset-0 opacity-20" style={{ background: "linear-gradient(135deg, rgba(215,30,41,0.1) 0%, transparent 50%)" }} />
         </div>

@@ -1,0 +1,25 @@
+{
+  "name": "Horizon Nepal API",
+  "description": "Public REST API for Horizon Nepal's construction company website — architecture, engineering, and construction services across Nepal.",
+  "baseUrl": "https://api.horizonnepalconstruction.com/api",
+  "endpoints": [
+    { "path": "/settings/", "methods": ["GET"], "description": "Site settings, social links, contact info, analytics scripts" },
+    { "path": "/projects/", "methods": ["GET"], "description": "List of construction projects" },
+    { "path": "/projects/{slug}/", "methods": ["GET"], "description": "Single project detail by slug" },
+    { "path": "/blog/", "methods": ["GET"], "description": "Blog posts list" },
+    { "path": "/blog/{slug}/", "methods": ["GET"], "description": "Single blog post by slug" },
+    { "path": "/categories/", "methods": ["GET"], "description": "Project categories" },
+    { "path": "/faq/", "methods": ["GET"], "description": "FAQ items" },
+    { "path": "/team/", "methods": ["GET"], "description": "Team members" },
+    { "path": "/reviews/", "methods": ["GET"], "description": "Client reviews / testimonials" },
+    { "path": "/pages/", "methods": ["GET"], "description": "CMS pages" },
+    { "path": "/pages/sections/", "methods": ["GET"], "description": "Page sections with bilingual content" },
+    { "path": "/banners/{slug}/", "methods": ["GET"], "description": "Banner images grouped by slug" },
+    { "path": "/models/", "methods": ["GET"], "description": "3D models list" },
+    { "path": "/models/{slug}/", "methods": ["GET"], "description": "Single 3D model by slug" },
+    { "path": "/vastu/", "methods": ["GET"], "description": "Vastu Shastra configuration" },
+    { "path": "/building-permit/", "methods": ["GET"], "description": "Building permit workflow configuration" },
+    { "path": "/calculator/materials/", "methods": ["GET"], "description": "Construction materials for cost estimation" },
+    { "path": "/consultation/", "methods": ["POST"], "description": "Submit consultation contact form" }
+  ]
+}

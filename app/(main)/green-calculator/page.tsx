@@ -3,6 +3,7 @@ import { Check } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { BannerCarousel } from "@/components/BannerCarousel";
 import { LdJson } from "@/components/JsonLd";
+import { getBanners } from "@/api/cached/banner";
 
 const categories = [
   {
@@ -83,12 +84,16 @@ const breadcrumb = {
   ],
 };
 
-export default function GreenCalculatorPage() {
+export default async function GreenCalculatorPage() {
+  const banners = await getBanners("green-calculator-page-hero").catch(() => null);
   return (
     <>
+      {banners?.map((b) =>
+        b.url ? <link rel="preload" as="image" href={b.url} key={b.id} /> : null
+      )}
       <LdJson data={breadcrumb} />
       <section className="relative min-h-[50vh] flex items-center overflow-hidden bg-brand-dark">
-        <BannerCarousel slug="green-calculator-page-hero" imgClassName="object-cover opacity-60" />
+        <BannerCarousel slug="green-calculator-page-hero" imgClassName="object-cover opacity-60" initialBanners={banners ?? undefined} />
         <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/40 to-brand-dark/70" />
         <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center">
           <span className="text-xs font-semibold tracking-[0.15em] uppercase text-white/60 bg-white/10 px-3 py-1 rounded-full border border-white/10 inline-block">Tools</span>

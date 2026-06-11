@@ -14,11 +14,12 @@ const fallback = [
   { q: "Can I visit ongoing projects to see your work?", a: "Absolutely. We encourage potential clients to visit our active project sites. Please contact us to schedule a visit at your convenience." },
 ];
 
-export function FAQWrapper() {
+export function FAQWrapper({ initialFaqs }: { initialFaqs?: { q: string; a: string }[] }) {
   const [open, setOpen] = useState<number | null>(0);
-  const [faqs, setFaqs] = useState(fallback);
+  const [faqs, setFaqs] = useState(initialFaqs ?? fallback);
 
   useEffect(() => {
+    if (initialFaqs) return;
     FaqPublic.list()
       .then((res) => {
         if (res.results?.length > 0) {
@@ -26,7 +27,7 @@ export function FAQWrapper() {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [initialFaqs]);
 
   return (
     <section className="py-16 sm:py-28 bg-off-white">

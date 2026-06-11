@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { AboutHero } from "@/components/AboutHero";
-import { getBanners } from "@/api/cached/banner";
 import { LdJson } from "@/components/JsonLd";
-import type { MediaItem } from "@/api/types/media.types";
 
 const AboutTabs = dynamic(() => import("@/components/AboutTabs").then((m) => ({ default: m.AboutTabs })));
 const ServicesSection = dynamic(() => import("@/components/ServicesSection").then((m) => ({ default: m.ServicesSection })));
@@ -47,9 +45,7 @@ const aboutPageSchema = {
   description: "Architecture, Engineering & Construction services across Nepal since 1999.",
 };
 
-export default async function AboutPage() {
-  const galleryImages: MediaItem[] = await getBanners("about-page-gallary-list").catch(() => []);
-
+export default function AboutPage() {
   return (
     <>
       <LdJson data={breadcrumb} />
@@ -57,7 +53,7 @@ export default async function AboutPage() {
       <AboutHero />
       <AboutTabs />
       <ServicesSection />
-      <AboutGallery initialImages={galleryImages} />
+      <AboutGallery />
       <TeamSection />
       <TestimonialsSection />
       <ConsultationForm />

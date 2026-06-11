@@ -95,14 +95,14 @@ export default function BuildingPermitClient({ initialConfig }: { initialConfig?
                           </div>
                           <h3 className="font-display font-bold text-xl text-brand-dark">{step.title?.en ?? ""}</h3>
                         </div>
-                        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-primary bg-brand-primary/10 px-3 py-1 rounded-full shrink-0">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-dark bg-brand-primary/10 px-3 py-1 rounded-full shrink-0">
                           <Clock className="size-3" />
                           {step.duration}
                         </span>
                       </div>
                       <p className="text-mid-gray text-sm leading-relaxed">{step.desc?.en ?? ""}</p>
                       <div className="mt-4 pt-4 border-t border-light-gray/40">
-                        <p className="text-xs font-semibold text-mid-gray/70 uppercase tracking-wide mb-2">Required:</p>
+                        <p className="text-xs font-semibold text-mid-gray uppercase tracking-wide mb-2">Required:</p>
                         <div className="flex flex-wrap gap-1.5">
                           {(step.docs ?? []).map((doc) => (
                             <span key={doc} className="text-xs text-brand-dark bg-white px-2.5 py-1 rounded-lg border border-light-gray/30">
@@ -191,9 +191,9 @@ export default function BuildingPermitClient({ initialConfig }: { initialConfig?
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="bg-brand-secondary/5 border-b border-light-gray/40">
-                        <th className="text-left font-semibold text-brand-dark px-5 py-3.5">Municipality</th>
-                        <th className="text-left font-semibold text-brand-dark px-5 py-3.5">District</th>
-                        <th className="text-left font-semibold text-brand-dark px-5 py-3.5">Phone</th>
+                        <th scope="col" className="text-left font-semibold text-brand-dark px-5 py-3.5">Municipality</th>
+                        <th scope="col" className="text-left font-semibold text-brand-dark px-5 py-3.5">District</th>
+                        <th scope="col" className="text-left font-semibold text-brand-dark px-5 py-3.5">Phone</th>
                       </tr>
                     </thead>
                     <tbody>

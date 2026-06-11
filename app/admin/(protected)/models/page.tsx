@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import "@google/model-viewer";
+// @google/model-viewer loaded lazily — see previewModelViewer() call
 import { Plus, Pencil, Trash2, Upload, Eye, X, Box, Loader2, ExternalLink, ChevronRight } from "lucide-react";
 import { getAdminModels, getAllProjects, revalidateAdminTag } from "@/app/actions/admin-cache";
 import { Model3dAdmin } from "@/api/services/model3d.service";
@@ -301,6 +301,13 @@ export default function AdminModelsPage() {
       }
     );
   }, []);
+
+  // Lazy-load @google/model-viewer only when a 3D model preview is opened
+  useEffect(() => {
+    if (previewUrl && isModelViewable(previewUrl)) {
+      import("@google/model-viewer");
+    }
+  }, [previewUrl]);
 
   const selected = items.find((m) => m.id === selectedId);
 

@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { DesignHero } from "@/components/sections/DesignHero";
 import { DesignServices } from "@/components/sections/DesignServices";
-import { Design3DShowcase } from "@/components/sections/Design3DShowcase";
-import { ConsultationForm } from "@/components/ConsultationForm";
 import { getProjects } from "@/api/cached/project";
 import { getModels } from "@/api/cached/model3d";
 import { getCategories } from "@/api/cached/category";
-import { getFaqs } from "@/api/cached/faq";
 import { LdJson } from "@/components/JsonLd";
+
+const Design3DShowcase = dynamic(() => import("@/components/sections/Design3DShowcase").then(m => ({ default: m.Design3DShowcase })));
+const ConsultationForm = dynamic(() => import("@/components/ConsultationForm").then(m => ({ default: m.ConsultationForm })));
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -41,14 +42,12 @@ function modelSrc(file: string) {
 }
 
 export default async function DesignPage() {
-  const [projectsRes, modelsRes, categoriesRes, faqRes] = await Promise.allSettled([
+  const [projectsRes, modelsRes, categoriesRes] = await Promise.allSettled([
     getProjects(),
     getModels(),
     getCategories(),
-    getFaqs(),
   ]);
   const categories = categoriesRes.status === "fulfilled" ? categoriesRes.value.results ?? [] : [];
-  const faqItems = faqRes.status === "fulfilled" ? faqRes.value.results ?? [] : [];
 
   let modelCards: { key: string; src: string; title: string; subtitle: string; href?: string }[];
   if (projectsRes.status === "fulfilled" || modelsRes.status === "fulfilled") {
@@ -90,7 +89,7 @@ export default async function DesignPage() {
       <DesignHero />
       <DesignServices />
       <Design3DShowcase initialItems={modelCards} />
-      <ConsultationForm initialCategories={categories} initialFaqItems={faqItems} />
+      <ConsultationForm initialCategories={categories} />
     </>
   );
 }

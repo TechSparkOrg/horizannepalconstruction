@@ -46,9 +46,17 @@ export function Header() {
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
-  // Scroll-aware background
+  // Scroll-aware background (throttled via rAF)
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 20);
+        ticking = false;
+      });
+      ticking = true;
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -78,11 +86,7 @@ export function Header() {
       {/* ── Nav bar ─────────────────────────────────────────────────────────── */}
       <nav
         aria-label="Primary navigation"
-        className={`fixed top-0 inset-x-0 z-[100] h-16 transition-all duration-300 ${
-          scrolled
-            ? "bg-brand-dark/95 backdrop-blur-xl shadow-lg shadow-black/20 border-b border-white/5"
-            : "bg-transparent"
-        }`}
+        className="fixed top-0 inset-x-0 z-[100] h-16 transition-all duration-300 bg-brand-dark/95 backdrop-blur-xl shadow-lg shadow-black/20 border-b border-white/5"
       >
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 h-full flex items-center gap-6">
 

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { CostEstimationHero } from "@/components/sections/CostEstimationHero";
 import { CostEstimationContent } from "@/components/sections/CostEstimationContent";
-import { CostEstimator } from "@/components/sections/CostEstimator";
 import { LdJson } from "@/components/JsonLd";
+
+const CostEstimator = dynamic(() => import("@/components/sections/CostEstimator").then(m => ({ default: m.CostEstimator })));
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 

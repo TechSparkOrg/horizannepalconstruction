@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import VastuShastraClient from "./VastuShastraClient";
 import { getVastuConfig } from "@/api/cached/vastu";
+import { getBanners } from "@/api/cached/banner";
 import { LdJson } from "@/components/JsonLd";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
@@ -36,10 +37,15 @@ export default async function VastuShastraPage() {
     initialData = null;
   }
 
+  const banners = await getBanners("vastu-shastra-page-hero").catch(() => null);
+
   return (
     <>
+      {banners?.map((b) =>
+        b.url ? <link rel="preload" as="image" href={b.url} key={b.id} /> : null
+      )}
       <LdJson data={breadcrumb} />
-      <VastuShastraClient initialData={initialData} />
+      <VastuShastraClient initialData={initialData} initialBanners={banners ?? undefined} />
     </>
   );
 }

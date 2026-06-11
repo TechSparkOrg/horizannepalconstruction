@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback, useEffect } from "react";
+import { useRef, useCallback, useEffect, useState, useMemo } from "react";
 import {
   Bold, Italic, Underline, Strikethrough, Code,
   List, ListOrdered, Quote, AlignLeft, AlignCenter, AlignRight,
@@ -34,6 +34,10 @@ function ToolbarBtn({
         e.preventDefault();
         onClick();
       }}
+      onClick={(e) => {
+        e.preventDefault();
+        onClick();
+      }}
       title={title}
       className="size-[30px] grid place-items-center rounded-md border-none bg-transparent text-mid-gray hover:bg-white hover:text-brand-dark transition-colors duration-150"
     >
@@ -46,11 +50,37 @@ function Sep() {
   return <div className="w-px h-[18px] bg-light-gray mx-1 shrink-0" />;
 }
 
+function saveSelection(editorEl: HTMLElement) {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return null;
+  const range = sel.getRangeAt(0);
+  if (!editorEl.contains(range.commonAncestorContainer)) return null;
+  return range.cloneRange();
+}
+
+function restoreSelection(editorEl: HTMLElement, savedRange: Range | null) {
+  if (!savedRange) {
+    editorEl.focus();
+    return;
+  }
+  const sel = window.getSelection();
+  if (!sel) {
+    editorEl.focus();
+    return;
+  }
+  try {
+    sel.removeAllRanges();
+    sel.addRange(savedRange);
+  } catch {
+    editorEl.focus();
+  }
+}
+
 export default function RichEditor({
   value,
   onChange,
   minHeight = 200,
-  placeholder = "Start typing…",
+  placeholder = "Start typing\u2026",
 }: {
   value: string;
   onChange: (html: string) => void;
@@ -58,65 +88,133 @@ export default function RichEditor({
   placeholder?: string;
 }) {
   const editorRef = useRef<HTMLDivElement>(null);
+  const isFocusedRef = useRef(false);
+  const lastEmittedRef = useRef(value);
+  const mountedRef = useRef(false);
+  const [wordCount, setWordCount] = useState(0);
+  const [charCount, setCharCount] = useState(0);
+
+  const updateCounts = useCallback(() => {
+    const text = editorRef.current?.innerText?.trim() ?? "";
+    setWordCount(text ? text.split(/\s+/).length : 0);
+    setCharCount(text.length);
+  }, []);
 
   const exec = useCallback(
     (cmd: string, val?: string) => {
-      document.execCommand(cmd, false, val ?? undefined);
-      editorRef.current?.focus();
-      onChange(editorRef.current?.innerHTML ?? "");
+      if (!editorRef.current) return;
+      const saved = saveSelection(editorRef.current);
+      try {
+        document.execCommand(cmd, false, val ?? undefined);
+      } catch {
+        /* execCommand is deprecated; browser may throw */
+      }
+      restoreSelection(editorRef.current, saved);
+      const html = editorRef.current.innerHTML;
+      lastEmittedRef.current = html;
+      onChange(html);
+      updateCounts();
     },
-    [onChange]
+    [onChange, updateCounts]
   );
 
-  const handleInput = () => {
-    onChange(editorRef.current?.innerHTML ?? "");
-  };
+  const handleInput = useCallback(() => {
+    if (!editorRef.current) return;
+    const html = editorRef.current.innerHTML;
+    lastEmittedRef.current = html;
+    onChange(html);
+    updateCounts();
+  }, [onChange, updateCounts]);
 
-  const insertLink = () => {
-    const url = window.prompt("Enter URL:");
-    if (url) exec("createLink", url);
-  };
-
-  const wrapInlineCode = () => {
-    const sel = window.getSelection();
-    if (sel && sel.toString()) {
-      document.execCommand(
-        "insertHTML",
-        false,
-        `<code>${sel.toString()}</code>`
-      );
-      editorRef.current?.focus();
-      onChange(editorRef.current?.innerHTML ?? "");
-    }
-  };
-
-  const wordCount = () => {
-    const text = editorRef.current?.innerText?.trim() ?? "";
-    return text ? text.split(/\s+/).length : 0;
-  };
-
-  const charCount = () =>
-    (editorRef.current?.innerText?.trim() ?? "").length;
-
-  // Sync initial value without cursor reset on re-renders
-  useEffect(() => {
-    if (editorRef.current && editorRef.current.innerHTML !== value) {
-      editorRef.current.innerHTML = value;
-    }
+  const handleFocus = useCallback(() => {
+    isFocusedRef.current = true;
   }, []);
+
+  const handleBlur = useCallback(() => {
+    isFocusedRef.current = false;
+  }, []);
+
+  const insertLink = useCallback(() => {
+    const url = window.prompt("Enter URL:");
+    if (url && url.trim()) exec("createLink", url.trim());
+  }, [exec]);
+
+  const wrapInlineCode = useCallback(() => {
+    if (!editorRef.current) return;
+    const sel = window.getSelection();
+    if (!sel || !sel.toString()) return;
+    const saved = saveSelection(editorRef.current);
+    try {
+      document.execCommand("insertHTML", false, `<code>${sel.toString()}</code>`);
+    } catch {
+      /* execCommand is deprecated; browser may throw */
+    }
+    restoreSelection(editorRef.current, saved);
+    const html = editorRef.current.innerHTML;
+    lastEmittedRef.current = html;
+    onChange(html);
+    updateCounts();
+  }, [onChange, updateCounts]);
+
+  const setBlockFormat = useCallback(
+    (raw: string) => {
+      const v = raw as BlockFormat;
+      exec("formatBlock", v === "pre" ? "pre" : `<${v}>`);
+    },
+    [exec]
+  );
+
+  // Initialize editor content on first mount only
+  useEffect(() => {
+    mountedRef.current = true;
+    if (editorRef.current) {
+      editorRef.current.innerHTML = value;
+      lastEmittedRef.current = value;
+    }
+    updateCounts();
+    // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Sync parent value when editor is NOT focused
+  // This handles external content changes (reset, load saved data, etc.)
+  useEffect(() => {
+    if (!mountedRef.current) return;
+    if (!editorRef.current) return;
+    if (isFocusedRef.current) return;
+    if (editorRef.current.innerHTML === value) return;
+
+    const saved = saveSelection(editorRef.current);
+    editorRef.current.innerHTML = value;
+    lastEmittedRef.current = value;
+    restoreSelection(editorRef.current, saved);
+    updateCounts();
+  }, [value, updateCounts]);
+
+  const placeholderStyle = useMemo(
+    () =>
+      [
+        "px-4 py-3 text-sm text-brand-dark focus:outline-none leading-relaxed",
+        "empty:before:content-[attr(data-placeholder)] empty:before:text-mid-gray/50",
+        "[&_h1]:text-xl [&_h1]:font-medium [&_h1]:mb-1",
+        "[&_h2]:text-base [&_h2]:font-medium [&_h2]:mb-1",
+        "[&_h3]:text-sm [&_h3]:font-medium [&_h3]:mb-1",
+        "[&_blockquote]:border-l-2 [&_blockquote]:border-light-gray [&_blockquote]:pl-3 [&_blockquote]:text-mid-gray [&_blockquote]:italic",
+        "[&_ul]:list-disc [&_ul]:pl-5",
+        "[&_ol]:list-decimal [&_ol]:pl-5",
+        "[&_code]:font-mono [&_code]:text-xs [&_code]:bg-off-white [&_code]:px-1 [&_code]:rounded",
+        "[&_a]:text-brand [&_a]:underline",
+      ].join(" "),
+    []
+  );
 
   return (
     <div className="border border-light-gray rounded-xl overflow-hidden bg-white">
-      {/* Toolbar */}
       <div className="flex items-center gap-0.5 px-2 py-1.5 bg-off-white border-b border-light-gray flex-wrap">
-        {/* Block type select */}
         <div className="relative mr-1">
           <select
             className="appearance-none text-xs border border-light-gray rounded-md pl-2 pr-6 h-[28px] bg-white text-mid-gray cursor-pointer focus:outline-none focus:border-brand-dark"
-            onChange={(e) => {
-              const v = e.target.value as BlockFormat;
-              exec("formatBlock", v === "pre" ? "pre" : `<${v}>`);
-            }}
+            onChange={(e) => setBlockFormat(e.target.value)}
             defaultValue="p"
           >
             {BLOCK_OPTIONS.map((o) => (
@@ -198,37 +296,26 @@ export default function RichEditor({
         </ToolbarBtn>
       </div>
 
-      {/* Editable area */}
       <div
         ref={editorRef}
         contentEditable
         suppressContentEditableWarning
         onInput={handleInput}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         data-placeholder={placeholder}
-        className={[
-          "px-4 py-3 text-sm text-brand-dark focus:outline-none leading-relaxed",
-          "empty:before:content-[attr(data-placeholder)] empty:before:text-mid-gray/50",
-          // prose styles — add to global CSS or tailwind prose plugin if preferred
-          "[&_h1]:text-xl [&_h1]:font-medium [&_h1]:mb-1",
-          "[&_h2]:text-base [&_h2]:font-medium [&_h2]:mb-1",
-          "[&_h3]:text-sm [&_h3]:font-medium [&_h3]:mb-1",
-          "[&_blockquote]:border-l-2 [&_blockquote]:border-light-gray [&_blockquote]:pl-3 [&_blockquote]:text-mid-gray [&_blockquote]:italic",
-          "[&_ul]:list-disc [&_ul]:pl-5",
-          "[&_ol]:list-decimal [&_ol]:pl-5",
-          "[&_code]:font-mono [&_code]:text-xs [&_code]:bg-off-white [&_code]:px-1 [&_code]:rounded",
-          "[&_a]:text-brand [&_a]:underline",
-        ].join(" ")}
+        className={placeholderStyle}
         style={{ minHeight }}
         dir="auto"
       />
 
-      {/* Footer */}
       <div className="flex items-center justify-between px-3 py-1.5 bg-off-white border-t border-light-gray">
-        <span className="text-[11px] text-mid-gray/60" id="wc">
-          {/* word count rendered via JS; static fallback */}
-          0 words
+        <span className="text-[11px] text-mid-gray/60">
+          {wordCount} {wordCount === 1 ? "word" : "words"}
         </span>
-        <span className="text-[11px] text-mid-gray/60">0 characters</span>
+        <span className="text-[11px] text-mid-gray/60">
+          {charCount} {charCount === 1 ? "character" : "characters"}
+        </span>
       </div>
     </div>
   );

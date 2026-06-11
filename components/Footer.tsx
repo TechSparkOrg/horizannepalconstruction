@@ -39,7 +39,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-brand-dark text-white/60">
+    <footer className="bg-brand-dark text-white/85">
 
       {/* Main grid */}
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
@@ -75,7 +75,7 @@ export function Footer() {
                   href={url ?? "#"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={label ?? platform}
+                  aria-label={label || platform || "Social media link"}
                   className="size-8 rounded-lg border border-white/12 grid place-items-center text-white/50 hover:bg-brand-primary hover:border-brand-primary hover:text-white transition-all duration-150"
                 >
                   <Icon className="size-3.5" />
@@ -150,19 +150,19 @@ export function Footer() {
                 {contact_info?.email ?? ""}
               </a>
             </p>
-            <p className="text-white/35 text-xs">Mon–Fri &nbsp;9:00 AM – 6:00 PM</p>
+            <p className="text-white/75 text-xs">Mon–Fri &nbsp;9:00 AM – 6:00 PM</p>
           </address>
         </div>
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-white/8">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-white/35">
+        <div className="border-t border-white/8">
+          <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-white/75">
           <p>&copy; {year} Horizon Nepal. All rights reserved.</p>
            <div className="flex items-center gap-5">
-            <a  href="/pages/privacy-policy" target="_blank"  rel="noopener noreferrer"  className="hover:text-white/70 transition-colors duration-150">Privacy Policy</a>
-            <a href="/pages/terms-conditions"  target="_blank" rel="noopener noreferrer" className="hover:text-white/70 transition-colors duration-150">Terms of Service</a>
-            <a href="/sitemap.xml"  target="_blank" rel="noopener noreferrer" className="hover:text-white/70 transition-colors duration-150">Sitemap</a>
+            <a  href="/pages/privacy-policy" target="_blank"  rel="noopener noreferrer"  className="hover:text-white/90 transition-colors duration-150">Privacy Policy</a>
+            <a href="/pages/terms-conditions"  target="_blank" rel="noopener noreferrer" className="hover:text-white/90 transition-colors duration-150">Terms of Service</a>
+            <a href="/sitemap.xml"  target="_blank" rel="noopener noreferrer" className="hover:text-white/90 transition-colors duration-150">Sitemap</a>
           </div>
         </div>
       </div>

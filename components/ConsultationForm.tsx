@@ -1,14 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowRight, MapPin, Mail, Phone, Minus, Plus } from "lucide-react";
+import { ArrowRight, MapPin, Mail, Phone } from "lucide-react";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { ConsultationPublic } from "@/api/services/consultation.service";
 import { CategoryPublic } from "@/api/services/category.service";
-import { FaqPublic } from "@/api/services/faq.service";
 import { useSettings } from "@/stores/settings-store";
 import type { Category } from "@/api/types/category.types";
-import type { FaqItem } from "@/api/types/faq.types";
 
 const sectionLabel = "Get in Touch";
 const heading = "Let's Build Together";
@@ -19,36 +17,21 @@ const successHeading = "Thank You!";
 const successMessage = "We've received your message and will get back to you shortly.";
 
 export function ConsultationForm({
-  faqCategorySlug = "consultation",
   initialCategories,
-  initialFaqItems,
 }: {
-  faqCategorySlug?: string;
   initialCategories?: Category[];
-  initialFaqItems?: FaqItem[];
 }) {
   const contactInfo = useSettings((s) => s.settings?.contact_info);
 
   const [categories, setCategories] = useState<Category[]>(initialCategories ?? []);
-  const [faqItems, setFaqItems] = useState<FaqItem[]>(initialFaqItems ?? []);
 
   useEffect(() => {
-    if (initialCategories && initialFaqItems) return;
-    Promise.all([
-      CategoryPublic.list(),
-      FaqPublic.list(),
-    ]).then(([catRes, faqRes]) => {
-      setCategories(catRes.results ?? []);
-      setFaqItems(faqRes.results ?? []);
+    if (initialCategories) return;
+    if (!CategoryPublic?.list) return;
+    CategoryPublic.list().then((r) => {
+      setCategories(r.results ?? []);
     }).catch(() => {});
   }, []);
-
-  const faqCategory = categories.find((c) => c.slug === faqCategorySlug);
-  const consultationFaqs = faqCategory
-    ? faqItems.filter((f) => f.category_id === faqCategory.id)
-    : [];
-
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -236,38 +219,6 @@ export function ConsultationForm({
         </form>
       </div>
 
-      {consultationFaqs.length > 0 && (
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12">
-          <div className="max-w-3xl mx-auto">
-            <h3 className="font-display font-bold text-xl sm:text-2xl text-brand-secondary text-center mb-8">
-              Frequently Asked Questions
-            </h3>
-            <div className="space-y-3">
-              {consultationFaqs.map((faq, i) => {
-                const isOpen = openFaq === i;
-                return (
-                  <div key={faq.id} className="bg-off-white rounded-xl border border-light-gray/40 overflow-hidden">
-                    <button
-                      onClick={() => setOpenFaq(isOpen ? null : i)}
-                      className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left"
-                    >
-                      <span className="text-sm font-medium text-brand-dark flex-1">{faq.question?.en ?? ""}</span>
-                      <span className={`shrink-0 size-6 rounded-full flex items-center justify-center transition-colors ${isOpen ? "bg-brand-primary/10 text-brand-primary" : "bg-light-gray/30 text-mid-gray"}`}>
-                        {isOpen ? <Minus className="size-3.5" /> : <Plus className="size-3.5" />}
-                      </span>
-                    </button>
-                    <div className="grid transition-all duration-300 ease-out" style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}>
-                      <div className="overflow-hidden">
-                        <p className="px-5 pb-4 text-sm text-mid-gray leading-relaxed">{faq.answer?.en ?? ""}</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

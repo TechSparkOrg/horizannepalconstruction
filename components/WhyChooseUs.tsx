@@ -74,7 +74,7 @@ export function WhyChooseUs() {
             >
               {/* Step number — fades in on hover */}
               <span
-                className="absolute top-5 right-5 text-xs font-medium tracking-wide text-mid-gray/70 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                className="absolute top-5 right-5 text-xs font-medium tracking-wide text-mid-gray opacity-0 group-hover:opacity-100 transition-opacity duration-200"
               >
                 0{i + 1}
               </span>

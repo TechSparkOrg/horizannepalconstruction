@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { BannerCarousel } from "@/components/BannerCarousel";
+import { getBanners } from "@/api/cached/banner";
 
 
 
@@ -11,10 +12,11 @@ const stats = [
   { label: "200+", sub: "Happy clients" },
 ];
 
-export function AboutHero() {
+export async function AboutHero() {
+  const banners = await getBanners("about-page-hero").catch(() => null);
   return (
     <section className="relative min-h-[75vh] flex items-center justify-center overflow-hidden">
-      <BannerCarousel slug="about-page-hero" imgClassName="object-cover" />
+      <BannerCarousel slug="about-page-hero" imgClassName="object-cover" initialBanners={banners ?? undefined} />
       <div
         className="absolute inset-0"
         style={{

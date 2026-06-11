@@ -5,8 +5,9 @@ import VastuShastraGuide from "@/components/sections/VastuShastraGuide";
 import { BannerCarousel } from "@/components/BannerCarousel";
 import { VastuPublic } from "@/api/services/vastu.service";
 import type { VastuConfig } from "@/stores/admin-types";
+import type { MediaItem } from "@/api/types/media.types";
 
-export default function VastuShastraClient({ initialData }: { initialData?: VastuConfig | null }) {
+export default function VastuShastraClient({ initialData, initialBanners }: { initialData?: VastuConfig | null; initialBanners?: MediaItem[] }) {
   const [data, setData] = useState<VastuConfig | null>(initialData ?? null);
   const [loading, setLoading] = useState(!initialData);
 
@@ -40,7 +41,7 @@ export default function VastuShastraClient({ initialData }: { initialData?: Vast
   return (
     <>
       <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-brand-dark">
-        <BannerCarousel slug="vastu-shastra-page-hero" imgClassName="object-cover opacity-60" />
+        <BannerCarousel slug="vastu-shastra-page-hero" imgClassName="object-cover opacity-60" initialBanners={initialBanners} />
         <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/40 to-brand-dark/70" />
         <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center">
           {data.hero?.badge && (
