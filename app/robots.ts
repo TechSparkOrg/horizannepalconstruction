@@ -11,7 +11,7 @@ export default function robots(): MetadataRoute.Robots {
       },
       {
         userAgent: "Googlebot-Image",
-        allow: ["/favicon.png", "/favicon.icon"], // Ensures Google's image crawler can always grab your icons
+        allow: ["/favicon.png", "/favicon.ico"], // Ensures Google's image crawler can always grab your icons
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
