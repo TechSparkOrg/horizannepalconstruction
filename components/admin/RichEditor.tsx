@@ -134,6 +134,34 @@ export default function RichEditor({
     isFocusedRef.current = false;
   }, []);
 
+  const handlePaste = useCallback((e: React.ClipboardEvent) => {
+    e.preventDefault();
+    if (!editorRef.current) return;
+
+    const text = e.clipboardData.getData("text/plain");
+    if (!text) return;
+
+    const cleanHtml = text
+      .split(/\n+/)
+      .map((line) => (line.trim() ? `<div>${line}</div>` : ""))
+      .join("");
+
+    const saved = saveSelection(editorRef.current);
+    try {
+      document.execCommand("insertHTML", false, cleanHtml || text);
+    } catch {
+      try {
+        document.execCommand("insertText", false, text);
+      } catch {}
+    }
+
+    restoreSelection(editorRef.current, saved);
+    const html = editorRef.current.innerHTML;
+    lastEmittedRef.current = html;
+    onChange(html);
+    updateCounts();
+  }, [onChange, updateCounts]);
+
   const insertLink = useCallback(() => {
     const url = window.prompt("Enter URL:");
     if (url && url.trim()) exec("createLink", url.trim());
@@ -303,6 +331,7 @@ export default function RichEditor({
         onInput={handleInput}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        onPaste={handlePaste}
         data-placeholder={placeholder}
         className={placeholderStyle}
         style={{ minHeight }}
