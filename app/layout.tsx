@@ -36,16 +36,7 @@ export const metadata: Metadata = {
     description: "Architecture, Engineering & Construction services across Nepal.",
     images: [{ url: `${siteUrl}/twitter-image`, width: 1200, height: 600 }],
   },
-  icons: {
-    icon: [
-      { url: "/favicon.png", sizes: "48x48", type: "image/png" },
-      { url: "/favicon.png", sizes: "96x96", type: "image/png" },
-      { url: "/favicon.png", sizes: "144x144", type: "image/png" },
-    ],
-    apple: [
-      { url: "/favicon.png", sizes: "180x180", type: "image/png" },
-    ],
-  },
+
 };
 
 const apiOrigin = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/api\/?$/, "");
@@ -59,6 +50,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       suppressHydrationWarning
     >
       <head>
+        <link rel="icon" href="/favicon.png" sizes="96x96" type="image/png" />
+        <link rel="apple-touch-icon" href="/favicon.png" sizes="180x180" type="image/png" />
         <link rel="preconnect" href={apiOrigin} crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://connect.facebook.net" />
