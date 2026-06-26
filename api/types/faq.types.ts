@@ -1,17 +1,13 @@
-export interface BilingualField {
-  en: string;
-  np: string;
-}
-
 export interface FaqItem {
-  id: string;
-  category_id: string;
-  question: BilingualField;
-  answer: BilingualField;
-  order: number;
-  created_at: string;
-  updated_at: string;
+  id: string
+  question: { en: string; np?: string }
+  answer: { en: string; np?: string }
+  order?: number
+  category_id?: string
 }
 
-export type FaqItemCreate = Omit<FaqItem, 'id' | 'created_at' | 'updated_at'>;
-export type FaqItemUpdate = Partial<FaqItemCreate>;
+export interface FaqGroup {
+  id: string
+  title: string
+  items: FaqItem[]
+}

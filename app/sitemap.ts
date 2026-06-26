@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
-import { getBlogs } from "@/api/cached/blog";
-import { getProjects } from "@/api/cached/project";
-import { getModels } from "@/api/cached/model3d";
-import { getPages } from "@/api/cached/page";
+import { getBlogs } from "@/api/services/blog.service";
+import { getProjects } from "@/api/services/project.service";
+import { getModels } from "@/api/services/model3d.service";
+import { getPages } from "@/api/services/page.service";
 
 const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ||
@@ -58,7 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })) : [];
 
   const pageEntries: MetadataRoute.Sitemap = pagesRes.status === "fulfilled"
-    ? pagesRes.value.map((p) => ({
+    ? (pagesRes.value.results ?? []).map((p) => ({
         url: `${SITE_URL}/pages/${p.slug}`,
         lastModified: new Date(p.updated_at || Date.now()),
         changeFrequency: "monthly" as const,

@@ -1,18 +1,21 @@
-export interface BilingualQuote {
-  en: string;
-  np: string;
+export interface ReviewItem {
+  name: string
+  text: string
+  rating?: number
+  image?: string
+}
+
+export interface ReviewGroup {
+  id: string
+  title: string
+  items: ReviewItem[]
 }
 
 export interface Review {
-  id: string;
-  name: string;
-  initials: string;
-  role: string;
-  quote: BilingualQuote;
-  rating: number;
-  created_at: string;
-  updated_at: string;
+  id: string
+  name: string
+  role?: string
+  rating: number
+  quote: { en: string; np?: string }
+  initials?: string
 }
-
-export type ReviewCreate = Omit<Review, 'id' | 'created_at' | 'updated_at'>;
-export type ReviewUpdate = Partial<ReviewCreate>;

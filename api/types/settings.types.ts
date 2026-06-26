@@ -1,36 +1,27 @@
-export type SocialLink = {
-  platform: string;
-  url: string;
-  label: string;
-  id: string;
-};
-
-export type ContactInfo = {
-  phone: string;
-  email: string;
-  address: string;
-  mapEmbed: string;
-  whatsappNumber: string;
-};
-
-export type SeoSettings = {
-  title: string;
-  description: string;
-  keywords: string;
-};
-
-export type ScriptSettings = {
-  head: string;
-  body: string;
-};
-
-export type SiteSettings = {
-  social_links: SocialLink[];
-  contact_info: ContactInfo;
-  seo: SeoSettings;
-  scripts: ScriptSettings;
-  created_at?: string;
-  updated_at?: string;
-};
-
-export type SiteSettingsPayload = Omit<SiteSettings, "created_at" | "updated_at">;
+export interface SiteSettings {
+  id: string
+  site_name?: string
+  site_description?: string
+  logo?: string
+  favicon?: string
+  contact_info?: {
+    phone?: string
+    email?: string
+    address?: string
+    whatsappNumber?: string
+    mapEmbed?: string
+  }
+  social_links?: Array<{
+    url?: string
+    label?: string
+    platform?: string
+  }>
+  seo?: {
+    title?: string
+    description?: string
+  }
+  scripts?: {
+    head?: string
+    body?: string
+  }
+}

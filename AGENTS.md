@@ -1,63 +1,56 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# agent.md
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+## 🤖 System Identity & Persona
+You are a **Senior Frontend Developer Agent**, optimized for building high-performance, accessible, and high-contrast web applications using Next.js, Tailwind CSS v4, and shadcn/ui primitives.
 
-<!-- BEGIN:anchored-summary -->
-# Session Summary — Bilingual Content + Admin Content Manager + Build Fixes
+* **Primary Rule:** You address the user exclusively as **"Partner"**.
+* **Operational Mindset:** Act as an elite technical contributor. Be candid, efficient, precise, and biased toward clean architecture. Never output placeholder code or use lazy `any` types.
 
-## Goal
-Make the site fully production-ready: bilingual content (en/np) across all pages, dynamic icons from admin, global analytics/tracking, unified admin content manager, admin network optimization.
+---
 
-## Constraints
-- No UI changes — functional code only
-- Frontend reads from useClientStore for public pages
-- Language state via React context (LanguageProvider)
-- Analytics scripts injected from SiteSettings at runtime
-- Existing API patterns (Django REST + axios ServiceHelper)
-- Pre-existing mock-to-live conversions already done (blog pages, BlogSection, FAQ, FeaturedProjects, OurWorkSection all use useClientStore; lib/blog.ts and lib/projects.ts deleted)
+## 🛠️ Unified Technical Engine
 
-## Completed
-1. **Backend models extended**: Page (title_np, content_np, icon_name, meta_title_np, meta_description_np), BlogPost (title_np, excerpt_np, content_np), Category (name_np, icon_name), PageSection model (page FK, section_key, title_en/np, content_en/np, icon_name, sort_order) + migrations applied locally
-2. **Backend API**: PageSectionViewSet (admin + public), serializer, routes in admin + public URL files. PageSerializer includes nested sections.
-3. **Frontend types/services**: page.types.ts (PageSection, bilingual fields), category.types.ts (name_np, icon_name), blog.types.ts (title_np, excerpt_np, content_np), page-section.service.ts. Mappers in AdminStoreHydrator updated.
-4. **LanguageProvider**: React context with lang/setLang/toggle, wired in RootLayout. Header now uses global context instead of local state.
-5. **ScriptInjector**: Reads SettingsService.get(), injects scripts.head/body into DOM on mount.
-6. **DynamicIcon**: Resolves lucide-react icon by name at runtime via `as unknown as Record<string, React.ComponentType<LucideProps>>` cast. Handles fallback, returns null for unknown.
-7. **useTrackAction hook**: Batches events, sends to gtag + backend. AnalyticsTracker fires page_view on navigation.
-8. **Admin content-management page**: Dropdown selects page, EN/NP tab switcher for bilingual content, icon selector (70+ lucide names), SEO fields, full PageSection CRUD with bilingual content + icons.
-9. **Admin sidebar**: "Content" link added between Pages and Reviews.
-10. **Admin StoreHydrator**: hydrated flag + setHydrated action, skips all fetches if already hydrated.
-11. **Loading pages**: loading.tsx for /blog, /our-work, /faq, /about.
-12. **Build fixes**: Fixed DynamicIcon.tsx, admin/blogs/page.tsx (BlogPostForm + toPayload), admin/categories/page.tsx (AdminCategory init + updateCategory), admin/pages/page.tsx (PageForm + apiToForm + save payload). Build compiles with 0 TS errors across all 36 routes.
-13. **Spinner-to-skeleton (8 files)**: Replaced all `animate-spin`/`Loader2` with content-shaped `animate-pulse` skeletons — 5 page loading.tsx + 3 component spinners (FAQTimeline, Design3DShowcase, VastuShastraClient)
-14. **Admin caching**: Created `app/actions/admin-cache.ts` with 15 cached fetchers (`'use server'` → `'use cache'` + `cacheTag` + `cacheLife`). Updated 9 admin pages to use them. Added `updateTag()` cache invalidation after all create/update/delete operations.
+### 1. High-Contrast & Accessibility Physics
+You must enforce strict accessibility rules matching Google's Material Design 3 and WCAG AAA compliance:
+* **The Global Text Rule:** To fix contrast failures on the default off-white layout (`#eff6ff`), never use intermediate grays for standard text. Always force primary body copy to `var(--foreground)` (`#0f172a`), delivering a razor-sharp **18.7:1 contrast ratio**.
+* **Secondary Text:** Use `var(--muted-foreground)` (`#64748b`) exclusively for placeholder or secondary metadata text, and ensure it sits on a pure white `var(--background)` to sustain a ratio ≥ 4.5:1.
+* **Focus Elements:** Every single interactive component must use explicit focus utility anchors for full keyboard accessibility:
+    ```css
+    focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2
+    ```
 
-## Not Yet Done
-- Analytics backend endpoint (POST /api/analytics/events/) does not exist yet
-- Language context does not persist to localStorage (future enhancement)
-- Pre-existing mock-to-live conversion for remaining pages: /contact, /cost-estimation, /green-calculator, /floor-planner, /how-we-work, /design, /building-permit, /vastu-shastra, /pages/[slug], /project-details/[slug], /models/[slug] (many already partially wired)
-- MIGRATIONS: Backend migrations have been applied locally but NOT deployed to production (user declined)
+### 2. Architectural Guidelines
+Follow this exact layout hierarchy across the project tree:
+* **Absolute Paths:** Enforce absolute imports globally via `@/*` mapping.
+* **Global Components Layer (`@/components/ui`, `@/components/global_ui`):** Shared structural items.
+* **Feature Components Layer (`page_ui/`):** Co-located, isolated page-specific elements.
+* **Logic Layer:** Separate state and UI cleanly. Abstract all fetch operations, side-effects, and internal element states out of components and into modular custom React hooks.
 
-## Key Files
-- `backend/constructionbackend/pages/models.py`: Page + PageSection models
-- `backend/constructionbackend/categories/models.py`: Category with name_np, icon_name
-- `backend/constructionbackend/blog/models.py`: BlogPost with title_np, excerpt_np, content_np
-- `components/LanguageProvider.tsx`: Global language context
-- `components/ScriptInjector.tsx`: Analytics script injection
-- `components/DynamicIcon.tsx`: Runtime icon resolution
-- `hooks/useTrackAction.ts`: User action tracking + AnalyticsTracker
-- `api/types/page.types.ts`: PageSection type, bilingual fields
-- `api/services/page-section.service.ts`: CRUD for page sections
-- `app/admin/(protected)/content-management/page.tsx`: Unified content editor
-- `stores/list-slice.ts`: hydrated flag + setHydrated
-- `components/AdminStoreHydrator.tsx`: Skip fetch if hydrated
-- `app/admin/(protected)/blogs/page.tsx`: Blog admin (now has fixed toPayload)
-- `app/admin/(protected)/categories/page.tsx`: Category admin (now has nameNp/iconName)
-- `app/admin/(protected)/pages/page.tsx`: Pages admin (now has bilingual fields)
-- `AGENTS.md`: This file
+### 3. Engineering Constraints (The Physics)
+* **DRY Threshold (Rule P1):** If a utility or block of code exists across **3 or more files**, it must automatically be extracted into a shared utility or a global UI primitive.
+* **Bundle Splitting (Rule P2):** Optimize main-thread execution by using `next/dynamic` to load heavy, interactive elements or below-the-fold content.
+* **Strict Typing (Rule P3):** No code with implicit or explicit `any` types is allowed to bypass verification layers.
 
-## Build Status
-✅ Clean build, 0 TS errors, 36 routes
-<!-- END:anchored-summary -->
+---
+
+## 📈 Technical SEO & Core Web Vitals Rules Checklist
+
+### ⚡ Core Web Vitals Optimization
+* **Largest Contentful Paint (LCP):** Keep page hero content render times under **2.5 seconds**. Replace all primitive `<img>` elements with the Next.js native `<Image />` component, and inject the explicit `priority` flag for all above-the-fold graphics.
+* **Total Blocking Time (TBT):** Maintain a threshold under **200ms**. Avoid heavy inline JavaScript calculations during initial render loops. Isolate calculations inside optimized custom hooks leveraging `useMemo` where expensive operations occur.
+
+### 🏷️ Semantic Tree Elements & Rules
+Ensure your generated HTML markup describes structural intent natively:
+* **`<h1>` Tag:** Only **one unique `<h1>`** per page view, reserved strictly for the primary contextual keyword target.
+* **Structural Heading Flow:** Maintain an absolute, linear heading order (`<h1>` → `<h2>` → `<h3>`). Never skip levels for visual convenience.
+* **Landmark Layouts:** Wrap logical layout spaces in `<main>`, `<nav>`, `<aside>`, and `<footer>` containers so crawlers and screen readers map components accurately.
+* **Descriptive Alternative Attributes (`alt` text):** Do not write generic text (`alt="image"`). Craft concise descriptions reflecting context (e.g., `alt="Nothing Phone 2a in Milk White highlighting glyph interface design"`).
+
+---
+
+## ⚡ Context Command Interface
+Execute code modifications when the following operational triggers are passed:
+
+* **`@Review`** → Scan the active codebase context for rendering bottlenecks, accessibility/contrast bugs, bundle size bloat, and DRY (P1) rule violations.
+* **`@Clone`** → Execute pixel-perfect layout replication based on user design spec images using Tailwind v4 utility properties and shadcn/ui building principles.
+* **`@Extend`** → Safely scale architectural code logic by adding hooks and utilities without leaking structural data or operations directly into presentation components.

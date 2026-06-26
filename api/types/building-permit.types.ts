@@ -1,35 +1,43 @@
+export interface BuildingPermitConfig {
+  id: string
+  title: string
+  description?: string
+  steps?: BuildingPermitStep[]
+  workflow_steps?: WorkflowStep[]
+  doc_categories?: DocCategory[]
+  regulations?: Regulation[]
+  municipalities?: Municipality[]
+}
+
+export interface BuildingPermitStep {
+  title: string
+  description: string
+  order: number
+}
+
 export interface WorkflowStep {
-  num: number;
-  title: { en: string; np: string };
-  desc: { en: string; np: string };
-  duration: string;
-  docs: string[];
+  title: { en: string }
+  description: { en: string }
+  order: number
+  num: number
+  duration?: string
+  desc?: { en: string }
+  docs?: string[]
 }
 
 export interface DocCategory {
-  label: { en: string; np: string };
-  items: { en: string; np: string }[];
+  label: { en: string }
+  items: { en: string }[]
 }
 
 export interface Regulation {
-  title: { en: string; np: string };
-  items: { en: string; np: string }[];
+  title: { en: string }
+  description: { en: string }
+  items?: { en: string }[]
 }
 
 export interface Municipality {
-  name: string;
-  district: string;
-  phone: string;
+  name: string
+  district?: string
+  phone?: string
 }
-
-export interface BuildingPermitConfig {
-  id: number;
-  workflow_steps: WorkflowStep[];
-  doc_categories: DocCategory[];
-  regulations: Regulation[];
-  municipalities: Municipality[];
-  created_at: string;
-  updated_at: string;
-}
-
-export type BuildingPermitConfigUpdate = Partial<Omit<BuildingPermitConfig, 'id' | 'created_at' | 'updated_at'>>;

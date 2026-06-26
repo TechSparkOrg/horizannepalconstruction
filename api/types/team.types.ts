@@ -1,15 +1,12 @@
 export interface TeamMember {
-  id: string;
-  name: string;
-  initials: string;
-  role: string;
-  specialisation: string;
-  experience: string;
-  email: string;
-  linkedin: string;
-  created_at: string;
-  updated_at: string;
+  id: string
+  name: string
+  role: string
+  image?: string
+  description?: string
+  initials?: string
+  specialisation?: string
+  experience?: string
+  linkedin?: string
+  email?: string
 }
-
-export type TeamMemberCreate = Omit<TeamMember, 'id' | 'created_at' | 'updated_at'>;
-export type TeamMemberUpdate = Partial<TeamMemberCreate>;

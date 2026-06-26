@@ -1,22 +1,8 @@
-import { apiPublic, apiPrivate } from '../ServiceHelper/index';
-import type { TeamMember, TeamMemberCreate, TeamMemberUpdate } from '../types/team.types';
-import type { PaginatedResponse } from '../types/consultation.types';
+import { apiGet, type PaginatedResponse } from "@/api/ServiceHelper"
+import type { TeamMember } from "@/api/types/team.types"
 
-export const TeamPublic = {
-  list: () =>
-    apiPublic.get<PaginatedResponse<TeamMember>>('/team/').then(r => r.data),
-};
+export function getTeam(): Promise<PaginatedResponse<TeamMember>> {
+  return apiGet<PaginatedResponse<TeamMember>>("/team/")
+}
 
-export const TeamAdmin = {
-  list: () =>
-    apiPrivate.get<PaginatedResponse<TeamMember>>('/admin/team/').then(r => r.data),
-  adminGet: (id: string) =>
-    apiPrivate.get<TeamMember>(`/admin/team/${id}/`).then(r => r.data),
-  create: (data: TeamMemberCreate) =>
-    apiPrivate.post<TeamMember>('/admin/team/', data).then(r => r.data),
-  update: (id: string, data: TeamMemberUpdate) =>
-    apiPrivate.put<TeamMember>(`/admin/team/${id}/`, data).then(r => r.data),
-  delete: (id: string) =>
-    apiPrivate.delete<{ ok: boolean }>(`/admin/team/${id}/`).then(r => r.data),
-};
-
+export const TeamPublic = { list: getTeam }

@@ -3,20 +3,13 @@ import type { NextConfig } from "next";
 const config: NextConfig = {
   reactStrictMode: true,
 
-  cacheComponents: true,
-  cacheLife: {
-    minutes: {
-      stale: 60,
-      revalidate: 60,
-      expire: 1800,
-    },
-  },
-
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
+      
       { protocol: "https", hostname: "assets.horizonnepalconstruction.com" },
+         { protocol: "https", hostname: "www.instagram.com" },
     ],
 
   },
@@ -25,12 +18,10 @@ const config: NextConfig = {
 
   experimental: {
     optimizePackageImports: ["lucide-react"],
-    staleTimes: { dynamic: 30, static: 180 },
     inlineCss: true,
     staticGenerationMaxConcurrency: 8,
 
-    turbopackFileSystemCacheForDev: true,
-    turbopackFileSystemCacheForBuild: true,
+
   },
 
   compiler: {

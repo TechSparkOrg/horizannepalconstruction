@@ -1,24 +1,12 @@
-import { apiPublic, apiPrivate } from '../ServiceHelper/index';
-import type { Project, ProjectCreate, ProjectUpdate, ProjectListParams } from '../types/project.types';
-import type { PaginatedResponse } from '../types/consultation.types';
+import { apiGet, type PaginatedResponse } from "@/api/ServiceHelper"
+import type { Project } from "@/api/types/project.types"
 
-export const ProjectPublic = {
-  list: (params?: ProjectListParams) =>
-    apiPublic.get<PaginatedResponse<Project>>('/projects/', { params: params as Record<string, string | number | boolean> | undefined }).then(r => r.data),
-  getBySlug: (slug: string) =>
-    apiPublic.get<Project>(`/projects/${slug}/`).then(r => r.data),
-};
+export function getProjects(): Promise<PaginatedResponse<Project>> {
+  return apiGet<PaginatedResponse<Project>>("/projects/")
+}
 
-export const ProjectAdmin = {
-  list: (params?: ProjectListParams) =>
-    apiPrivate.get<PaginatedResponse<Project>>('/admin/projects/', { params: params as Record<string, string | number | boolean> | undefined }).then(r => r.data),
-  adminGet: (slug: string) =>
-    apiPrivate.get<Project>(`/admin/projects/${slug}/`).then(r => r.data),
-  create: (data: ProjectCreate) =>
-    apiPrivate.post<Project>('/admin/projects/', data).then(r => r.data),
-  update: (slug: string, data: ProjectUpdate) =>
-    apiPrivate.put<Project>(`/admin/projects/${slug}/`, data).then(r => r.data),
-  delete: (slug: string) =>
-    apiPrivate.delete<{ ok: boolean }>(`/admin/projects/${slug}/`).then(r => r.data),
-};
+export function getProjectBySlug(slug: string): Promise<Project> {
+  return apiGet<Project>(`/projects/${slug}/`)
+}
 
+export const ProjectPublic = { list: getProjects }

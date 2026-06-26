@@ -1,13 +1,6 @@
-import { apiPrivate, apiPublic } from '../ServiceHelper/index';
-import type { SiteSettings, SiteSettingsPayload } from '../types/settings.types';
+import { apiGet } from "@/api/ServiceHelper"
+import type { SiteSettings } from "@/api/types/settings.types"
 
-export const SettingsPublic = {
-    get: () =>
-        apiPublic.get<SiteSettings>(`/settings/`).then(r => r.data),
-};
-
-export const SettingsAdmin = {
-    put: (data: Partial<SiteSettingsPayload>) =>
-        apiPrivate.put<SiteSettings>(`/settings/`, data).then(r => r.data),
-};
-
+export function getSettings(): Promise<SiteSettings> {
+  return apiGet<SiteSettings>("/settings/")
+}

@@ -1,28 +1,29 @@
-import { create } from "zustand";
-import { SettingsPublic } from "@/api/services/settings.service";
-import type { SiteSettings } from "@/api/types/settings.types";
+import { create } from "zustand"
+import type { SiteSettings } from "@/api/types/settings.types"
+import { getSettings } from "@/api/services/settings.service"
 
-let fetchPromise: Promise<void> | null = null;
+let pendingFetch: Promise<void> | null = null
 
-export const useSettings = create<{
-  settings: SiteSettings | null;
-  loaded: boolean;
-  fetchSettings: () => Promise<void>;
-}>((set) => ({
+interface SettingsState {
+  settings: SiteSettings | null
+  loaded: boolean
+  fetchSettings: () => Promise<void>
+}
+
+export const useSettings = create<SettingsState>((set) => ({
   settings: null,
   loaded: false,
   fetchSettings: async () => {
-    if (fetchPromise) return fetchPromise;
-    fetchPromise = (async () => {
-      try {
-        const s = await SettingsPublic.get();
-        set({ settings: s, loaded: true });
-      } catch {
-        set({ loaded: true });
-      } finally {
-        fetchPromise = null;
-      }
-    })();
-    return fetchPromise;
+    if (pendingFetch) return pendingFetch
+    pendingFetch = getSettings()
+      .then((data) => {
+        set({ settings: data, loaded: true })
+        pendingFetch = null
+      })
+      .catch(() => {
+        set({ loaded: true })
+        pendingFetch = null
+      })
+    return pendingFetch
   },
-}));
+}))

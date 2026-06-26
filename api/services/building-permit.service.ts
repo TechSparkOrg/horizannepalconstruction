@@ -1,15 +1,16 @@
-import { apiPublic, apiPrivate } from '../ServiceHelper/index';
-import type { BuildingPermitConfig, BuildingPermitConfigUpdate } from '../types/building-permit.types';
+import { apiGet } from "@/api/ServiceHelper"
+import type { BuildingPermitConfig } from "@/api/types/building-permit.types"
+
+export function getBuildingPermit(): Promise<BuildingPermitConfig[]> {
+  return apiGet<BuildingPermitConfig[]>("/building-permit/")
+}
+
+export async function getBuildingPermitSingle(): Promise<BuildingPermitConfig | null> {
+  const data = await apiGet<BuildingPermitConfig[]>("/building-permit/")
+  return data?.[0] ?? null
+}
 
 export const BuildingPermitPublic = {
-  get: () =>
-    apiPublic.get<BuildingPermitConfig>('/building-permit/').then(r => r.data),
-};
-
-export const BuildingPermitAdmin = {
-  get: () =>
-    apiPrivate.get<BuildingPermitConfig>('/admin/building-permit/').then(r => r.data),
-  update: (data: BuildingPermitConfigUpdate) =>
-    apiPrivate.put<BuildingPermitConfig>('/admin/building-permit/', data).then(r => r.data),
-};
-
+  search: getBuildingPermit,
+  get: getBuildingPermitSingle,
+}

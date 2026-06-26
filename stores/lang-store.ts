@@ -1,15 +1,11 @@
-import { create } from "zustand";
+import { create } from "zustand"
 
-type Lang = "en" | "np";
-
-interface LangStore {
-  lang: Lang;
-  setLang: (l: Lang) => void;
-  toggle: () => void;
+interface LangState {
+  lang: string
+  toggle: () => void
 }
 
-export const useLangStore = create<LangStore>()((set) => ({
+export const useLangStore = create<LangState>((set) => ({
   lang: "en",
-  setLang: (lang) => set({ lang }),
-  toggle: () => set((s) => ({ lang: s.lang === "en" ? "np" : "en" })),
-}));
+  toggle: () => set((s) => ({ lang: s.lang === "en" ? "ne" : "en" })),
+}))

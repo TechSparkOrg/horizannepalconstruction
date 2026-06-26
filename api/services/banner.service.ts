@@ -1,7 +1,8 @@
-import { apiPublic } from '../ServiceHelper/index';
-import type { MediaItem } from '../types/media.types';
+import { apiGet } from "@/api/ServiceHelper"
+import type { Banner } from "@/api/types/banner.types"
 
-export const BannerService = {
-  getBySlug: (slug: string) =>
-    apiPublic.get<MediaItem[]>(`/banners/${slug}/`).then(r => r.data),
-};
+export function getBanners(slug: string): Promise<Banner[]> {
+  return apiGet<Banner[]>(`/media/banners/${slug}`)
+}
+
+export const BannerService = { getBySlug: getBanners }

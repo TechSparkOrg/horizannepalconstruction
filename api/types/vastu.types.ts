@@ -1,49 +1,60 @@
 export interface VastuConfig {
-  id: number;
-  hero: {
-    title: string;
-    subtitle: string;
-    bgImage: string;
-    badge: string;
-  };
-  quick_tools: {
-    badge: string;
-    title: string;
-    description: string;
-    roomToolTitle: string;
-    roomToolDesc: string;
-    directionToolTitle: string;
-    directionToolDesc: string;
-  };
-  section_icons: Record<string, string>;
-  section_keys: string[];
-  sections: Record<string, {
-    title: string;
-    titleNp: string;
-    content: { en: string; np: string }[];
-    customTopics: {
-      title: string;
-      titleNp: string;
-      items: { en: string; np: string }[];
-    }[];
-  }>;
-  rooms: Record<string, {
-    idealDirection: { en: string; np: string };
-    facingDirection: { en: string; np: string };
-    tips: { en: string; np: string }[];
-    avoid: { en: string; np: string }[];
-  }>;
-  room_options: { id: string; label: string; labelNp: string }[];
-  directions: Record<string, {
-    deity: string;
-    element: string;
-    description: { en: string; np: string };
-    recommended: { en: string; np: string }[];
-    avoid: { en: string; np: string }[];
-  }>;
-  direction_options: { id: string; label: string; subtitle: string }[];
-  created_at: string;
-  updated_at: string;
+  id: string
+  title: string
+  description?: string
+  rules?: VastuRule[]
+  hero?: {
+    badge?: string
+    title?: string
+    subtitle?: string
+  }
+  sections?: Record<string, VastuSection>
+  rooms?: Record<string, VastuRoomInfo>
+  directions?: Record<string, VastuDirectionInfo>
+  section_keys?: string[]
+  section_icons?: Record<string, string>
+  room_options?: Array<{ id: string; label: string; labelNp: string }>
+  direction_options?: Array<{ id: string; label: string; subtitle: string }>
+  quick_tools?: VastuQuickTools
 }
 
-export type VastuConfigUpdate = Partial<Omit<VastuConfig, 'id' | 'created_at' | 'updated_at'>>;
+export interface VastuRule {
+  title: string
+  description: string
+}
+
+export interface VastuSection {
+  title?: string
+  titleNp?: string
+  content?: Array<{ en: string; np: string }>
+  customTopics?: Array<{
+    title: string
+    titleNp: string
+    items: Array<{ en: string; np: string }>
+  }>
+}
+
+export interface VastuRoomInfo {
+  idealDirection?: { en: string; np: string }
+  facingDirection?: { en: string; np: string }
+  tips?: Array<{ en: string; np: string }>
+  avoid?: Array<{ en: string; np: string }>
+}
+
+export interface VastuDirectionInfo {
+  deity: string
+  element: string
+  description?: { en: string; np: string }
+  recommended?: Array<{ en: string; np: string }>
+  avoid?: Array<{ en: string; np: string }>
+}
+
+export interface VastuQuickTools {
+  badge?: string
+  title?: string
+  description?: string
+  roomToolTitle?: string
+  roomToolDesc?: string
+  directionToolTitle?: string
+  directionToolDesc?: string
+}
