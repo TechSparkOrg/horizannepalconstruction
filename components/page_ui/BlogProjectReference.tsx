@@ -58,14 +58,12 @@ export default function BlogProjectReference({ project }: Props) {
             </h3>
 
             {project.description && (
-              <p className="text-sm leading-relaxed text-[#3d526e] line-clamp-2 mb-5">
-    
-
-                        <div
-                          className="prose prose-lg max-w-none prose-headings:text-brand-dark prose-headings:font-bold prose-a:text-brand-primary prose-img:rounded-xl"
-                          dangerouslySetInnerHTML={sanitizeHtml(project.description)}
-                        />
-              </p>
+              <div className="text-sm leading-relaxed text-[#3d526e] line-clamp-2 mb-5">
+                <div
+                  className="prose prose-lg max-w-none prose-headings:text-brand-dark prose-headings:font-bold prose-a:text-brand-primary prose-img:rounded-xl"
+                  dangerouslySetInnerHTML={sanitizeHtml(project.description)}
+                />
+              </div>
             )}
 
             <div className="border-t border-[#e8edf5] pt-4 mb-5 flex flex-col gap-3">

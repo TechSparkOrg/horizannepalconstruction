@@ -9,6 +9,5 @@ export function getBlogBySlug(slug: string): Promise<BlogPost> {
   return apiGet<BlogPost>(`/blog/${slug}/`)
 }
 
-export function getBlogsByCategory(categorySlug: string): Promise<PaginatedResponse<BlogPost>> {
-  return apiGet<PaginatedResponse<BlogPost>>(`/blog/?category=${categorySlug}`)
-}
+export const getBlogsByCategory = (categorySlug: string): Promise<PaginatedResponse<BlogPost>> =>
+  apiGet<PaginatedResponse<BlogPost>>(`/blog/?category=${categorySlug}`)

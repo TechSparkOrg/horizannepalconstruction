@@ -54,8 +54,8 @@ export function BlogSection({ initialPosts }: { initialPosts?: BlogPost[] }) {
                   </div>
                 </div>
               ))
-            : featured.map((post) => (
-                <BlogCard key={post.slug} post={post} variant="default" />
+            : featured.map((post, i) => (
+                <BlogCard key={post.slug ?? i} post={post} variant="default" />
               ))}
         </div>
 
