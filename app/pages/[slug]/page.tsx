@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowLeft, FileText } from "lucide-react";
 import Link from "next/link";
-import { HtmlContent } from "@/lib/html-content";
+import ParsedContent from "@/lib/Parse-Content";
 import { getPageBySlug } from "@/api/services/page.service";
 import { getBanners } from "@/api/services/banner.service";
 import type { MediaItem } from "@/api/types/media.types";
@@ -82,8 +82,8 @@ export default async function PageView({ params }: { params: Promise<{ slug: str
           {page.title}
         </h2>
 
-        <HtmlContent
-          html={page.content ?? ""}
+        <ParsedContent
+          description={page.content ?? ""}
           className="prose prose-lg max-w-none prose-headings:font-display prose-headings:text-brand-dark prose-a:text-brand-primary prose-img:rounded-xl"
         />
       </article>

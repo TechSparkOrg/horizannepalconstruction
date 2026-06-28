@@ -15,19 +15,23 @@ function getEmbedUrl(url: string): string | null {
 
 interface Props {
   url: string;
+  title?: string;
 }
 
-export default function BlogVideoEmbed({ url }: Props) {
+export default function VideoEmbed({ url, title }: Props) {
   const embedUrl = getEmbedUrl(url);
   if (!embedUrl) return null;
 
   return (
     <section className="bg-white py-12 sm:py-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {title && (
+          <h2 className="text-xl font-bold text-brand-dark mb-6">{title}</h2>
+        )}
         <div className="relative aspect-video rounded-xl overflow-hidden bg-black">
           <iframe
             src={embedUrl}
-            title="Embedded video"
+            title={title || "Embedded video"}
             className="absolute inset-0 size-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen

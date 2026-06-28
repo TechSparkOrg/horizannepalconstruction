@@ -14,7 +14,7 @@ interface Props {
   initialBanners?: MediaItem[];
 }
 
-export function BannerCarousel({ children, overlay, carousel = true, className = "", imgClassName = "object-cover", initialBanners }: Props) {
+export function BannerCarousel({ children, overlay, carousel = true, className = "", imgClassName = "object-cover", initialBanners ,slug}: Props) {
   const [banners] = useState<MediaItem[]>(initialBanners ?? []);
   const [current, setCurrent] = useState(0);
 
@@ -32,7 +32,7 @@ export function BannerCarousel({ children, overlay, carousel = true, className =
       {hasSlides ? (
         slides.map((b, i) => (
           <div
-            key={b.id}
+            key={`${b.id}+${slug}-${i}`}
             className={`absolute inset-0 transition-opacity duration-1000 ${className}`}
             style={{ opacity: i === current ? 1 : 0, position: "absolute" }}
           >

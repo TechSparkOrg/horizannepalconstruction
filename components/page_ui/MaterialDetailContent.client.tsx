@@ -11,7 +11,7 @@ interface Props {
 
 const HEADER_HEIGHT = 80;
 
-export default function BlogContent({ content }: Props) {
+export default function MaterialDetailContent({ content }: Props) {
   const [tocItems, setTocItems] = useState<TocItem[]>([]);
   const [activeId, setActiveId] = useState<string>("");
 
@@ -47,7 +47,6 @@ export default function BlogContent({ content }: Props) {
     if (el) {
       const top = el.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT;
       window.scrollTo({ top, behavior: "smooth" });
-
       setActiveId(id);
     }
   };
@@ -69,7 +68,6 @@ export default function BlogContent({ content }: Props) {
                 <h3 className="text-sm font-semibold text-brand-dark uppercase tracking-wider mb-3">
                   On this page
                 </h3>
-                {/* Relative container with a continuous vertical track line */}
                 <nav className="relative space-y-1 border-l border-mid-gray/20 pl-0">
                   {tocItems.map((item) => (
                     <button
@@ -81,8 +79,6 @@ export default function BlogContent({ content }: Props) {
                           ? "text-brand-primary border-brand-primary font-medium"
                           : "text-mid-gray border-transparent hover:text-brand-dark"
                       )}
-                      // Compute dynamic padding so the item text indents gracefully, 
-                      // while adding a base padding (e.g., 16px) to clear the track line.
                       style={{ paddingLeft: `${16 + (item.level - 2) * 12}px` }}
                     >
                       {item.text}

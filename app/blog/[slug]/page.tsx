@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import { getBlogBySlug, getBlogs } from "@/api/services/blog.service";
-import { stripHtml } from "@/lib/html-content";
+import { stripHtml } from "@/lib/extractTocItems";
 import type { BlogPost } from "@/api/types/blog.types";
 import type { MediaItem } from "@/api/types/media.types";
 import BlogMetaBar from "@/components/page_ui/BlogMetaBar.client";
@@ -11,7 +11,7 @@ import BlogProjectReference from "@/components/page_ui/BlogProjectReference";
 
 const BlogContent = dynamic(() => import("@/components/page_ui/BlogContent.client"));
 
-const BlogVideoEmbed = dynamic(() => import("@/components/page_ui/BlogVideoEmbed.client"));
+const VideoEmbed = dynamic(() => import("@/components/global_ui/VideoEmbed.client"));
 
 const BlogReelStories = dynamic(() => import("@/components/page_ui/BlogReelStories.client"));
 
@@ -82,15 +82,15 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     title: b.name,
   }));
 
-  if (bannerImages.length === 0 && post.image) {
-    bannerImages.push({ id: "hero", url: post.image, alt: post.title });
-  }
+
 
   return (
     <>
+    <h1 className="sr-only" >{post?.title}</h1>
       <section className="relative min-h-[75vh] flex items-end bg-brand-dark">
         <BannerCarousel
           initialBanners={bannerImages}
+          slug={slug}
           overlay="linear-gradient(to top, rgba(15,37,87,0.8) 0%, rgba(15,37,87,0.3) 50%, transparent 100%)"
           carousel={bannerImages.length > 1}
           imgClassName="object-cover opacity-70"
@@ -120,7 +120,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </section>
       )}
 
-      {post.video_embed_url && <BlogVideoEmbed url={post.video_embed_url} />}
+      {post.video_embed_url && <VideoEmbed url={post.video_embed_url} />}
 
       {post.project && <BlogProjectReference project={post.project} />}
 

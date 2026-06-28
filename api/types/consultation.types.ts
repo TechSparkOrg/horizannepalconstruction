@@ -7,6 +7,7 @@ export interface ConsultationData {
   service?: string
   description?: string
   preferred_date?: string
+  landmark?: string
 }
 
 export interface ConsultationResponse {

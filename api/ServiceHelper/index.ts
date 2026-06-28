@@ -23,3 +23,12 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
   if (!res.ok) throw new Error(`API ${res.status}: ${path}`)
   return res.json()
 }
+
+export async function apiPostFormData<T>(path: string, formData: FormData): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    body: formData,
+  })
+  if (!res.ok) throw new Error(`API ${res.status}: ${path}`)
+  return res.json()
+}

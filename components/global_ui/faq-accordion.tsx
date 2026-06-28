@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { Minus, Plus, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { FaqPublic } from "@/api/services/faq.service";
+import { getFaqs } from "@/api/services/faq.service";
+import type { FaqItem } from "@/api/types/faq.types";
 
 type Faq = { q: string; a: string };
 
@@ -13,10 +14,10 @@ export function FAQWrapper({ initialFaqs }: { initialFaqs?: Faq[] }) {
 
   useEffect(() => {
     if (initialFaqs) return;
-    FaqPublic.list()
+    getFaqs()
       .then((res) => {
         if (res.results?.length > 0) {
-          setFaqs(res.results.map((f) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" })));
+          setFaqs(res.results.map((f: FaqItem) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" })));
         }
       })
       .catch(() => {});

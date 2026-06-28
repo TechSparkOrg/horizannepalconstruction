@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { LdJson } from "@/components/global_ui/JsonLd";
-
-const PageHeroComponent = dynamic(() => import("@/components/global_ui/page-hero").then((m) => ({ default: m.PageHero })));
-const FAQTimeline = dynamic(() => import("@/components/page_ui/FAQTimeline").then((m) => ({ default: m.FAQTimeline })));
-const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then((m) => ({ default: m.ConsultationForm })));
+import { PageHero } from "@/components/global_ui/page-hero";
+import { FAQTimeline } from "@/components/page_ui/FAQTimeline";
+import { ConsultationForm } from "@/components/global_ui/ConsultationForm";
+import { getFaqGroups } from "@/api/services/faq.service";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -33,12 +32,20 @@ const breadcrumb = {
   ],
 };
 
-export default function FAQPage() {
+export default async function FAQPage() {
+  let initialGroups: Awaited<ReturnType<typeof getFaqGroups>>["results"] = [];
+  try {
+    const res = await getFaqGroups();
+    initialGroups = res.results ?? [];
+  } catch {
+    // groups will be empty, FAQTimeline renders empty state
+  }
+
   return (
     <>
       <LdJson data={breadcrumb} />
-      <PageHeroComponent slug="faq-page-hero" badge="FAQ" heading="Frequently Asked Questions" description="Everything you need to know about working with Horizon Nepal — from pricing to process." />
-      <FAQTimeline />
+      <PageHero slug="faq-page-hero" badge="FAQ" minHeight='80vh' heading="Frequently Asked Questions" description="Everything you need to know about working with Horizon Nepal — from pricing to process." />
+      <FAQTimeline initialGroups={initialGroups} />
       <ConsultationForm />
     </>
   );

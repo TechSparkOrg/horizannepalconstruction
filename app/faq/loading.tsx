@@ -15,30 +15,13 @@ export default function FaqLoading() {
             <div className="mx-auto h-8 w-72 rounded-lg bg-light-gray/40 animate-pulse" />
             <div className="mx-auto h-5 w-80 rounded bg-light-gray/30 animate-pulse" />
           </div>
-          <div className="space-y-14">
-            {Array.from({ length: 3 }).map((_, catIdx) => (
-              <div key={catIdx} className="flex items-start gap-6">
-                <div className="hidden lg:block w-1/2 pr-14">
-                  <div className="bg-white rounded-2xl border border-light-gray/40 overflow-hidden">
-                    <div className="flex items-center gap-4 p-6">
-                      <div className="size-12 rounded-full bg-light-gray/30 animate-pulse" />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-5 w-40 rounded bg-light-gray/40 animate-pulse" />
-                      </div>
-                    </div>
-                    <div className="border-t border-light-gray/40 divide-y divide-light-gray/30">
-                      {Array.from({ length: 2 }).map((_, itemIdx) => (
-                        <div key={itemIdx} className="px-6 py-3.5">
-                          <div className="h-4 w-3/4 rounded bg-light-gray/30 animate-pulse" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+          <div className="space-y-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-light-gray/40 overflow-hidden">
+                <div className="flex items-center gap-4 p-6">
+                  <div className="size-12 rounded-full bg-light-gray/30 animate-pulse shrink-0" />
+                  <div className="h-5 w-48 rounded bg-light-gray/40 animate-pulse" />
                 </div>
-                <div className="shrink-0 relative z-10 hidden lg:flex items-center justify-center">
-                  <div className="size-12 rounded-full bg-white border-2 border-light-gray/30 animate-pulse" />
-                </div>
-                <div className="w-1/2 hidden lg:block" />
               </div>
             ))}
           </div>

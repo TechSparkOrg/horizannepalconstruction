@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Activity, MapPin, Briefcase, Coins } from "lucide-react";
 import type { BlogProjectRef } from "@/api/types/blog.types";
-import { HtmlContent, sanitizeHtml } from "@/lib/html-content";
+import { sanitizeHtml } from "@/lib/dumpurify";
 
 interface Props {
   project: BlogProjectRef;
@@ -61,7 +61,7 @@ export default function BlogProjectReference({ project }: Props) {
               <div className="text-sm leading-relaxed text-[#3d526e] line-clamp-2 mb-5">
                 <div
                   className="prose prose-lg max-w-none prose-headings:text-brand-dark prose-headings:font-bold prose-a:text-brand-primary prose-img:rounded-xl"
-                  dangerouslySetInnerHTML={sanitizeHtml(project.description)}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(project.description) }}
                 />
               </div>
             )}

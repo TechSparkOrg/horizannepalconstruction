@@ -1,12 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ArrowRight, MapPin, Mail, Phone } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
+import { ArrowRight, MapPin, Mail, Phone, ChevronDown, X, Link, MapPinHouse, Camera, Check, Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
 import { ConsultationPublic } from "@/api/services/consultation.service";
 import { CategoryPublic } from "@/api/services/category.service";
 import { useSettings } from "@/stores/settings-store";
 import type { Category } from "@/api/types/category.types";
+import type { LocationData } from "@/components/global_ui/Googlemap";
+
+const GoogleMapAddress = dynamic(() => import("@/components/global_ui/Googlemap"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-full flex items-center justify-center">
+      <Loader2 className="size-8 animate-spin text-brand-primary" />
+    </div>
+  ),
+});
 
 const sectionLabel = "Get in Touch";
 const heading = "Let's Build Together";
@@ -41,19 +53,41 @@ export function ConsultationForm({
   const [preferredDate, setPreferredDate] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const [showLocation, setShowLocation] = useState(false);
+  const [locationMethod, setLocationMethod] = useState<"gps" | "landmark">("gps");
+  const [mapLocation, setMapLocation] = useState<LocationData | null>(null);
+  const [mapDialogOpen, setMapDialogOpen] = useState(false);
+  const [landmark, setLandmark] = useState("");
+  const [sitePhotos, setSitePhotos] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    setSitePhotos((prev) => [...prev, ...files]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removePhoto = (idx: number) => {
+    setSitePhotos((prev) => prev.filter((_, i) => i !== idx));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submitting) return;
     setSubmitting(true);
     try {
-      await ConsultationPublic.submit({
-        name,
-        email,
-        phone,
-        service,
-        description: desc,
-        preferred_date: preferredDate,
-      });
+      await ConsultationPublic.submit(
+        {
+          name,
+          email,
+          phone,
+          service,
+          description: desc,
+          preferred_date: preferredDate,
+          landmark,
+        },
+        sitePhotos.length > 0 ? sitePhotos : undefined,
+      );
       setSubmitted(true);
     } finally {
       setSubmitting(false);
@@ -201,6 +235,155 @@ export function ConsultationForm({
                     onChange={(e) => setPreferredDate(e.target.value)}
                     className="w-full h-11 px-3 rounded-md border border-light-gray bg-white text-brand-dark text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                   />
+                </div>
+
+                <div className="sm:col-span-2 border-t border-light-gray/60 pt-4 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowLocation(!showLocation)}
+                    className="flex items-center gap-2 text-sm font-medium text-brand-secondary hover:text-brand-primary transition-colors"
+                  >
+                    <MapPin className="size-4" />
+                    <span>Add location details?</span>
+                    <ChevronDown className={`size-4 ml-auto transition-transform duration-300 ${showLocation ? "rotate-180" : ""}`} />
+                  </button>
+
+                  <div
+                    className="grid transition-all duration-300 ease-out mt-2"
+                    style={{ gridTemplateRows: showLocation ? "1fr" : "0fr" }}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="space-y-4 pt-2">
+
+                        <div className="flex gap-3">
+                          <button
+                            type="button"
+                            onClick={() => setLocationMethod("gps")}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium border transition-colors ${
+                              locationMethod === "gps"
+                                ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
+                                : "border-light-gray text-mid-gray hover:border-brand-primary/40"
+                            }`}
+                          >
+                            <Link className="size-3.5" />
+                            GPS Link
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setLocationMethod("landmark")}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium border transition-colors ${
+                              locationMethod === "landmark"
+                                ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
+                                : "border-light-gray text-mid-gray hover:border-brand-primary/40"
+                            }`}
+                          >
+                            <MapPinHouse className="size-3.5" />
+                            Landmark
+                          </button>
+                        </div>
+
+                        {locationMethod === "gps" ? (
+                          <div >
+                            <label className="block text-xs font-medium text-brand-secondary mb-1">
+                              Pin Location on Map
+                            </label>
+                            <Dialog open={mapDialogOpen} onOpenChange={setMapDialogOpen}>
+                              <DialogTrigger asChild>
+                                <button
+                                  type="button"
+                                  className={`w-full flex items-center gap-2 h-10 px-3 rounded-lg border text-xs font-medium transition-colors ${
+                                    mapLocation
+                                      ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
+                                      : "border-dashed border-light-gray text-mid-gray hover:border-brand-primary/40 hover:text-brand-primary"
+                                  }`}
+                                >
+                                  {mapLocation ? <Check className="size-4" /> : <MapPin className="size-4" />}
+                                  <span className="truncate">
+                                    {mapLocation ? mapLocation.address : "Pick on map"}
+                                  </span>
+                                </button>
+                              </DialogTrigger>
+                              {/* <DialogContent className="flex flex-col bg-white [max-width:90vw!important] sm:[max-width:75vw!important] [height:85vh!important] p-0! gap-0! overflow-hidden">
+                                <div className="flex items-center justify-between px-4 pt-4 pb-2 shrink-0">
+                                  <DialogTitle className="text-sm font-medium">Pin Your Location</DialogTitle>
+                                </div>
+                                <div className="flex-1 min-h-0 relative">
+                                  <GoogleMapAddress
+                                    onLocationSelect={(loc) => {
+                                      setMapLocation(loc);
+                                      setMapDialogOpen(false);
+                                    }}
+                                    initialPosition={mapLocation ?? undefined}
+                                  />
+                                </div>
+                              </DialogContent> */}
+                            </Dialog>
+                          </div>
+                        ) : (
+                          <div className="px-2">
+                            <label className="block text-xs font-medium text-brand-secondary mb-1" htmlFor="landmark">
+                              Landmark
+                            </label>
+                            <input
+                              id="landmark"
+                              value={landmark}
+                              onChange={(e) => setLandmark(e.target.value)}
+                              className="w-full h-10 px-3 rounded-md border border-light-gray bg-white text-brand-dark text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                              placeholder="Near Ratna Park, Kathmandu"
+                            />
+                          </div>
+                        )}
+
+                        <div>
+                          <label className="block text-xs font-medium text-brand-secondary mb-1">
+                            Site Photos
+                          </label>
+                          <div className="flex items-center gap-3">
+                            <button
+                              type="button"
+                              onClick={() => fileInputRef.current?.click()}
+                              className="flex items-center gap-2 h-10 px-4 rounded-lg border border-dashed border-light-gray text-xs text-mid-gray hover:border-brand-primary/40 hover:text-brand-primary transition-colors"
+                            >
+                              <Camera className="size-4" />
+                              Add Photos
+                            </button>
+                            {sitePhotos.length > 0 && (
+                              <span className="text-[11px] text-mid-gray">{sitePhotos.length} selected</span>
+                            )}
+                          </div>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handlePhotoSelect}
+                            className="hidden"
+                          />
+                          {sitePhotos.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-3">
+                              {sitePhotos.map((file, idx) => (
+                                <div key={`${file.name}-${idx}`} className="relative group">
+                                  <img
+                                    src={URL.createObjectURL(file)}
+                                    alt={`Site photo ${idx + 1}`}
+                                    className="size-20 rounded-md object-cover border border-light-gray"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => removePhoto(idx)}
+                                    className="absolute -top-1.5 -right-1.5 size-5 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                  >
+                                    <X className="size-3" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 

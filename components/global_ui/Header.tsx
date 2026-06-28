@@ -28,7 +28,7 @@ const NAV = [
       { href: "/floor-planner", label: "Floor Planner" },
       { href: "/vastu-shastra", label: "Vastu Shastra" },
       { href: "/building-permit", label: "Building Permit" },
-      { href: "/materials", label: "Materials" },
+      { href: "/material", label: "Materials" },
     ],
   },
   { href: "/our-work", label: "Projects" },

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Calendar } from "lucide-react";
 import { CategoryBadge } from "@/components/global_ui/CategoryBadge";
-import { stripHtml } from "@/lib/html-content";
+import { stripHtml } from "@/lib/extractTocItems";
 import type { BlogPost } from "@/api/types/blog.types";
 
 type BlogCardPost = Pick<BlogPost,"slug" | "title" | "image" | "category" | "date" | "content">;
