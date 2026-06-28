@@ -34,7 +34,7 @@ export async function AboutHero() {
           className="font-display font-bold text-white leading-[1.1]"
           style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
         >
-          Crafting Nepal&apos;s Built Environment Since 1999
+          Crafting Nepal&apos;s Built Environment 
         </h1>
 
         <p className="mt-5 text-white/70 text-lg max-w-[600px] mx-auto leading-relaxed">

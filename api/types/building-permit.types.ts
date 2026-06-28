@@ -1,43 +1,43 @@
-export interface BuildingPermitConfig {
-  id: string
-  title: string
-  description?: string
-  steps?: BuildingPermitStep[]
-  workflow_steps?: WorkflowStep[]
-  doc_categories?: DocCategory[]
-  regulations?: Regulation[]
-  municipalities?: Municipality[]
-}
-
-export interface BuildingPermitStep {
-  title: string
-  description: string
-  order: number
+export interface BilingualPair {
+  en: string
+  np: string
 }
 
 export interface WorkflowStep {
-  title: { en: string }
-  description: { en: string }
-  order: number
-  num: number
-  duration?: string
-  desc?: { en: string }
-  docs?: string[]
-}
-
-export interface DocCategory {
-  label: { en: string }
-  items: { en: string }[]
-}
-
-export interface Regulation {
-  title: { en: string }
-  description: { en: string }
-  items?: { en: string }[]
-}
-
-export interface Municipality {
   name: string
-  district?: string
-  phone?: string
+  description: BilingualPair
+  duration: string
+  requiredDocs: { name: string; imageUrl: string }[]
+}
+
+export interface RegulationItem {
+  name: string
+  items: BilingualPair[]
+}
+
+export interface MunicipalityItem {
+  district: string
+  phone: string
+  location: string
+}
+
+export interface BannerItem {
+  url: string
+  name: string
+}
+
+export interface BuildingPermitConfig {
+  id: string
+  title: string
+  slug: string
+  is_active: boolean
+  workflow_steps: WorkflowStep[]
+  regulation_items: RegulationItem[]
+  municipality_items: MunicipalityItem[]
+  banners: BannerItem[]
+  meta_title: string
+  meta_keywords: string
+  meta_description: string
+  created_at: string
+  updated_at: string
 }

@@ -20,7 +20,7 @@ import {
 
 const NAV = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
+
   {
     label: "Services",
     children: [
@@ -42,6 +42,7 @@ const NAV = [
   { href: "/blog", label: "Blog" },
   { href: "/reviews", label: "Reviews" },
   { href: "/faq", label: "FAQ" },
+    { href: "/about", label: "About" },
 ];
 
 type NavItem =

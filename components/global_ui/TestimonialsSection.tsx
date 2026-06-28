@@ -83,7 +83,7 @@ export function TestimonialsSection({ initialReviews }: { initialReviews?: Revie
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <Label className="text-xs font-semibold tracking-[0.15em] uppercase text-brand-primary bg-brand-primary/5 px-3 py-1 rounded-full">Testimonials</Label>
+            <Label className="text-xs font-semibold tracking-[0.15em] w-fit  uppercase text-brand-primary bg-brand-primary/5 px-3 py-1 rounded-full">Testimonials</Label>
             <h2 className="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl text-brand-dark">
               What Our Clients Say
             </h2>

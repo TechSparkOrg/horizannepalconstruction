@@ -130,7 +130,7 @@ export function ReviewList({ initialReviews, initialTotal, initialBanners }: Pro
   const rCol2 = rest.filter((_, i) => i % 3 === 1);
   const rCol3 = rest.filter((_, i) => i % 3 === 2);
 
-  const galleryImgs = (initialBanners ?? []).filter((b) => b.url).slice(0, 5);
+  
 
   return (
     <>

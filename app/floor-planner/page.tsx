@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import FloorPlanner from "@/components/page_ui/FloorPlanner";
-import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import { LdJson } from "@/components/global_ui/JsonLd";
+import { BannerGridCarousel } from "@/components/global_ui/BannerGridCarousel";
 import { getBanners } from "@/api/services/banner.service";
 
 const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
@@ -40,20 +40,19 @@ const breadcrumb = {
 
 export default async function FloorPlannerPage() {
   const banners = await getBanners("floor-planner-page-hero").catch(() => null);
+
   return (
     <>
-      {banners?.map((b) =>
-        b.url ? <link rel="preload" as="image" href={b.url} key={b.id} /> : null
-      )}
       <LdJson data={breadcrumb} />
+
       <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-brand-dark">
-        <BannerCarousel slug="floor-planner-page-hero" imgClassName="object-cover opacity-60 scale-105" initialBanners={banners ?? undefined} />
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-dark/60 via-brand-dark/30 to-transparent">
-          <div className="absolute inset-0 opacity-20" style={{ background: "linear-gradient(135deg, rgba(215,30,41,0.1) 0%, transparent 50%)" }} />
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-brand-dark/60 via-brand-dark/30 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/70 via-transparent to-brand-dark/20" />
-        <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center">
+        {banners && banners.length > 0 && (
+          <div className="absolute inset-0">
+            <BannerGridCarousel banners={banners} className="h-full" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/60 to-brand-dark/30" />
+        <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center z-10">
           <span className="text-xs font-semibold tracking-[0.15em] uppercase text-white/60 bg-white/10 px-3 py-1 rounded-full border border-white/10 inline-block">Tools</span>
           <h1 className="font-display font-bold text-white mt-6 leading-[1.05] max-w-3xl mx-auto" style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}>2D Floor Planner</h1>
           <p className="mt-6 text-white/70 text-lg max-w-[600px] mx-auto leading-relaxed">Plan your dream home with precision — explore sample layouts and understand the 2D planning process.</p>

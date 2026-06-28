@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { AboutHero } from "@/components/page_ui/AboutHero";
 import { LdJson } from "@/components/global_ui/JsonLd";
+import { TeamSection } from "@/components/global_ui/TeamSection";
+import { getTeam } from "@/api/services/team.service";
+import type { TeamMember } from "@/api/types/team.types";
 
 const AboutTabs = dynamic(() => import("@/components/page_ui/AboutTabs").then((m) => ({ default: m.AboutTabs })));
 const ServicesSection = dynamic(() => import("@/components/global_ui/ServicesSection").then((m) => ({ default: m.ServicesSection })));
 const AboutGallery = dynamic(() => import("@/components/global_ui/image-grid").then((m) => ({ default: m.ImageGrid })));
-const TeamSection = dynamic(() => import("@/components/global_ui/TeamSection").then((m) => ({ default: m.TeamSection })));
 const TestimonialsSection = dynamic(() => import("@/components/global_ui/TestimonialsSection").then((m) => ({ default: m.TestimonialsSection })));
 const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then((m) => ({ default: m.ConsultationForm })));
 const LocationSection = dynamic(() => import("@/components/global_ui/LocationSection").then((m) => ({ default: m.LocationSection })));
@@ -45,7 +47,9 @@ const aboutPageSchema = {
   description: "Architecture, Engineering & Construction services across Nepal since 1999.",
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const team = await getTeam().catch(() => ({ results: [] as TeamMember[] }));
+
   return (
     <>
       <LdJson data={breadcrumb} />
@@ -54,7 +58,7 @@ export default function AboutPage() {
       <AboutTabs />
       <ServicesSection />
       <AboutGallery slug="about-page-gallary-list" label="Our Work in Action" heading="A Glimpse Into What We Do" description="From concept to completion — the projects and people that define Horizon Nepal." bg="" priority />
-      <TeamSection />
+      <TeamSection members={team.results} />
       <TestimonialsSection />
       <ConsultationForm />
       <LocationSection />

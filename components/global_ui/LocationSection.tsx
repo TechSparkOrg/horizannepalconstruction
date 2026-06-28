@@ -7,7 +7,7 @@ export function LocationSection() {
     <section className="relative bg-white">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-28 pb-8 sm:pb-12">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <Label className="text-xs font-semibold tracking-[0.15em] uppercase text-brand-primary bg-brand-primary/5 px-3 py-1 rounded-full">Location</Label>
+          <Label className="text-xs font-semibold tracking-[0.15em] w-fit mx-auto uppercase text-brand-primary bg-brand-primary/5 px-3 py-1 rounded-full">Location</Label>
           <h2 className="mt-3 font-display font-bold text-3xl sm:text-4xl lg:text-5xl text-brand-dark">
             Visit Our Office
           </h2>
