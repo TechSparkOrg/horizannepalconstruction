@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Star, Languages } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { ReviewPublic } from "@/api/services/review.service";
 import type { Review } from "@/api/types/review.types";
@@ -16,6 +16,15 @@ function Stars({ value }: { value: number }) {
   );
 }
 
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2) || "?";
+}
+
 export function TestimonialsSection({ initialReviews }: { initialReviews?: Review[] }) {
   const [reviews, setReviews] = useState<Review[]>(initialReviews ?? []);
   const [i, setI] = useState(0);
@@ -24,7 +33,6 @@ export function TestimonialsSection({ initialReviews }: { initialReviews?: Revie
     if (initialReviews) return;
     ReviewPublic.list().then((res) => setReviews(res.results ?? []));
   }, [initialReviews]);
-  const [lang, setLang] = useState<"en" | "np">("en");
   const perView = 3;
   const max = Math.max(0, reviews.length - perView);
   const prev = () => setI((v) => Math.max(0, v - 1));
@@ -82,13 +90,6 @@ export function TestimonialsSection({ initialReviews }: { initialReviews?: Revie
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setLang(lang === "en" ? "np" : "en")}
-              className="h-10 px-3 rounded-lg border border-light-gray bg-white text-xs font-semibold text-mid-gray flex items-center gap-1.5 hover:border-brand-primary hover:text-brand-primary transition"
-            >
-              <Languages className="size-3.5" />
-              {lang === "en" ? "NP" : "EN"}
-            </button>
-            <button
               onClick={prev}
               aria-label="Previous"
               className="size-11 rounded-full border border-light-gray bg-white grid place-items-center hover:border-brand-primary hover:text-brand-primary transition"
@@ -121,16 +122,15 @@ export function TestimonialsSection({ initialReviews }: { initialReviews?: Revie
                 <Stars value={t.rating} />
                 <p className="text-brand-dark italic leading-relaxed">
                   <span className="text-brand-primary font-display text-xl">&ldquo;</span>
-                  {t.quote[lang]}
+                  {t.description}
                   <span className="text-brand-primary font-display text-xl">&rdquo;</span>
                 </p>
                 <div className="mt-5 flex items-center gap-3">
                   <div className="size-11 rounded-full bg-brand-secondary text-white grid place-items-center font-semibold text-sm">
-                    {t.initials}
+                    {getInitials(t.name)}
                   </div>
                   <div>
                     <p className="font-semibold text-brand-secondary">{t.name}</p>
-                    <p className="text-sm text-mid-gray">{t.role}</p>
                   </div>
                 </div>
               </article>

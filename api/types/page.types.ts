@@ -1,21 +1,20 @@
+import type { MediaItem } from "./media.types"
+
 export interface Page {
   id: string
   slug: string
   title: string
-  description?: string
   content?: string
-  image?: string
-  sections?: PageSection[]
   meta_title?: string
   meta_description?: string
+  meta_keywords?: string
+  is_active?: boolean
+  is_published?: boolean
+  publish_date?: string | null
+  banner_images?: MediaItem[]
+  author_name?: string
+  author_image?: string
+  author_team_id?: string
+  created_at?: string
   updated_at?: string
-}
-
-export interface PageSection {
-  id: string
-  page: string
-  section_key: string
-  title?: string
-  content: string
-  order?: number
 }

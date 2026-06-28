@@ -24,45 +24,48 @@ export async function PageHero({
 
   return (
     <section
-      className="relative flex items-center overflow-hidden bg-[#162d62]"
+      className="relative flex items-end overflow-hidden bg-[#0f2557]"
       style={{ minHeight }}
     >
       <BannerCarousel
         slug={slug}
-        imgClassName="object-cover opacity-50"
+        imgClassName="object-cover"
         initialBanners={banners ?? undefined}
       />
 
-      {/* Single directional gradient — bottom-heavy so text reads cleanly */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0f2557]/90 via-[#0f2557]/40 to-transparent" />
+      {/* Bottom-anchored gradient — image visible top, dark at base */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0a1a3d]/95 via-[#0f2557]/50 to-transparent" />
 
-      <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center">
-        {badge && (
-          <span className="inline-block text-[11px] font-bold tracking-[0.18em] uppercase text-white/70 border border-white/20 px-3 py-1 rounded mb-5">
-            {badge}
-          </span>
-        )}
+      {/* Left-side vertical red rule — desktop only */}
+      <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#cd2028] hidden lg:block" />
 
+      <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-36 pb-14 lg:pb-16">
         {srHeading && <h1 className="sr-only">{srHeading}</h1>}
 
+        {badge && (
+          <p className="text-[#cd2028] text-[11px] font-bold tracking-[0.22em] uppercase mb-4">
+            {badge}
+          </p>
+        )}
+
         <h1
-          className="font-display font-bold text-white leading-[1.05] max-w-3xl mx-auto"
-          style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}
+          className="font-display font-bold text-white leading-[1.05] max-w-3xl"
+          style={{ fontSize: "clamp(2.2rem, 5vw, 4rem)" }}
         >
           {heading}
         </h1>
 
-        {/* Accent rule under heading */}
-        <div className="mt-5 mb-5 mx-auto w-12 h-[3px] bg-[#cd2028]" />
-
-        <p
-          className={
-            descClassName ??
-            "text-white/65 text-[1.05rem] max-w-[580px] mx-auto leading-relaxed"
-          }
-        >
-          {description}
-        </p>
+        <div className="mt-5 flex items-center gap-4">
+          <div className="w-10 h-[3px] bg-[#cd2028] shrink-0" />
+          <p
+            className={
+              descClassName ??
+              "text-white/60 text-[0.975rem] leading-relaxed"
+            }
+          >
+            {description}
+          </p>
+        </div>
       </div>
     </section>
   )

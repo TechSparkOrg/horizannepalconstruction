@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import type { ReactNode } from "react";
 import dynamic from "next/dynamic";
+import { Toaster } from "sonner";
 
 const Header = dynamic(() => import("@/components/global_ui/Header").then((m) => ({ default: m.Header })));
 const WhatsAppButton = dynamic(() => import("@/components/global_ui/WhatsAppButton").then((m) => ({ default: m.WhatsAppButton })));
@@ -36,8 +37,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <main id="main-content">{children}</main>
         <WhatsAppButton />
         <Footer />
-
- 
+        <Toaster position="top-right" richColors />
       </body>
     </html>
   );

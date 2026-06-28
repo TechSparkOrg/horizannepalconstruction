@@ -10,7 +10,7 @@ export default function HomepagePage() {
     <>
       <ServicesSection />
       <ImageGrid
-        slug="asdfasfsa-sf-sf"
+        slug="home-page-gallary"
         label="Our Gallery"
         heading="Photo Gallery"
         description="Explore our portfolio of completed projects and ongoing works across Nepal."

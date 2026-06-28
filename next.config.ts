@@ -9,7 +9,7 @@ const config: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "assets.horizonnepalconstruction.com" },
       { protocol: "https", hostname: "www.instagram.com" },
-      { protocol: "https", hostname: "fatafatsewa.com" },
+  
     ],
   },
 

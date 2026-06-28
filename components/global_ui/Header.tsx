@@ -40,7 +40,7 @@ const NAV = [
     ],
   },
   { href: "/blog", label: "Blog" },
-  { href: "/review", label: "Reviews" },
+  { href: "/reviews", label: "Reviews" },
   { href: "/faq", label: "FAQ" },
 ];
 
