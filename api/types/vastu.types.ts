@@ -58,3 +58,31 @@ export interface VastuQuickTools {
   directionToolTitle?: string
   directionToolDesc?: string
 }
+
+export interface VastuItemDetail {
+  id: string
+  type: 'section' | 'room' | 'direction'
+  title: string
+  slug: string
+  order: number
+  is_active: boolean
+  content_list: Array<{ en: string; np: string }>
+  benefits: Array<{ en: string; np: string }>
+  avoids: Array<{ en: string; np: string }>
+  ideal_direction: { en: string; np: string }
+  facing_direction: { en: string; np: string }
+  deity: string
+  element: string
+  description: { en: string; np: string }
+}
+
+export interface VastuNavItem {
+  slug: string
+  title: string
+}
+
+export interface VastuNavResponse {
+  sections: VastuNavItem[]
+  rooms: VastuNavItem[]
+  directions: VastuNavItem[]
+}

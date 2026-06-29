@@ -45,7 +45,7 @@ export default async function BlogPage() {
         badge="Our Blog"
         heading="Insights & Stories From the Field"
         description="Thought leadership, project stories, and practical guides from the Horizon Nepal team."
-        minHeight="70vh"
+        minHeight="80vh"
       />
       
       <BlogGrid posts={blogs} categories={categories} />

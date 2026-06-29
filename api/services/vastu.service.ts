@@ -1,8 +1,10 @@
 import { apiGet } from "@/api/ServiceHelper"
-import type { VastuConfig } from "@/api/types/vastu.types"
+import type { VastuItemDetail, VastuNavResponse } from "@/api/types/vastu.types"
 
-export function getVastuConfig(): Promise<VastuConfig[]> {
-  return apiGet<VastuConfig[]>("/vastu/")
+export function getVastuNav(): Promise<VastuNavResponse> {
+  return apiGet<VastuNavResponse>("/vastu/nav/")
 }
 
-export const VastuPublic = { get: getVastuConfig }
+export function getVastuItem(slug: string): Promise<VastuItemDetail> {
+  return apiGet<VastuItemDetail>(`/vastu/${slug}/`)
+}
