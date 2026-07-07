@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import FloorPlanner from "@/components/page_ui/FloorPlanner";
+import BlogContent from "@/components/page_ui/BlogContent.client";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { BannerGridCarousel } from "@/components/global_ui/BannerGridCarousel";
-import { getBanners } from "@/api/services/banner.service";
+import { getPageBySlug } from "@/api/services/page.service";
+import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+const SLUG = "floor-planner"
 
 const benefits = [
   { title: "Accurate Measurements", desc: "Scale-accurate layouts prevent costly errors during construction." },
@@ -15,35 +17,30 @@ const benefits = [
   { title: "Visualisation", desc: "See your home before it's built — walls, rooms, windows, and furniture placement." },
 ];
 
-export const metadata: Metadata = {
-  title: "Floor Planner | Horizan Nepal",
-  description:
-    "Design your dream floor plan online with Horizan Nepal's interactive 2D floor planner. Plan rooms, walls, stairs, and visualize your space before building.",
-  openGraph: {
-    title: "Floor Planner | Horizan Nepal",
-    description:
-      "Design your dream floor plan online with Horizan Nepal's interactive 2D floor planner.",
-    type: "website",
-    url: `${siteUrl}/floor-planner`,
-  },
-  alternates: { canonical: `${siteUrl}/floor-planner` },
-};
-
-const breadcrumb = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
-    { "@type": "ListItem", position: 2, name: "Floor Planner", item: `${siteUrl}/floor-planner` },
-  ],
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug(SLUG).catch(() => null)
+  const base = pageMetadataBase(page, SLUG)
+  return {
+    title: page?.meta_title || "Floor Planner | Horizan Nepal",
+    description: page?.meta_description || "Design your dream floor plan online with Horizan Nepal's interactive 2D floor planner. Plan rooms, walls, stairs, and visualize your space before building.",
+    openGraph: {
+      ...base.openGraph,
+      title: page?.meta_title || "Floor Planner | Horizan Nepal",
+      description: page?.meta_description || "Design your dream floor plan online with Horizan Nepal's interactive 2D floor planner.",
+      type: "website",
+    },
+    alternates: base.alternates,
+    ...(base.keywords ? { keywords: base.keywords } : {}),
+  }
+}
 
 export default async function FloorPlannerPage() {
-  const banners = await getBanners("floor-planner-page-hero").catch(() => null);
+  const page = await getPageBySlug(SLUG).catch(() => null)
+  const banners = page?.banner_images
 
   return (
     <>
-      <LdJson data={breadcrumb} />
+      <LdJson data={breadcrumbList("Floor Planner", "floor-planner")} />
 
       <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-brand-dark">
         {banners && banners.length > 0 && (
@@ -88,6 +85,12 @@ export default async function FloorPlannerPage() {
           </div>
         </div>
       </section>
+
+      {page?.content && (
+        <div className="max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <BlogContent content={page.content} />
+        </div>
+      )}
     </>
   );
 }

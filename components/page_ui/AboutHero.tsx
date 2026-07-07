@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
-import { getBanners } from "@/api/services/banner.service";
-
-
+import type { MediaItem } from "@/api/types/media.types";
 
 const stats = [
   { label: "50+", sub: "Projects delivered" },
@@ -12,11 +10,10 @@ const stats = [
   { label: "200+", sub: "Happy clients" },
 ];
 
-export async function AboutHero() {
-  const banners = await getBanners("about-page-hero").catch(() => null);
+export async function AboutHero({ initialBanners }: { initialBanners?: MediaItem[] }) {
   return (
     <section className="relative min-h-[75vh] flex items-center justify-center overflow-hidden">
-      <BannerCarousel slug="about-page-hero" imgClassName="object-cover" initialBanners={banners ?? undefined} />
+      <BannerCarousel slug="about-page-hero" imgClassName="object-cover" initialBanners={initialBanners} />
       <div
         className="absolute inset-0"
         style={{

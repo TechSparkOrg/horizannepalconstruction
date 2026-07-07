@@ -95,7 +95,7 @@ export function Footer() {
             <div className="col-span-2 sm:col-span-3 lg:col-span-1">
               <Link href="/" className="inline-flex items-center gap-2.5 mb-5">
                 <div className="size-9 rounded-md bg-white/10 flex items-center justify-center shrink-0">
-                  <Image src="/logo.png" alt="Horizon Nepal" width={22} height={22} className="object-contain" />
+                  <Image src="/logo.png" alt="Horizon Nepal" width={22} height={22} className="object-contain w-auto h-auto" />
                 </div>
                 <span className="flex items-baseline leading-none">
                   <span className="text-brand-primary font-extrabold text-xl tracking-tight">Horizon</span>
@@ -103,7 +103,7 @@ export function Footer() {
                 </span>
               </Link>
               <p className="text-sm text-white/55 leading-relaxed mb-5 max-w-[280px]">
-                Trusted architecture, engineering &amp; construction firm delivering innovative and sustainable designs across Nepal.
+               Trusted architecture, engineering &amp; construction firm delivering innovative and sustainable designs across Nepal
               </p>
               <ul className="space-y-2.5 text-sm">
                 {c.address && (
@@ -248,7 +248,7 @@ export function Footer() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
             <div className="flex items-center gap-3">
               <div className="size-6 rounded bg-white/10 flex items-center justify-center">
-                <Image src="/logo.png" alt="Horizon Nepal" width={14} height={14} className="object-contain" />
+                <Image src="/logo.png" alt="Horizon Nepal" width={14} height={14} className="object-contain w-auto h-auto" />
               </div>
               <p className="text-white/40 text-xs">&copy; {year} Horizon Nepal. All rights reserved.</p>
             </div>

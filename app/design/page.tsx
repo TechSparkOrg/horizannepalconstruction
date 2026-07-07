@@ -5,35 +5,32 @@ import { DesignServices } from "@/components/page_ui/DesignServices";
 import { getProjects } from "@/api/services/project.service";
 import { getModels } from "@/api/services/model3d.service";
 import { getCategories } from "@/api/services/category.service";
+import { getPageBySlug } from "@/api/services/page.service";
 import { LdJson } from "@/components/global_ui/JsonLd";
+import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
 
 const Design3DShowcase = dynamic(() => import("@/components/page_ui/Design3DShowcase").then(m => ({ default: m.Design3DShowcase })));
 const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then(m => ({ default: m.ConsultationForm })));
+const BlogContent = dynamic(() => import("@/components/page_ui/BlogContent.client"))
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+const SLUG = "design"
 
-export const metadata: Metadata = {
-  title: "Design | Horizan Nepal",
-  description:
-    "Explore Horizan Nepal's architectural design services — from conceptual 2D floor plans to stunning 3D visualizations. Turn your vision into reality.",
-  openGraph: {
-    title: "Design | Horizan Nepal",
-    description:
-      "Explore Horizan Nepal's architectural design services — 2D plans and 3D visualizations.",
-    type: "website",
-    url: `${siteUrl}/design`,
-  },
-  alternates: { canonical: `${siteUrl}/design` },
-};
-
-const breadcrumb = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
-    { "@type": "ListItem", position: 2, name: "Design", item: `${siteUrl}/design` },
-  ],
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug(SLUG).catch(() => null)
+  const base = pageMetadataBase(page, SLUG)
+  return {
+    title: page?.meta_title || "Design | Horizan Nepal",
+    description: page?.meta_description || "Explore Horizan Nepal's architectural design services — from conceptual 2D floor plans to stunning 3D visualizations.",
+    openGraph: {
+      ...base.openGraph,
+      title: page?.meta_title || "Design | Horizan Nepal",
+      description: page?.meta_description || "Explore Horizan Nepal's architectural design services — 2D plans and 3D visualizations.",
+      type: "website",
+    },
+    alternates: base.alternates,
+    ...(base.keywords ? { keywords: base.keywords } : {}),
+  }
+}
 
 function modelSrc(file: string) {
   if (!file) return "";
@@ -42,11 +39,13 @@ function modelSrc(file: string) {
 }
 
 export default async function DesignPage() {
-  const [projectsRes, modelsRes, categoriesRes] = await Promise.allSettled([
+  const [pageData, projectsRes, modelsRes, categoriesRes] = await Promise.allSettled([
+    getPageBySlug(SLUG),
     getProjects(),
     getModels(),
     getCategories(),
   ]);
+  const page = pageData.status === "fulfilled" ? pageData.value : null
   const categories = categoriesRes.status === "fulfilled" ? categoriesRes.value.results ?? [] : [];
 
   let modelCards: { key: string; src: string; title: string; subtitle?: string; href?: string }[];
@@ -85,11 +84,16 @@ export default async function DesignPage() {
 
   return (
     <>
-      <LdJson data={breadcrumb} />
-      <PageHero slug="design-page-hero" badge="Design" srHeading="Architectural Design Services" heading="Design That Inspires" description="From concept to completion — our design team creates spaces that are beautiful, functional, and built to last." minHeight="80vh" />
+      <LdJson data={breadcrumbList("Design", "design")} />
+      <PageHero slug="design-page-hero" badge="Design" srHeading="Architectural Design Services" heading="Design That Inspires" description="From concept to completion — our design team creates spaces that are beautiful, functional, and built to last." minHeight="80vh" initialBanners={page?.banner_images} />
       <DesignServices />
       <Design3DShowcase initialItems={modelCards} />
       <ConsultationForm initialCategories={categories} />
+      {page?.content && (
+        <div className="max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <BlogContent content={page.content} />
+        </div>
+      )}
     </>
   );
 }

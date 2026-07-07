@@ -1,44 +1,32 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { AboutHero } from "@/components/page_ui/AboutHero";
 import { LdJson } from "@/components/global_ui/JsonLd";
-import { TeamSection } from "@/components/global_ui/TeamSection";
 import { getTeam } from "@/api/services/team.service";
+import { getPageBySlug } from "@/api/services/page.service";
+import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
 import type { TeamMember } from "@/api/types/team.types";
+import { AboutClient } from "./_client";
 
-const AboutTabs = dynamic(() => import("@/components/page_ui/AboutTabs").then((m) => ({ default: m.AboutTabs })));
-const ServicesSection = dynamic(() => import("@/components/global_ui/ServicesSection").then((m) => ({ default: m.ServicesSection })));
-const AboutGallery = dynamic(() => import("@/components/global_ui/image-grid").then((m) => ({ default: m.ImageGrid })));
-const TestimonialsSection = dynamic(() => import("@/components/global_ui/TestimonialsSection").then((m) => ({ default: m.TestimonialsSection })));
-const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then((m) => ({ default: m.ConsultationForm })));
-const LocationSection = dynamic(() => import("@/components/global_ui/LocationSection").then((m) => ({ default: m.LocationSection })));
+const SLUG = "about"
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+const aboutPagePromise = getPageBySlug(SLUG).catch(() => null)
 
 export async function generateMetadata(): Promise<Metadata> {
+  const page = await aboutPagePromise
+  const base = pageMetadataBase(page, SLUG)
   return {
-    title: "About | Horizan Nepal",
-    description:
-      "Learn about Horizan Nepal — our team, mission, and portfolio. A trusted name in architectural design and construction across Nepal since 1999.",
+    title: page?.meta_title || "About | Horizan Nepal",
+    description: page?.meta_description || "Learn about Horizan Nepal — our team, mission, and portfolio. A trusted name in architectural design and construction across Nepal since 1999.",
     openGraph: {
-      title: "About | Horizan Nepal",
-      description:
-        "Learn about Horizan Nepal — our team, mission, and portfolio. A trusted name in architectural design and construction across Nepal.",
+      ...base.openGraph,
+      title: page?.meta_title || "About | Horizan Nepal",
+      description: page?.meta_description || "Learn about Horizan Nepal — our team, mission, and portfolio.",
       type: "website",
-      url: `${siteUrl}/about`,
     },
-    alternates: { canonical: `${siteUrl}/about` },
-  };
+    alternates: base.alternates,
+    ...(base.keywords ? { keywords: base.keywords } : {}),
+  }
 }
-
-const breadcrumb = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
-    { "@type": "ListItem", position: 2, name: "About", item: `${siteUrl}/about` },
-  ],
-};
 
 const aboutPageSchema = {
   "@context": "https://schema.org",
@@ -48,20 +36,22 @@ const aboutPageSchema = {
 };
 
 export default async function AboutPage() {
-  const team = await getTeam().catch(() => ({ results: [] as TeamMember[] }));
+  const [page, teamRes] = await Promise.all([
+    aboutPagePromise,
+    getTeam().catch(() => ({ results: [] as TeamMember[] })),
+  ]);
+  const team = "results" in teamRes ? teamRes.results : []
 
   return (
     <>
-      <LdJson data={breadcrumb} />
+      <h1 className="sr-only">{page?.meta_title || "About | Horizan Nepal"}</h1>
+      {page?.banner_images?.map((b) =>
+        b.url ? <link key={b.id} rel="preload" as="image" href={b.url} /> : null
+      )}
+      <LdJson data={breadcrumbList("About", "about")} />
       <LdJson data={aboutPageSchema} />
-      <AboutHero />
-      <AboutTabs />
-      <ServicesSection />
-      <AboutGallery slug="about-page-gallary-list" label="Our Work in Action" heading="A Glimpse Into What We Do" description="From concept to completion — the projects and people that define Horizon Nepal." bg="" priority />
-      <TeamSection members={team.results} />
-      <TestimonialsSection />
-      <ConsultationForm />
-      <LocationSection />
+      <AboutHero initialBanners={page?.banner_images} />
+      <AboutClient page={page} team={team} />
     </>
   );
 }

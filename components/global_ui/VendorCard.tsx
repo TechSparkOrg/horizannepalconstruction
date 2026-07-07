@@ -1,31 +1,31 @@
-import Image from "next/image";
-import type { PublicVendor } from "@/api/types/material.types";
+import Image from "next/image"
+import type { PublicVendor } from "@/api/types/material.types"
 
 interface Props {
-  vendor: PublicVendor;
+  vendor: PublicVendor
 }
 
 export function VendorCard({ vendor }: Props) {
   return (
-    <div className="flex flex-col items-center gap-3 p-5 bg-white rounded-xl border border-[#e8edf5]">
-      <div className="relative w-16 h-16 rounded-full overflow-hidden bg-[#f1f5f9]">
+    <div className="flex items-center gap-3 px-4 py-3 border-none last:border-r-0 flex-1 min-w-[140px]">
+      <div className="size-9 shrink-0 rounded-lg bg-[#f4f6fb] border border-[#e8edf5] flex items-center justify-center overflow-hidden">
         {vendor.logo ? (
           <Image
             src={vendor.logo}
-            alt={`${vendor.name} logo`}
-            fill
-            sizes="64px"
-            className="object-contain"
+            alt={vendor.name}
+            width={36}
+            height={36}
+            className="size-full object-contain p-1"
           />
         ) : (
-          <div className="w-full h-full grid place-items-center text-[#94a3b8] text-lg font-bold">
+          <span className="text-xs font-extrabold text-[#0f2557]">
             {vendor.name.charAt(0)}
-          </div>
+          </span>
         )}
       </div>
-      <span className="text-[13px] font-semibold text-brand-dark text-center leading-snug">
+      <span className="text-xs font-semibold text-[#3d526e] leading-snug">
         {vendor.name}
       </span>
     </div>
-  );
+  )
 }

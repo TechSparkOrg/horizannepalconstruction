@@ -1,6 +1,12 @@
-import { Building2, TriangleAlert, Wind, Flame, Clock } from "lucide-react";
-import ParsedContent from "@/lib/Parse-Content";
+"use client"
+
+import { Building2, TriangleAlert, Wind, Flame, Clock, FileText } from "lucide-react";
+import dynamic from "next/dynamic";
+import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import type { BuildingPermitConfig, WorkflowStep, RegulationItem, MunicipalityItem } from "@/api/types/building-permit.types";
+import type { Page } from "@/api/types/page.types";
+
+const ParsedContent = dynamic(() => import("@/lib/Parse-Content"), { ssr: false })
 
 const REG_ICONS = [Building2, TriangleAlert, Flame, Wind];
 
@@ -140,12 +146,52 @@ function MunicipalityTable({ items }: { items: MunicipalityItem[] }) {
   );
 }
 
-export default function BuildingPermitContent({ config }: { config: BuildingPermitConfig }) {
+export default function BuildingPermitClient({
+  config,
+  page,
+}: {
+  config: BuildingPermitConfig
+  page?: Page | null
+}) {
   return (
     <>
+      <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-brand-dark">
+        {page?.banner_images && page.banner_images.length > 0 ? (
+          <BannerCarousel
+            slug="building-permit-hero"
+            carousel
+            imgClassName="object-cover opacity-60"
+            initialBanners={page.banner_images}
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/40 to-brand-dark/70" />
+        )}
+        <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-16">
+          <div className="max-w-2xl">
+            <span className="text-xs font-semibold tracking-[0.15em] uppercase text-white/60 bg-white/10 px-3 py-1 rounded-full border border-white/10 inline-block">Tools</span>
+            <h2 className="font-display font-bold text-white mt-6 leading-[1.08]" style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}>
+              Building Permit<br />Assistant
+            </h2>
+            <p className="mt-4 text-white/80 text-lg max-w-[540px] leading-relaxed font-semibold">Navigate Nepal&apos;s building permit process with confidence.</p>
+            <div className="mt-8">
+              <a href="#workflow" className="inline-flex items-center gap-2 px-6 py-3 bg-brand-primary text-white text-sm font-semibold rounded-xl hover:bg-brand-primary/90 transition-all shadow-lg shadow-brand-primary/30">
+                <FileText className="size-4" />
+                Get Permit Assistance
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <WorkflowTimeline steps={config.workflow_steps} />
       <RegulationsGrid items={config.regulation_items} />
       <MunicipalityTable items={config.municipality_items} />
+
+      {page?.content && (
+        <div className="max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <ParsedContent description={page.content} />
+        </div>
+      )}
     </>
-  );
+  )
 }

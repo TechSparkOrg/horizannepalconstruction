@@ -119,7 +119,7 @@ function MobileSidebar() {
         <SheetHeader className="px-5 py-[18px] border-b border-light-gray">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
           <Link href="/" className="flex items-center gap-3">
-            <Image src="/logo.png" alt="Horizon Nepal" width={30} height={30} className="object-contain shrink-0" />
+            <Image src="/logo.png" alt="Horizon Nepal" width={30} height={30} className="object-contain shrink-0 w-auto h-auto" />
             <div className="flex flex-col gap-[3px]">
               <span className="text-brand-dark font-bold text-[15px] leading-none tracking-tight">
                 Horizon <span className="text-brand-primary">Nepal</span>
@@ -205,7 +205,7 @@ export function Header() {
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 shrink-0">
-          <Image src="/logo.png" alt="Horizon Nepal" width={32} height={32} className="object-contain shrink-0" />
+          <Image src="/logo.png" alt="Horizon Nepal" width={32} height={32} className="object-contain shrink-0 w-auto h-auto" />
           <div className="flex flex-col gap-[3px]">
             <span className="text-white font-bold text-[15.5px] leading-none tracking-tight">
               Horizon Nepal

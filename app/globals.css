@@ -12,6 +12,10 @@
   --color-brand-primary:   #1d4ed8;
   --color-brand-secondary: #3b82f6;
 
+  /* Brand red */
+  --color-brand-red:       #cd2028;
+  --color-brand-red-hover: #b01c22;
+
   /* Neutrals */
   --color-off-white:  #eff6ff;
   --color-light-gray: #e2e8f0;

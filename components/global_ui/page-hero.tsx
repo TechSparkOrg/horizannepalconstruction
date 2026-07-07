@@ -1,5 +1,5 @@
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel"
-import { getBanners } from "@/api/services/banner.service"
+import type { MediaItem } from "@/api/types/media.types"
 
 interface PageHeroProps {
   slug: string
@@ -9,6 +9,7 @@ interface PageHeroProps {
   description: string
   minHeight?: string
   descClassName?: string
+  initialBanners?: MediaItem[]
 }
 
 export async function PageHero({
@@ -19,9 +20,8 @@ export async function PageHero({
   description,
   minHeight = "55vh",
   descClassName,
+  initialBanners,
 }: PageHeroProps) {
-  const banners = await getBanners(slug).catch(() => null)
-
   return (
     <section
       className="relative flex items-end overflow-hidden bg-[#0f2557]"
@@ -30,7 +30,7 @@ export async function PageHero({
       <BannerCarousel
         slug={slug}
         imgClassName="object-cover"
-        initialBanners={banners ?? undefined}
+        initialBanners={initialBanners}
       />
 
       {/* Bottom-anchored gradient — image visible top, dark at base */}

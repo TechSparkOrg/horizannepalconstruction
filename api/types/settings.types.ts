@@ -11,6 +11,10 @@ export interface SiteSettings {
     whatsappNumber?: string
     mapEmbed?: string
   }
+  company_info?: {
+    name?: string
+    description?: string
+  }
   social_links?: Array<{
     url?: string
     label?: string

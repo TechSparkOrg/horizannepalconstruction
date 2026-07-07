@@ -1,45 +1,43 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import BlogContent from "@/components/page_ui/BlogContent.client";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { ContactHero } from "@/components/page_ui/ContactHero";
 import { getCategories } from "@/api/services/category.service";
 import { getFaqs } from "@/api/services/faq.service";
-import { getBanners } from "@/api/services/banner.service";
+import { getPageBySlug } from "@/api/services/page.service";
 
 const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then(m => ({ default: m.ConsultationForm })));
 const LocationSection = dynamic(() => import("@/components/global_ui/LocationSection").then(m => ({ default: m.LocationSection })));
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
+
+const SLUG = "contact"
 
 export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug(SLUG).catch(() => null)
+  const base = pageMetadataBase(page, SLUG)
   return {
-    title: "Contact | Horizan Nepal",
-    description:
-      "Get in touch with Horizan Nepal. Schedule a consultation, visit our office, or reach out to discuss your dream project. We're here to help you build better.",
+    title: page?.meta_title || "Contact | Horizan Nepal",
+    description: page?.meta_description || "Get in touch with Horizan Nepal. Schedule a consultation, visit our office, or reach out to discuss your dream project.",
     openGraph: {
-      title: "Contact | Horizan Nepal",
-      description:
-        "Get in touch with Horizan Nepal. Schedule a consultation or visit our office.",
+      ...base.openGraph,
+      title: page?.meta_title || "Contact | Horizan Nepal",
+      description: page?.meta_description || "Get in touch with Horizan Nepal. Schedule a consultation or visit our office.",
       type: "website",
     },
-    alternates: { canonical: `${siteUrl}/contact` },
-  };
+    alternates: base.alternates,
+    ...(base.keywords ? { keywords: base.keywords } : {}),
+  }
 }
 
-const breadcrumb = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
-    { "@type": "ListItem", position: 2, name: "Contact", item: `${siteUrl}/contact` },
-  ],
-};
-
 export default async function ContactPage() {
-  const [categoriesRes, faqRes] = await Promise.allSettled([
+  const [pageData, categoriesRes, faqRes] = await Promise.allSettled([
+    getPageBySlug(SLUG),
     getCategories(),
     getFaqs(),
   ]);
+  const page = pageData.status === "fulfilled" ? pageData.value : null
   const categories = categoriesRes.status === "fulfilled" ? categoriesRes.value.results ?? [] : [];
   const faqItems = faqRes.status === "fulfilled" ? faqRes.value.results ?? [] : [];
 
@@ -56,17 +54,18 @@ export default async function ContactPage() {
     })),
   } : null;
 
-  const banners = await getBanners("contact-us-page-hero").catch(() => null);
   return (
     <>
-      {banners?.map((b) =>
-        b.url ? <link rel="preload" as="image" href={b.url} key={b.id} /> : null
-      )}
-      <LdJson data={breadcrumb} />
+      <LdJson data={breadcrumbList("Contact", "contact")} />
       {faqPageSchema && <LdJson data={faqPageSchema} />}
-      <ContactHero initialBanners={banners ?? undefined} />
+      <ContactHero initialBanners={page?.banner_images} />
       <ConsultationForm initialCategories={categories} />
       <LocationSection />
+      {page?.content && (
+        <div className="max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <BlogContent content={page.content} />
+        </div>
+      )}
     </>
   );
 }

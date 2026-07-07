@@ -1,49 +1,48 @@
 import type { Metadata } from "next";
-import { ReviewList } from "@/components/page_ui/ReviewList";
-import { LdJson } from "@/components/global_ui/JsonLd";
 import { getReviews } from "@/api/services/review.service";
-import { getBanners } from "@/api/services/banner.service";
+import { getPageBySlug } from "@/api/services/page.service";
+import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
+import { LdJson } from "@/components/global_ui/JsonLd";
+import { ReviewsClient } from "./_client";
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+const SLUG = "reviews"
+const reviewsPagePromise = getPageBySlug(SLUG).catch(() => null)
 
 export async function generateMetadata(): Promise<Metadata> {
+  const page = await reviewsPagePromise
+  const base = pageMetadataBase(page, SLUG)
   return {
-    title: "Reviews | Horizan Nepal",
-    description:
-      "Read customer reviews and testimonials for Horizan Nepal. Share your experience or browse what our clients say about our architecture and construction services.",
+    title: page?.meta_title || "Reviews | Horizan Nepal",
+    description: page?.meta_description || "Read customer reviews and testimonials for Horizan Nepal. Share your experience or browse what our clients say about our architecture and construction services.",
     openGraph: {
-      title: "Reviews | Horizan Nepal",
-      description:
-        "Read customer reviews and share your experience with Horizan Nepal.",
+      ...base.openGraph,
+      title: page?.meta_title || "Reviews | Horizan Nepal",
+      description: page?.meta_description || "Read customer reviews and share your experience with Horizan Nepal.",
       type: "website",
-      url: `${siteUrl}/reviews`,
     },
-    alternates: { canonical: `${siteUrl}/reviews` },
-  };
+    alternates: base.alternates,
+    ...(base.keywords ? { keywords: base.keywords } : {}),
+  }
 }
 
-const breadcrumb = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
-    { "@type": "ListItem", position: 2, name: "Reviews", item: `${siteUrl}/reviews` },
-  ],
-};
-
 export default async function ReviewsPage() {
-  const [reviewsRes, banners] = await Promise.all([
+  const [page, reviewsRes] = await Promise.all([
+    reviewsPagePromise,
     getReviews().catch(() => ({ results: [], count: 0 })),
-    getBanners("reviews-page-hero").catch(() => null),
   ]);
 
   return (
     <>
-      <LdJson data={breadcrumb} />
-      <ReviewList
-        initialReviews={reviewsRes.results ?? []}
-        initialTotal={reviewsRes.count ?? 0}
-        initialBanners={banners ?? undefined}
+      <h1 className="sr-only">Reviews — Horizan Nepal</h1>
+      {page?.banner_images?.map((b) =>
+        b.url ? <link key={b.id} rel="preload" as="image" href={b.url} /> : null
+      )}
+      <LdJson data={breadcrumbList("Reviews", "reviews")} />
+      <ReviewsClient
+        page={page}
+        reviews={reviewsRes.results ?? []}
+        total={reviewsRes.count ?? 0}
+        banners={page?.banner_images}
       />
     </>
   );

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { getSiteUrl } from "@/lib/seo-utils";
 import "./globals.css";
 import type { ReactNode } from "react";
 import dynamic from "next/dynamic";
@@ -20,6 +21,10 @@ const geistMono = Geist_Mono({
 });
 
 
+
+export const metadata: Metadata = {
+  metadataBase: new URL(getSiteUrl()),
+}
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

@@ -1,52 +1,53 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { PageHero } from "@/components/global_ui/page-hero";
 import { FAQTimeline } from "@/components/page_ui/FAQTimeline";
 import { ConsultationForm } from "@/components/global_ui/ConsultationForm";
 import { getFaqGroups } from "@/api/services/faq.service";
+import { getPageBySlug } from "@/api/services/page.service";
+import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+const BlogContent = dynamic(() => import("@/components/page_ui/BlogContent.client"))
+
+const SLUG = "faq"
 
 export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug(SLUG).catch(() => null)
+  const base = pageMetadataBase(page, SLUG)
   return {
-    title: "FAQ | Horizan Nepal",
-    description:
-      "Frequently asked questions about Horizan Nepal's services, design process, construction timeline, costing, and more. Find answers to common queries.",
+    title: page?.meta_title || "FAQ | Horizan Nepal",
+    description: page?.meta_description || "Frequently asked questions about Horizan Nepal's services, design process, construction timeline, costing, and more.",
     openGraph: {
-      title: "FAQ | Horizan Nepal",
-      description:
-        "Frequently asked questions about Horizan Nepal's services, design process, and construction timeline.",
+      ...base.openGraph,
+      title: page?.meta_title || "FAQ | Horizan Nepal",
+      description: page?.meta_description || "Frequently asked questions about Horizan Nepal's services and process.",
       type: "website",
-      url: `${siteUrl}/faq`,
     },
-    alternates: { canonical: `${siteUrl}/faq` },
-  };
+    alternates: base.alternates,
+    ...(base.keywords ? { keywords: base.keywords } : {}),
+  }
 }
 
-const breadcrumb = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
-    { "@type": "ListItem", position: 2, name: "FAQ", item: `${siteUrl}/faq` },
-  ],
-};
-
 export default async function FAQPage() {
-  let initialGroups: Awaited<ReturnType<typeof getFaqGroups>>["results"] = [];
-  try {
-    const res = await getFaqGroups();
-    initialGroups = res.results ?? [];
-  } catch {
-    // groups will be empty, FAQTimeline renders empty state
-  }
+  const [pageData, faqRes] = await Promise.allSettled([
+    getPageBySlug(SLUG),
+    getFaqGroups(),
+  ]);
+  const page = pageData.status === "fulfilled" ? pageData.value : null
+  const initialGroups = faqRes.status === "fulfilled" ? faqRes.value.results ?? [] : []
 
   return (
     <>
-      <LdJson data={breadcrumb} />
-      <PageHero slug="faq-page-hero" badge="FAQ" minHeight='80vh' heading="Frequently Asked Questions" description="Everything you need to know about working with Horizon Nepal — from pricing to process." />
+      <LdJson data={breadcrumbList("FAQ", "faq")} />
+      <PageHero slug="faq-page-hero" badge="FAQ" minHeight='80vh' heading="Frequently Asked Questions" description="Everything you need to know about working with Horizon Nepal — from pricing to process." initialBanners={page?.banner_images} />
       <FAQTimeline initialGroups={initialGroups} />
       <ConsultationForm />
+      {page?.content && (
+        <div className="max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <BlogContent content={page.content} />
+        </div>
+      )}
     </>
   );
 }

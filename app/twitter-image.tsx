@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import fs from "node:fs";
+import path from "node:path";
 
 export const size = {
   width: 1200,
@@ -6,6 +8,11 @@ export const size = {
 };
 
 export const contentType = "image/png";
+
+const bgPath = path.join(process.cwd(), "public", "horizanbg.jpeg");
+const bgSrc = fs.existsSync(bgPath)
+  ? `data:image/jpeg;base64,${fs.readFileSync(bgPath).toString("base64")}`
+  : null;
 
 export default function TwitterImage() {
   return new ImageResponse(
@@ -22,18 +29,19 @@ export default function TwitterImage() {
           fontFamily: "sans-serif",
         }}
       >
-        {/* Background Image */}
-        <img
-          src="/horizanbg.jpeg"
-          alt="Building"
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        />
+        {bgSrc && (
+          <img
+            src={bgSrc}
+            alt="Horizan Nepal — Architecture, Engineering & Construction"
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
+        )}
 
         {/* Overlay */}
         <div

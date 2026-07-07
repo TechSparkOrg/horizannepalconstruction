@@ -14,7 +14,7 @@ export const ReelThumbnailFallback: FC<Props> = ({ platform }) => {
           alt="Horizon Nepal"
           width={32}
           height={32}
-          className="object-contain"
+          className="object-contain w-auto h-auto"
         />
       </span>
     </div>

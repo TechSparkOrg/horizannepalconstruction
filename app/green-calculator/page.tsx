@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Check } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import BlogContent from "@/components/page_ui/BlogContent.client";
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import { LdJson } from "@/components/global_ui/JsonLd";
-import { getBanners } from "@/api/services/banner.service";
+import { getPageBySlug } from "@/api/services/page.service";
+import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
 
 const categories = [
   {
@@ -59,41 +61,33 @@ const comparison = [
   { factor: "Water", conventional: "Municipal + tanker", green: "Municipal + rainwater harvesting" },
 ];
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+const SLUG = "green-calculator"
 
-export const metadata: Metadata = {
-  title: "Green Calculator | Horizan Nepal",
-  description:
-    "Compare eco-friendly building materials and methods with Horizan Nepal's Green Builder Calculator. Build sustainably with our green checklist and material comparison.",
-  openGraph: {
-    title: "Green Calculator | Horizan Nepal",
-    description:
-      "Compare eco-friendly building materials and methods with Horizan Nepal's Green Builder Calculator.",
-    type: "website",
-    url: `${siteUrl}/green-calculator`,
-  },
-  alternates: { canonical: `${siteUrl}/green-calculator` },
-};
-
-const breadcrumb = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
-    { "@type": "ListItem", position: 2, name: "Green Calculator", item: `${siteUrl}/green-calculator` },
-  ],
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getPageBySlug(SLUG).catch(() => null)
+  const base = pageMetadataBase(page, SLUG)
+  return {
+    title: page?.meta_title || "Green Calculator | Horizan Nepal",
+    description: page?.meta_description || "Compare eco-friendly building materials and methods with Horizan Nepal's Green Builder Calculator.",
+    openGraph: {
+      ...base.openGraph,
+      title: page?.meta_title || "Green Calculator | Horizan Nepal",
+      description: page?.meta_description || "Compare eco-friendly building materials and methods with Horizan Nepal's Green Builder Calculator.",
+      type: "website",
+    },
+    alternates: base.alternates,
+    ...(base.keywords ? { keywords: base.keywords } : {}),
+  }
+}
 
 export default async function GreenCalculatorPage() {
-  const banners = await getBanners("green-calculator-page-hero").catch(() => null);
+  const page = await getPageBySlug(SLUG).catch(() => null)
+  const banners = page?.banner_images
   return (
     <>
-      {banners?.map((b) =>
-        b.url ? <link rel="preload" as="image" href={b.url} key={b.id} /> : null
-      )}
-      <LdJson data={breadcrumb} />
+      <LdJson data={breadcrumbList("Green Calculator", "green-calculator")} />
       <section className="relative min-h-[50vh] flex items-center overflow-hidden bg-brand-dark">
-        <BannerCarousel slug="green-calculator-page-hero" imgClassName="object-cover opacity-60" initialBanners={banners ?? undefined} />
+        <BannerCarousel slug="green-calculator-page-hero" imgClassName="object-cover opacity-60" initialBanners={banners} />
         <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/40 to-brand-dark/70" />
         <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-20 text-center">
           <span className="text-xs font-semibold tracking-[0.15em] uppercase text-white/60 bg-white/10 px-3 py-1 rounded-full border border-white/10 inline-block">Tools</span>
@@ -158,6 +152,12 @@ export default async function GreenCalculatorPage() {
           </div>
         </div>
       </section>
+
+      {page?.content && (
+        <div className="max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <BlogContent content={page.content} />
+        </div>
+      )}
     </>
   );
 }
