@@ -1,4 +1,6 @@
 import dynamic from "next/dynamic";
+import Image from "next/image";
+import bulldozerSvg from "@/components/video-gif/construnction-bull-dozer.svg";
 import { ServicesSection } from "@/components/global_ui/ServicesSection";
 import { ImageGrid } from "@/components/global_ui/image-grid";
 import { FeaturedProjects } from "@/components/global_ui/FeaturedProjects";
@@ -11,6 +13,16 @@ const ParsedContent = dynamic(() => import("@/lib/Parse-Content"))
 export default function HomepagePage({ description }: { description?: string }) {
   return (
     <>
+      <div className="w-full overflow-hidden" style={{ height: "180px" }}>
+        <Image
+          src={bulldozerSvg}
+          alt="Construction bulldozer illustration"
+          width={1920}
+          height={180}
+          className="w-full h-full object-cover"
+          priority={false}
+        />
+      </div>
       <ServicesSection />
       <ImageGrid
         slug="home-page-gallary"

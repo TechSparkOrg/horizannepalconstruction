@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { getBanners } from "@/api/services/banner.service";
 import { getSettings } from "@/api/services/settings.service";
 import { HeroSection } from "@/components/global_ui/HeroSection";
 import HomepagePage from "./homepage/page";
@@ -20,18 +19,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [settings, banners] = await Promise.all([
-    settingsForPage,
-    getBanners("home-page-hero").catch(() => null),
-  ]);
+  const settings = await settingsForPage;
 
   return (
     <>
       <h1 className="sr-only">{settings?.company_info?.name || "Horizan Nepal — Architecture, Engineering & Construction"}</h1>
-      {banners?.map((b) =>
-        b.url ? <link key={b.id} rel="preload" as="image" href={b.url} /> : null
-      )}
-      <HeroSection initialBanners={banners ?? undefined} />
+      <HeroSection />
       <HomepagePage description={settings?.company_info?.description || ""} />
     </>
   );

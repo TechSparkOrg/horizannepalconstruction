@@ -63,10 +63,14 @@ export function ImageGrid({
 
         {/* Header */}
         <div className="text-center mb-10 max-w-[520px] mx-auto">
-          <p className="text-[11px] font-semibold tracking-[0.18em] uppercase text-brand-primary">
-            {label}
-          </p>
-          <h2 className="mt-4 text-[28px] sm:text-[34px] font-bold text-brand-dark tracking-tight leading-[1.15]">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <span className="block w-6 h-px bg-brand-primary shrink-0" aria-hidden="true" />
+            <span className="text-[11px] font-semibold tracking-[0.18em] uppercase text-brand-primary">
+              {label}
+            </span>
+            <span className="block w-6 h-px bg-brand-primary shrink-0" aria-hidden="true" />
+          </div>
+          <h2 className="text-[28px] sm:text-[34px] font-bold text-brand-dark leading-[1.15]">
             {heading}
           </h2>
           <p className="mt-3 text-[14.5px] text-mid-gray leading-[1.7]">

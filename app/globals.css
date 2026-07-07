@@ -5,7 +5,7 @@
   /* Typography */
   --font-sans:    var(--font-geist-sans);
   --font-mono:    var(--font-geist-mono);
-  --font-display: var(--font-geist-sans);
+  --font-display: var(--font-playfair);
 
   /* Brand blues */
   --color-brand-dark:      #0f2557;
@@ -123,6 +123,12 @@
     color: var(--foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+  }
+
+  /* Display headings use Playfair Display */
+  h1, h2 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
   }
 
   /* Accessible focus ring — visible on all surfaces */
