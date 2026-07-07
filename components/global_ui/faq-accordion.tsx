@@ -1,173 +1,163 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Minus, ArrowRight, MessageCircleQuestion } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight, ChevronDown, MessageCircle } from "lucide-react";
 import { getFaqs } from "@/api/services/faq.service";
 import type { FaqItem } from "@/api/types/faq.types";
 
-type Faq = { q: string; a: string };
+interface Faq { q: string; a: string }
 
-function AccordionItem({ faq, index, isOpen, onToggle }: {
+function FaqRow({
+  faq,
+  isOpen,
+  isLast,
+  onToggle,
+}: {
   faq: Faq;
-  index: number;
   isOpen: boolean;
+  isLast: boolean;
   onToggle: () => void;
 }) {
   return (
-    <div
-      className={[
-        "rounded-xl bg-white shadow-sm transition-shadow duration-200",
-        isOpen ? "shadow-md" : "hover:shadow-md",
-      ].join(" ")}
-    >
-      <button
-        type="button"
-        aria-expanded={isOpen}
-        aria-controls={`faq-panel-${index}`}
-        onClick={onToggle}
-        className="w-full flex items-center justify-between gap-4 text-left px-5 py-4 rounded-xl"
-      >
-        <span
-          className={`text-[14.5px] font-semibold leading-snug transition-colors duration-150 ${
-            isOpen ? "text-brand-primary" : "text-[#111827]"
+    <div className="relative flex gap-4">
+      {/* Rail */}
+      <div className="flex flex-col items-center shrink-0">
+        <div
+          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-colors duration-200 ${
+            isOpen
+              ? "bg-brand-primary text-white shadow-sm"
+              : "border border-light-gray bg-white text-muted-foreground"
           }`}
         >
-          {faq.q}
-        </span>
+          Q
+        </div>
+        {!isLast && <div className="my-1.5 w-px flex-1 bg-light-gray" />}
+      </div>
 
-        <span
-          className={[
-            "shrink-0 size-7 rounded-full flex items-center justify-center transition-colors duration-200",
-            isOpen
-              ? "bg-brand-primary text-white"
-              : "bg-[#f0f5ff] text-brand-primary",
-          ].join(" ")}
-          aria-hidden="true"
-        >
-          {isOpen
-            ? <Minus className="size-3.5" />
-            : <Plus className="size-3.5" />}
-        </span>
-      </button>
-
-      {/* Answer — CSS grid collapse */}
-      <div
-        id={`faq-panel-${index}`}
-        role="region"
-        className="grid transition-all duration-300 ease-out"
-        style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
+      {/* Content */}
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        className="min-w-0 flex-1 pb-6 pt-0.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 rounded-sm"
       >
-        <div className="overflow-hidden">
-          <p className="px-5 pb-5 text-[13.5px] leading-[1.75] text-[#6b7280]">
+        <div className="flex items-start justify-between gap-3">
+          <p className={`text-[14.5px] font-semibold leading-snug transition-colors duration-150 ${isOpen ? "text-brand-primary" : "text-brand-dark"}`}>
+            {faq.q}
+          </p>
+          <ChevronDown
+            className={`size-4 shrink-0 mt-0.5 text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-180 text-brand-primary" : ""}`}
+          />
+        </div>
+        <div
+          className="overflow-hidden transition-all duration-300"
+          style={{ maxHeight: isOpen ? "300px" : "0px", opacity: isOpen ? 1 : 0 }}
+        >
+          <p className="mt-2.5 text-[13.5px] leading-relaxed text-muted-foreground">
             {faq.a}
           </p>
         </div>
+      </button>
+    </div>
+  );
+}
+
+function SkeletonRow({ isLast }: { isLast?: boolean }) {
+  return (
+    <div className="flex gap-4 pb-6">
+      <div className="flex flex-col items-center shrink-0">
+        <div className="h-7 w-7 rounded-full bg-light-gray/60 animate-pulse" />
+        {!isLast && <div className="my-1.5 w-px flex-1 bg-light-gray" />}
+      </div>
+      <div className="flex-1 space-y-2 pt-1">
+        <div className="h-3.5 w-2/3 rounded bg-light-gray/60 animate-pulse" />
       </div>
     </div>
   );
 }
 
-function SkeletonItem({ wide }: { wide?: boolean }) {
-  return (
-    <div className="rounded-xl bg-white shadow-sm px-5 py-4 flex items-center justify-between gap-4">
-      <div className={`h-4 rounded bg-[#eef2f9] animate-pulse ${wide ? "w-3/4" : "w-2/3"}`} />
-      <div className="size-7 rounded-full bg-[#eef2f9] animate-pulse shrink-0" />
-    </div>
-  );
-}
-
-export function FAQWrapper({ initialFaqs }: { initialFaqs?: Faq[] }) {
-  const [open, setOpen] = useState<number | null>(0);
-  const [faqs, setFaqs] = useState<Faq[]>(initialFaqs ?? []);
+export function FAQWrapper({ initialFaqs }: { initialFaqs?: FaqItem[] }) {
+  const [faqs, setFaqs]           = useState<Faq[]>([]);
+  const [openIndex, setOpenIndex] = useState(0);
 
   useEffect(() => {
-    if (initialFaqs) return;
+    if (initialFaqs) {
+      setFaqs(initialFaqs.map((f) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" })));
+      return;
+    }
     getFaqs()
-      .then((res) => {
-        if (res.results?.length > 0) {
-          setFaqs(res.results.map((f: FaqItem) => ({
-            q: f.question?.en ?? "",
-            a: f.answer?.en ?? "",
-          })));
-        }
-      })
+      .then((res) =>
+        setFaqs((res.results ?? []).map((f: FaqItem) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" })))
+      )
       .catch(() => {});
   }, [initialFaqs]);
 
   return (
-    <section className="py-16 sm:py-24 bg-[#f5f8ff]">
+    <section className="py-20 bg-[#f5f8ff]">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-[1fr_1.5fr] gap-12 lg:gap-16 items-start">
 
-          {/* ── Left: heading + CTAs ── */}
+        {/* Live-chatbot SVG — full width above */}
+        <div className="relative w-full overflow-hidden rounded-2xl mb-10" style={{ height: "clamp(160px, 22vw, 300px)" }}>
+          <Image
+            src="/video-gif/Live-chatbot.svg"
+            alt="Live chat support illustration"
+            fill
+            className="object-contain object-center"
+            unoptimized
+            priority={false}
+          />
+        </div>
+
+        {/* Two-column: heading left, FAQ right */}
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-10 lg:gap-16 items-start">
+
+          {/* Left */}
           <div className="lg:sticky lg:top-28">
             <div className="flex items-center gap-3 mb-4">
               <span className="block w-6 h-px bg-brand-primary shrink-0" aria-hidden="true" />
               <span className="text-[11px] font-semibold tracking-[0.18em] uppercase text-brand-primary">
-                Have Questions?
+                Common Questions
               </span>
             </div>
-
-            <h2 className="text-[28px] sm:text-[34px] font-bold text-brand-dark leading-[1.15]">
-              Frequently<br />Asked Questions
+            <h2 className="text-[28px] sm:text-[34px] font-bold text-brand-dark leading-[1.15] mb-3">
+              Frequently Asked<br />Questions
             </h2>
-
-            <p className="mt-4 text-[14px] leading-[1.75] text-[#6b7280] max-w-[300px]">
-              Find answers to common enquiries about our services, process, and pricing.
+            <p className="text-[14px] leading-relaxed text-muted-foreground mb-8">
+              Can&apos;t find what you&apos;re looking for? Reach out directly — we&apos;re happy to help.
             </p>
-
-            {/* Icon stat */}
-            <div className="mt-8 inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-4 shadow-sm">
-              <div className="size-10 rounded-xl bg-[#f0f5ff] flex items-center justify-center shrink-0">
-                <MessageCircleQuestion className="size-5 text-brand-primary" />
-              </div>
-              <div>
-                <p className="text-[13px] font-bold text-[#111827]">Still have questions?</p>
-                <p className="text-[12px] text-[#9ca3af]">We&apos;re happy to help.</p>
-              </div>
-            </div>
-
-            {/* CTAs */}
-            <div className="mt-6 flex flex-wrap items-center gap-3">
+            <div className="flex flex-col gap-3">
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 h-10 px-5 rounded-full text-[13px] font-semibold text-white bg-brand-primary hover:bg-blue-700 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
+                className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-brand-primary hover:bg-blue-700 text-white font-semibold text-[13px] transition-colors w-fit focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
               >
-                Ask a question
-                <ArrowRight className="size-3.5 shrink-0" />
+                <MessageCircle className="size-4" />
+                Ask a Question
               </Link>
               <Link
                 href="/faq"
-                className="inline-flex items-center gap-1.5 h-10 px-5 rounded-full text-[13px] font-semibold text-[#374151] border border-[#e8edf5] bg-white hover:border-brand-primary/30 transition-colors focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
+                className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-muted-foreground hover:text-brand-dark transition-colors focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
               >
                 View all FAQs
-                <ArrowRight className="size-3.5 shrink-0" />
+                <ArrowRight className="size-3.5" />
               </Link>
             </div>
           </div>
 
-          {/* ── Right: accordion ── */}
-          <div className="flex flex-col gap-3">
-            {faqs.length === 0 ? (
-              <>
-                <SkeletonItem wide />
-                <SkeletonItem />
-                <SkeletonItem wide />
-                <SkeletonItem />
-                <SkeletonItem />
-              </>
-            ) : (
-              faqs.map((f, i) => (
-                <AccordionItem
-                  key={i}
-                  faq={f}
-                  index={i}
-                  isOpen={open === i}
-                  onToggle={() => setOpen(open === i ? null : i)}
-                />
-              ))
-            )}
+          {/* Right — FAQ list */}
+          <div>
+            {faqs.length === 0
+              ? [0, 1, 2, 3].map((i) => <SkeletonRow key={i} isLast={i === 3} />)
+              : faqs.map((faq, i) => (
+                  <FaqRow
+                    key={i}
+                    faq={faq}
+                    isLast={i === faqs.length - 1}
+                    isOpen={openIndex === i}
+                    onToggle={() => setOpenIndex(openIndex === i ? -1 : i)}
+                  />
+                ))}
           </div>
 
         </div>

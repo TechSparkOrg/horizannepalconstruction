@@ -12,7 +12,10 @@ const statusMap: Record<string, { label: string; icon: React.ElementType; color:
   Ongoing:   { label: "Ongoing",   icon: Clock3,       color: "text-blue-300"   },
 };
 
-function ProjectCard({ p }: { p: Project }) {
+/* Rumble.svg internal animation is ~8s — sync card swap to that */
+const SVG_CYCLE_MS = 8000;
+
+function ProjectCard({ p, delay }: { p: Project; delay: number }) {
   const statusKey = p.completion ? "Completed" : "Ongoing";
   const { label, icon: StatusIcon, color } = statusMap[statusKey] ?? statusMap.Ongoing;
   const imgSrc = p.thumbnail || p.images?.[0] || "";
@@ -21,8 +24,8 @@ function ProjectCard({ p }: { p: Project }) {
     <Link
       href={`/project-details/${p.slug}`}
       className="group relative block rounded-2xl overflow-hidden bg-brand-dark aspect-[4/3] focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
+      style={{ animation: `card-enter 0.5s ease-out ${delay}ms both` }}
     >
-      {/* Full-bleed image */}
       {imgSrc ? (
         <Image
           src={imgSrc}
@@ -34,17 +37,9 @@ function ProjectCard({ p }: { p: Project }) {
       ) : (
         <div className="absolute inset-0 bg-gradient-to-br from-brand-dark to-brand-primary/30" />
       )}
-
-      {/* Permanent bottom gradient — title always readable */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#07112b] via-[#07112b]/20 to-transparent" />
-
-      {/* Hover: darken upper area for detail legibility */}
-      <div className="absolute inset-0 bg-brand-dark/55 opacity-0 group-hover:opacity-100 transition-opacity duration-350" />
-
-      {/* Bottom content */}
+      <div className="absolute inset-0 bg-brand-dark/55 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       <div className="absolute bottom-0 inset-x-0 p-5 sm:p-6">
-
-        {/* Hover-only details — slide up */}
         <div className="mb-3.5 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-out">
           {p.category_id && (
             <p className="text-[9.5px] font-bold tracking-[0.26em] uppercase text-brand-secondary mb-2.5">
@@ -64,8 +59,6 @@ function ProjectCard({ p }: { p: Project }) {
             )}
           </div>
         </div>
-
-        {/* Always-visible: title + arrow */}
         <div className="flex items-end justify-between gap-4">
           <h3
             className="text-white font-bold text-[16px] sm:text-[18px] leading-[1.25] flex-1"
@@ -77,16 +70,13 @@ function ProjectCard({ p }: { p: Project }) {
             <ArrowRight className="size-4" />
           </div>
         </div>
-
       </div>
     </Link>
   );
 }
 
 function SkeletonCard() {
-  return (
-    <div className="rounded-2xl bg-[#dde6f8] animate-pulse aspect-[4/3]" />
-  );
+  return <div className="rounded-2xl bg-[#dde6f8] animate-pulse aspect-[4/3]" />;
 }
 
 export function FeaturedProjects({
@@ -96,7 +86,10 @@ export function FeaturedProjects({
   initialProjects?: Project[];
   limit?: number;
 }) {
-  const [projects, setProjects] = useState<Project[]>(initialProjects ?? []);
+  const [projects, setProjects]         = useState<Project[]>(initialProjects ?? []);
+  const [batch, setBatch]               = useState(0);
+  const [visible, setVisible]           = useState(true);
+  const [cardsPerView, setCardsPerView] = useState(3);
 
   useEffect(() => {
     if (initialProjects) return;
@@ -105,10 +98,51 @@ export function FeaturedProjects({
       .catch(() => {});
   }, [initialProjects]);
 
-  const featured = projects.slice(0, limit);
+  /* Responsive cards per view */
+  useEffect(() => {
+    function update() {
+      if (window.innerWidth < 640)       setCardsPerView(1);
+      else if (window.innerWidth < 1024) setCardsPerView(2);
+      else                               setCardsPerView(3);
+    }
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  /* Cycle cards in sync with SVG's own animation */
+  useEffect(() => {
+    const id = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setBatch((b) => b + 1);
+        setVisible(true);
+      }, 420);
+    }, SVG_CYCLE_MS);
+    return () => clearInterval(id);
+  }, []);
+
+  const featured      = projects.slice(0, limit);
+  const totalBatches  = Math.max(1, Math.ceil(featured.length / cardsPerView));
+  const activeBatch   = batch % totalBatches;
+  const batchCards    = featured.slice(
+    activeBatch * cardsPerView,
+    activeBatch * cardsPerView + cardsPerView,
+  );
 
   return (
     <section id="works" className="py-16 sm:py-24 bg-[#f5f8ff]">
+      <style>{`
+        @keyframes card-enter {
+          from { opacity: 0; transform: translateX(36px); }
+          to   { opacity: 1; transform: translateX(0);    }
+        }
+        @keyframes card-exit {
+          from { opacity: 1; transform: translateX(0);     }
+          to   { opacity: 0; transform: translateX(-36px); }
+        }
+      `}</style>
+
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
@@ -133,12 +167,63 @@ export function FeaturedProjects({
           </Link>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 min-h-[260px]">
           {featured.length === 0
-            ? Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
-            : featured.map((p) => <ProjectCard key={p.id} p={p} />)}
+            ? Array.from({ length: cardsPerView }).map((_, i) => <SkeletonCard key={i} />)
+            : visible
+              ? batchCards.map((p, i) => (
+                  <ProjectCard key={`${p.id}-${activeBatch}`} p={p} delay={i * 80} />
+                ))
+              : batchCards.map((_, i) => (
+                  <div
+                    key={`exit-${i}`}
+                    className="rounded-2xl bg-brand-dark/10 aspect-[4/3]"
+                    style={{ animation: "card-exit 0.4s ease-in both" }}
+                  />
+                ))}
         </div>
+
+        {/* Ground line */}
+        <div className="mt-6 border-t border-brand-primary/10" />
+
+        {/* Rumble SVG — full bleed */}
+        </div>
+        <div className="w-screen relative left-1/2 -translate-x-1/2" style={{ height: "clamp(140px, 22vw, 280px)" }}>
+          <Image
+            src="/video-gif/Rumble.svg"
+            alt=""
+            fill
+            className="object-cover"
+            unoptimized
+            priority={false}
+            aria-hidden="true"
+          />
+        </div>
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Batch dots */}
+        {totalBatches > 1 && (
+          <div className="flex justify-center gap-2 mt-4" role="tablist" aria-label="Project batches">
+            {Array.from({ length: totalBatches }).map((_, i) => (
+              <button
+                key={i}
+                role="tab"
+                aria-selected={i === activeBatch}
+                onClick={() => {
+                  setVisible(false);
+                  setTimeout(() => { setBatch(i); setVisible(true); }, 420);
+                }}
+                className="h-1.5 rounded-full transition-all duration-300 focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+                style={{
+                  width:      i === activeBatch ? "20px" : "6px",
+                  background: i === activeBatch ? "var(--color-brand-primary)" : "var(--color-light-gray)",
+                }}
+                aria-label={`Batch ${i + 1}`}
+              />
+            ))}
+          </div>
+        )}
 
       </div>
     </section>
