@@ -13,16 +13,7 @@ const ParsedContent = dynamic(() => import("@/lib/Parse-Content"))
 export default function HomepagePage({ description }: { description?: string }) {
   return (
     <>
-      <div className="w-full overflow-hidden" style={{ height: "180px" }}>
-        <Image
-          src={bulldozerSvg}
-          alt="Construction bulldozer illustration"
-          width={1920}
-          height={180}
-          className="w-full h-full object-cover"
-          priority={false}
-        />
-      </div>
+
       <ServicesSection />
       <ImageGrid
         slug="home-page-gallary"

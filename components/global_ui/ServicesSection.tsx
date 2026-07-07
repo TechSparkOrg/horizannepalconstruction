@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import {
   PencilRuler, LayoutGrid, Compass,
@@ -121,6 +122,8 @@ export function ServicesSection() {
           </Link>
         </div>
 
+      
+
         {/* Grid */}
         <div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 rounded-2xl overflow-hidden border border-light-gray"
@@ -134,6 +137,17 @@ export function ServicesSection() {
         </div>
 
       </div>
+        {/* SVG banner */}
+        <div className="relative w-full max-w-6xl mx-auto overflow-hidden rounded-2xl my-2" style={{ height: "clamp(140px, 20vw, 300px)" }}>
+          <Image
+            src="/video-gif/service-consruction.svg"
+            alt="Construction services illustration"
+            fill
+            className="object-cover object-center"
+            unoptimized
+            priority={false}
+          />
+        </div>
     </section>
   )
 }
