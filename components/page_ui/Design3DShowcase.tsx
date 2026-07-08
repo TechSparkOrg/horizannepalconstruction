@@ -161,7 +161,7 @@ export function Design3DShowcase({ initialItems }: { initialItems?: ModelCard[] 
 
             if (item.href) {
               return (
-                <Link
+                <Link prefetch={false}
                   key={item.key}
                   href={item.href}
                   className="bg-white rounded-2xl border border-light-gray/40 overflow-hidden shadow-sm hover:shadow-md transition-all group"

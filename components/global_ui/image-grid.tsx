@@ -1,6 +1,7 @@
 import Image from "next/image"
 
 interface ImageGridProps {
+  slug: string
   initialItems?: { id: string; url: string; alt?: string }[]
   label: string
   heading: string

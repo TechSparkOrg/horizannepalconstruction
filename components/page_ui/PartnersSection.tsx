@@ -59,16 +59,23 @@ function Divider({ label }: { label: string }) {
   )
 }
 
-export function PartnersSection() {
-  const [vendors, setVendors] = useState<PublicVendor[] | null>(null)
-  const [banks,   setBanks]   = useState<EmiBank[] | null>(null)
+export function PartnersSection({
+  initialVendors,
+  initialBanks,
+}: {
+  initialVendors?: PublicVendor[];
+  initialBanks?: EmiBank[];
+}) {
+  const [vendors, setVendors] = useState<PublicVendor[] | null>(initialVendors ?? null)
+  const [banks,   setBanks]   = useState<EmiBank[] | null>(initialBanks ?? null)
 
   useEffect(() => {
+    if (initialVendors && initialBanks) return
     Promise.all([
       getVendors().then((r) => r.results ?? []).catch(() => [] as PublicVendor[]),
       getBanks().catch(() => [] as EmiBank[]),
     ]).then(([v, b]) => { setVendors(v); setBanks(b) })
-  }, [])
+  }, [initialVendors, initialBanks])
 
   const loading = vendors === null || banks === null
   const empty   = !loading && vendors!.length === 0 && banks!.length === 0
@@ -86,7 +93,7 @@ export function PartnersSection() {
             width={148}
             height={92}
             className="w-[100px] h-[62px] sm:w-[148px] sm:h-[92px] shrink-0 object-contain"
-            unoptimized
+            sizes="(max-width: 640px) 100px, 148px"
           />
           <div>
             <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-[#1d4ed8] bg-[#eff6ff] border border-[#bfdbfe] px-3 py-1 rounded-full mb-3">

@@ -129,7 +129,7 @@ export function ScrollPaperplane() {
           width={110}
           height={110}
           className="w-20 h-20 sm:w-[110px] sm:h-[110px]"
-          unoptimized
+          sizes="(max-width: 640px) 80px, 110px"
           priority
         />
       </div>

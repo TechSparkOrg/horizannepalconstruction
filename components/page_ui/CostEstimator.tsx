@@ -627,9 +627,8 @@ export function CostEstimator() {
             Get a site-specific quote from our team and turn your estimate into a real project.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link
+            <Link prefetch={false}
               href="/contact"
-              prefetch={false}
               className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-brand-primary text-white text-sm font-bold hover:brightness-110 transition"
             >
               Get detailed quote <ArrowRight className="size-4" />

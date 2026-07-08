@@ -39,7 +39,7 @@ export default function RelatedArticles({ slug, categorySlug }: Props) {
           <h2 className="font-display font-bold text-2xl sm:text-3xl text-brand-dark">
             Related Articles
           </h2>
-          <Link
+          <Link prefetch={false}
             href="/blog"
             className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-mid-gray hover:text-brand-primary transition-colors shrink-0"
           >

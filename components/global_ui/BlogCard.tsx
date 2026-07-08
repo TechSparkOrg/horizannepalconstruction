@@ -34,7 +34,7 @@ export function BlogCard({
 
   if (variant === "featured") {
     return (
-      <Link
+      <Link prefetch={false}
         href={`/blog/${post?.slug}`}
         className="group col-span-2 flex flex-col sm:flex-row bg-white rounded-lg border border-[#e8edf5] overflow-hidden hover:border-[#cd2028] transition-colors duration-200"
       >
@@ -77,7 +77,7 @@ export function BlogCard({
 
   if (variant === "compact") {
     return (
-      <Link
+      <Link prefetch={false}
         href={`/blog/${post?.slug}`}
         className="group bg-white rounded-lg border border-[#e8edf5] overflow-hidden hover:border-[#cd2028] transition-colors duration-200"
       >
@@ -113,7 +113,7 @@ export function BlogCard({
   }
 
   return (
-    <Link
+    <Link prefetch={false}
       href={`/blog/${post?.slug}`}
       className="group flex flex-col bg-white rounded-lg border border-[#e8edf5] overflow-hidden hover:border-[#cd2028] transition-colors duration-200"
     >

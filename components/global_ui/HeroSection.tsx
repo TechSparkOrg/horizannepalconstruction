@@ -16,8 +16,8 @@ export function HeroSection() {
         src="/video-gif/construnction-bull-dozer.svg"
         alt="Construction bulldozer illustration"
         fill
+        sizes="100vw"
         className="object-cover object-center"
-        unoptimized
         priority
       />
 

@@ -24,7 +24,7 @@ function BlogCard({ post }: { post: BlogPost }) {
   const excerpt = post.content ? stripHtml(post.content).slice(0, 130) : "";
 
   return (
-    <Link
+    <Link prefetch={false}
       href={`/blog/${post.slug}`}
       className="group flex flex-col rounded-2xl bg-white shadow-sm hover:shadow-lg transition-shadow duration-200 overflow-hidden focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
     >
@@ -136,7 +136,7 @@ export function BlogSection({ initialPosts }: { initialPosts?: BlogPost[] }) {
               Latest Insights
             </h2>
           </div>
-          <Link
+          <Link prefetch={false}
             href="/blog"
             className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-muted-foreground hover:text-brand-primary transition-colors"
           >

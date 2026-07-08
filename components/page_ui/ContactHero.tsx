@@ -80,7 +80,7 @@ export function ContactHero({ initialBanners }: { initialBanners?: MediaItem[] }
         </p>
 
         <div className="mt-8">
-          <Link
+          <Link prefetch={false}
             href="#consultation-form"
             className="inline-flex items-center gap-2 h-12 px-7 rounded-full bg-blue-600 text-white text-sm font-bold shadow-lg hover:bg-blue-500 transition-colors duration-200"
           >

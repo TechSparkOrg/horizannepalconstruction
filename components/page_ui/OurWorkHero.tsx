@@ -51,7 +51,7 @@ export function OurWorkHero({ initialImages }: { initialImages?: MediaItem[] }) 
         </p>
 
         <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <Link
+          <Link prefetch={false}
             href="/contact"
             className="inline-flex items-center gap-2 h-12 px-6 rounded bg-brand-primary text-white font-semibold hover:brightness-110 transition"
           >

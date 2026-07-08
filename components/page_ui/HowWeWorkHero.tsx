@@ -49,13 +49,13 @@ export function HowWeWorkHero({ initialBanners }: { initialBanners?: MediaItem[]
             className="mt-8 flex flex-wrap gap-4 animate-fade-in-up"
             style={{ animationDelay: "0.45s" }}
           >
-            <Link
+            <Link prefetch={false}
               href="#process"
               className="inline-flex items-center gap-2 h-12 px-6 rounded bg-brand-primary text-white font-semibold hover:brightness-110 transition"
             >
               See Our Process <ArrowRight className="size-4" />
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/#contact"
               className="inline-flex items-center gap-2 h-12 px-6 rounded border-2 border-white text-white font-semibold hover:bg-white hover:text-brand-dark transition"
             >

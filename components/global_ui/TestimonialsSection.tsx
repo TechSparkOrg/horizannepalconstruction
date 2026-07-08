@@ -103,8 +103,7 @@ export function TestimonialsSection({ initialReviews }: { initialReviews?: Revie
               width={140}
               height={88}
               className="w-[72px] h-[45px] sm:w-[140px] sm:h-[88px] shrink-0 object-contain"
-              unoptimized
-            />
+              sizes="(max-width: 640px) 72px, 140px" />
             <div>
               <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-[#1d4ed8] bg-[#eff6ff] border border-[#bfdbfe] px-3 py-1 rounded-full mb-2">
                 Testimonials

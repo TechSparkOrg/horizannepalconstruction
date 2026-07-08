@@ -29,7 +29,7 @@ function ServiceCard({ service, index }: { service: ServiceCategory; index: numb
   const Icon = iconMap[service.slug] || Wrench
 
   return (
-    <Link
+    <Link prefetch={false}
       href={`/services/${service.slug}`}
       className="group relative flex flex-col gap-4 bg-white p-5 sm:p-7 hover:bg-[#f8faff] transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[#1d4ed8] focus-visible:ring-inset"
     >
@@ -122,9 +122,9 @@ export function ServicesSection({ initialServices }: { initialServices?: Service
               width={56}
               height={56}
               className="object-contain shrink-0"
-              unoptimized
+              sizes="56px"
             />
-            <Link
+            <Link prefetch={false}
               href="/services"
               className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#475569] hover:text-[#0f2557] transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#1d4ed8] focus-visible:ring-offset-2"
             >

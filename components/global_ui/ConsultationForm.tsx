@@ -37,7 +37,7 @@ export function ConsultationForm({ initialCategories }: { initialCategories?: Ca
     if (initialCategories) return;
     if (!CategoryPublic?.list) return;
     CategoryPublic.list().then((r) => setCategories(r.results ?? [])).catch(() => {});
-  }, []);
+  }, [initialCategories]);
 
   const [submitted, setSubmitting2] = useState(false);
   const [name, setName]             = useState("");
@@ -120,7 +120,7 @@ export function ConsultationForm({ initialCategories }: { initialCategories?: Ca
             width={200}
             height={120}
             className="w-[140px] h-[84px] sm:w-[200px] sm:h-[120px] object-contain"
-            unoptimized
+            sizes="(max-width: 640px) 140px, 200px"
           />
         </div>
 

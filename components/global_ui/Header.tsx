@@ -52,7 +52,7 @@ function DropdownItem({ item }: { item: NavItem }) {
 
   if (!item.children) {
     return (
-      <Link
+      <Link prefetch={false}
         href={item.href}
         className="flex items-center h-9 px-3 text-[13px] font-medium text-white/75 hover:text-white hover:bg-white/8 rounded-lg transition-colors"
       >
@@ -84,7 +84,7 @@ function DropdownItem({ item }: { item: NavItem }) {
       >
         <div className="w-[200px] rounded-xl border border-[#e8edf5] bg-white shadow-lg shadow-[#0f2557]/8 p-1.5">
           {item.children.map((child) => (
-            <Link
+            <Link prefetch={false}
               key={child.href}
               href={child.href}
               className="flex items-center h-9 px-3 text-[13px] font-medium text-[#374151] hover:text-brand-dark hover:bg-[#f5f8ff] rounded-lg transition-colors"
@@ -134,7 +134,7 @@ function MobileSidebar() {
       >
         {/* Sidebar header — dark brand */}
         <div className="bg-brand-dark px-5 py-4 flex items-center justify-between shrink-0">
-          <Link
+          <Link prefetch={false}
             href="/"
             onClick={() => setIsOpen(false)}
             className="flex items-center gap-3"
@@ -172,7 +172,7 @@ function MobileSidebar() {
         <nav className="flex-1 overflow-y-auto px-3 py-3">
           {NAV.map((item) =>
             !item.children ? (
-              <Link
+              <Link prefetch={false}
                 key={item.label}
                 href={(item as { href: string; label: string }).href}
                 onClick={() => setIsOpen(false)}
@@ -194,7 +194,7 @@ function MobileSidebar() {
                 <CollapsibleContent>
                   <div className="ml-3 mt-0.5 mb-1 pl-3 border-l-2 border-[#e8edf5] space-y-0.5">
                     {item.children.map((child) => (
-                      <Link
+                      <Link prefetch={false}
                         key={child.href}
                         href={child.href}
                         onClick={() => setIsOpen(false)}
@@ -221,7 +221,7 @@ function MobileSidebar() {
             </div>
             Call us now
           </a>
-          <Link
+          <Link prefetch={false}
             href="/contact"
             onClick={() => setIsOpen(false)}
             className="flex items-center justify-center gap-2 w-full h-11 rounded-xl bg-brand-dark hover:bg-[#0c1f4a] text-white font-semibold text-[13.5px] transition-colors"
@@ -265,7 +265,7 @@ export function Header() {
       <div className="max-w-[1280px] mx-auto h-[60px] sm:h-[64px] px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0">
+        <Link prefetch={false} href="/" className="flex items-center gap-2.5 shrink-0">
           <Image
             src="/logo.png"
             alt="Horizon Nepal Construction"
@@ -294,7 +294,7 @@ export function Header() {
         {/* Right actions */}
         <div className="flex items-center gap-2.5 shrink-0">
           {/* Desktop CTA */}
-          <Link
+          <Link prefetch={false}
             href="/contact"
             className="hidden sm:inline-flex items-center h-9 px-5 rounded-full bg-white hover:bg-gray-100 text-brand-dark font-semibold text-[13px] leading-none transition-colors focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-1 focus-visible:ring-offset-brand-dark"
           >

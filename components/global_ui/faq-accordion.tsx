@@ -104,8 +104,8 @@ export function FAQWrapper({ initialFaqs }: { initialFaqs?: FaqItem[] }) {
             src="/video-gif/Live-chatbot.svg"
             alt="Live chat support illustration"
             fill
+            sizes="100vw"
             className="object-contain object-center"
-            unoptimized
             priority={false}
           />
         </div>
@@ -128,14 +128,14 @@ export function FAQWrapper({ initialFaqs }: { initialFaqs?: FaqItem[] }) {
               Can&apos;t find what you&apos;re looking for? Reach out directly — we&apos;re happy to help.
             </p>
             <div className="flex flex-col gap-3">
-              <Link
+              <Link prefetch={false}
                 href="/contact"
                 className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-brand-primary hover:bg-blue-700 text-white font-semibold text-[13px] transition-colors w-fit focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
               >
                 <MessageCircle className="size-4" />
                 Ask a Question
               </Link>
-              <Link
+              <Link prefetch={false}
                 href="/faq"
                 className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-muted-foreground hover:text-brand-dark transition-colors focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
               >

@@ -20,7 +20,7 @@ export function AboutHero() {
         alt="Construction site illustration"
         fill
         className="object-contain object-center"
-        unoptimized
+        sizes="100vw"
         priority
       />
 

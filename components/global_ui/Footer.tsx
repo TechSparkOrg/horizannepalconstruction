@@ -70,8 +70,7 @@ function FooterLink({ href, children, external }: { href: string; children: Reac
     : {};
   return (
     <li>
-      <Link
-        prefetch={false}
+      <Link prefetch={false}
         href={href}
         {...props}
         className="group flex items-center gap-1.5 text-[13px] text-white/50 hover:text-white transition-colors duration-150"
@@ -151,7 +150,7 @@ export function Footer() {
 
               <div className="hidden sm:block w-px h-10 bg-white/10" aria-hidden="true" />
 
-              <Link
+              <Link prefetch={false}
                 href="/contact"
                 className="inline-flex items-center gap-2 h-11 px-7 rounded-full bg-brand-primary hover:bg-blue-700 text-white font-semibold text-[13.5px] transition-colors focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
               >
@@ -171,7 +170,7 @@ export function Footer() {
 
             {/* Brand column */}
             <div className="col-span-2 sm:col-span-3 lg:col-span-1">
-              <Link href="/" className="inline-flex items-center gap-3 mb-6">
+              <Link prefetch={false} href="/" className="inline-flex items-center gap-3 mb-6">
                 <div className="size-10 rounded-lg bg-white/8 border border-white/10 flex items-center justify-center shrink-0">
                   <Image src="/logo.png" alt="Horizon Nepal logo" width={24} height={24} className="object-contain w-auto h-auto" />
                 </div>

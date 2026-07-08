@@ -13,7 +13,7 @@ export function MaterialCard({ item }: Props) {
   const description = item.description ? stripHtml(item.description).slice(0, 120) : null;
 
   return (
-    <Link
+    <Link prefetch={false}
       href={`/material/${item.slug}`}
       className="group flex flex-col bg-white rounded-lg border border-[#e8edf5] overflow-hidden hover:border-[#cd2028] transition-colors duration-200"
     >

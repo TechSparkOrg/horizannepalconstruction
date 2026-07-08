@@ -26,7 +26,7 @@ export function QuoteBannerSecondary() {
 
         {/* CTA */}
         <div className="mt-10">
-          <Link
+          <Link prefetch={false}
             href="/contact"
             className="inline-flex items-center gap-2 h-11 px-8 rounded-full bg-brand-primary hover:bg-blue-700 text-white font-semibold text-[13.5px] transition-colors focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
           >

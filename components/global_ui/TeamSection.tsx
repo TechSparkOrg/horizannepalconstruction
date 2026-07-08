@@ -31,7 +31,7 @@ export function TeamSection({ members }: { members: TeamMember[] }) {
             width={176}
             height={112}
             className="w-[100px] h-[64px] sm:w-[176px] sm:h-[112px] shrink-0 object-contain"
-            unoptimized
+            sizes="(max-width: 640px) 100px, 176px"
           />
 
           {/* Right: sub-copy */}

@@ -21,7 +21,7 @@ function ProjectCard({ p, delay }: { p: Project; delay: number }) {
   const imgSrc = p.thumbnail || p.images?.[0] || "";
 
   return (
-    <Link
+    <Link prefetch={false}
       href={`/project-details/${p.slug}`}
       className="group relative block rounded-2xl overflow-hidden bg-brand-dark aspect-[4/3] focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
       style={{ animation: `card-enter 0.5s ease-out ${delay}ms both` }}
@@ -158,7 +158,7 @@ export function FeaturedProjects({
               Featured Projects
             </h2>
           </div>
-          <Link
+          <Link prefetch={false}
             href="/our-work"
             className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-muted-foreground hover:text-brand-dark transition-colors focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
           >
@@ -194,8 +194,8 @@ export function FeaturedProjects({
             src="/video-gif/Rumble.svg"
             alt=""
             fill
+            sizes="100vw"
             className="object-cover"
-            unoptimized
             priority={false}
             aria-hidden="true"
           />

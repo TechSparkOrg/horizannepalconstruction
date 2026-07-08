@@ -33,9 +33,8 @@ export default function BlogProjectReference({ project }: Props) {
           Project Reference
         </p>
 
-        <Link
+        <Link prefetch={false}
           href={`/project-details/${project.slug}`}
-          prefetch={false}
           className="group flex flex-col sm:flex-row bg-white border border-[#e8edf5] rounded-lg overflow-hidden hover:shadow-sm transition-colors duration-200"
         >
           <div className="relative w-full sm:w-1/2 aspect-[4/3] sm:aspect-auto min-h-[300px] shrink-0 bg-[#e8edf5] border-b sm:border-b-0 sm:border-r border-[#e8edf5]">

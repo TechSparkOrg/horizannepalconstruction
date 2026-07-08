@@ -18,7 +18,7 @@ export default function NotFound() {
         <p className="text-mid-gray text-base sm:text-lg mb-8 leading-relaxed">
           The page you&apos;re looking for doesn&apos;t exist or has been moved.
         </p>
-        <Link
+        <Link prefetch={false}
           href="/"
           className="inline-flex items-center gap-2 h-12 px-6 rounded-full bg-brand-primary text-white font-bold text-sm hover:brightness-110 transition-all active:scale-[0.97]"
         >

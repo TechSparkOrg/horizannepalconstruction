@@ -2,7 +2,7 @@ function Skeleton({ className }: { className?: string }) {
   return <div className={`animate-pulse bg-light-gray/30 rounded ${className ?? ""}`} />;
 }
 
-export function HeroSkeleton({ minH = "70vh" }: { minH?: string }) {
+export function HeroSkeleton({ minH = "100vh" }: { minH?: string }) {
   return (
     <section className={`relative min-h-[${minH}] flex items-center bg-brand-dark px-4 sm:px-6 lg:px-8`}>
       <div className="max-w-[1200px] mx-auto w-full pt-32 pb-20 space-y-4">

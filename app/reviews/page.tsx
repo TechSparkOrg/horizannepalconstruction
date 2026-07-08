@@ -31,18 +31,35 @@ export default async function ReviewsPage() {
     getReviews().catch(() => ({ results: [], count: 0 })),
   ]);
 
+  const reviews = reviewsRes.results ?? [];
+  const total = reviewsRes.count ?? 0;
+
+  const avgRating = reviews.length > 0
+    ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
+    : "5.0";
+
+  const aggregateRatingSchema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "Horizan Nepal Engineering Research & Construction",
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: avgRating,
+      reviewCount: total,
+      bestRating: 5,
+      worstRating: 1,
+    },
+  };
+
   return (
     <>
-      <h1 className="sr-only">Reviews — Horizan Nepal</h1>
-      {page?.banner_images?.map((b) =>
-        b.url ? <link key={b.id} rel="preload" as="image" href={b.url} /> : null
-      )}
+      <h1 className="sr-only">Client Reviews — Horizan Nepal Construction</h1>
       <LdJson data={breadcrumbList("Reviews", "reviews")} />
+      {total > 0 && <LdJson data={aggregateRatingSchema} />}
       <ReviewsClient
         page={page}
-        reviews={reviewsRes.results ?? []}
-        total={reviewsRes.count ?? 0}
-        banners={page?.banner_images}
+        reviews={reviews}
+        total={total}
       />
     </>
   );
