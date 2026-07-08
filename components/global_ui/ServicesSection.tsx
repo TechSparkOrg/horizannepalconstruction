@@ -13,11 +13,11 @@ import type { ServiceCategory } from "@/api/types/category.types"
 
 const iconMap: Record<string, LucideIcon> = {
   "architectural-design": PencilRuler,
-  "floor-planning":       LayoutGrid,
-  "vastu-shastra":        Compass,
-  "building-permits":     FileBadge,
-  "materials-supply":     Boxes,
-  construction:           Wrench,
+  "floor-planning": LayoutGrid,
+  "vastu-shastra": Compass,
+  "building-permits": FileBadge,
+  "materials-supply": Boxes,
+  construction: Wrench,
 }
 
 function truncate(text: string, max = 90): string {
@@ -34,7 +34,7 @@ function ServiceCard({ service, index }: { service: ServiceCategory; index: numb
       className="group relative flex flex-col gap-5 bg-white p-7 hover:bg-[#f8faff] transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-inset"
     >
       <span
-        className="absolute top-5 right-5 text-[11px] font-bold tracking-wide text-light-gray group-hover:text-brand-primary transition-colors duration-150"
+        className="absolute top-5 right-5 text-[11px] font-bold tracking-wide text-[#94a3b8] group-hover:text-brand-primary transition-colors duration-150"
         aria-hidden="true"
       >
         {String(index + 1).padStart(2, "0")}
@@ -111,13 +111,25 @@ export function ServicesSection({ initialServices }: { initialServices?: Service
               Comprehensive architectural and construction services — from first sketch to final handover.
             </p>
           </div>
-          <Link
-            href="/services"
-            className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-mid-gray hover:text-brand-dark transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
-          >
-            All services
-            <ArrowRight className="size-3.5" />
-          </Link>
+
+          <div className="flex flex-col items-end gap-3">
+            <div className="relative w-16 h-16 shrink-0">
+              <Image
+                src="/video-gif/in-progress.svg"
+                alt="Construction in progress"
+                fill
+                className="object-contain w-full h-full"
+                unoptimized
+              />
+            </div>
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-mid-gray hover:text-brand-dark transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
+            >
+              All services
+              <ArrowRight className="size-3.5" />
+            </Link>
+          </div>
         </div>
 
         <div
@@ -127,8 +139,8 @@ export function ServicesSection({ initialServices }: { initialServices?: Service
           {services === null
             ? Array.from({ length: 6 }).map((_, i) => <ServiceSkeleton key={i} />)
             : services.length === 0
-            ? null
-            : services.map((s, i) => <ServiceCard key={s.id} service={s} index={i} />)}
+              ? null
+              : services.map((s, i) => <ServiceCard key={s.id} service={s} index={i} />)}
         </div>
 
       </div>

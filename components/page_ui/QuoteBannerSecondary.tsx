@@ -9,7 +9,7 @@ export function QuoteBannerSecondary() {
         {/* Eyebrow */}
         <div className="flex items-center justify-center gap-3 mb-8">
           <span className="block w-8 h-px bg-brand-secondary shrink-0" aria-hidden="true" />
-          <span className="text-[11px] font-semibold tracking-[0.22em] uppercase text-brand-secondary">
+          <span className="text-[11px] font-semibold tracking-[0.22em] uppercase text-[#93c5fd]">
             Our Philosophy
           </span>
           <span className="block w-8 h-px bg-brand-secondary shrink-0" aria-hidden="true" />
@@ -20,7 +20,7 @@ export function QuoteBannerSecondary() {
           &ldquo;Architecture is not just about building. It is about creating spaces where life happens — where families grow, businesses thrive, and communities flourish.&rdquo;
         </blockquote>
 
-        <p className="mt-6 text-white/45 text-[13px] font-medium tracking-wide">
+        <p className="mt-6 text-white/70 text-[13px] font-medium tracking-wide">
           &mdash; Arun Poudel, Founder
         </p>
 

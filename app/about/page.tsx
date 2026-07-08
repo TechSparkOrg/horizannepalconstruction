@@ -45,13 +45,10 @@ export default async function AboutPage() {
   return (
     <>
       <h1 className="sr-only">{page?.meta_title || "About | Horizan Nepal"}</h1>
-      {page?.banner_images?.map((b) =>
-        b.url ? <link key={b.id} rel="preload" as="image" href={b.url} /> : null
-      )}
       <LdJson data={breadcrumbList("About", "about")} />
       <LdJson data={aboutPageSchema} />
-      <AboutHero initialBanners={page?.banner_images} />
-      <AboutClient page={page} team={team} />
+      <AboutHero />
+      <AboutClient page={page} team={team} gallery={page?.banner_images ?? []} />
     </>
   );
 }

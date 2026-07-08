@@ -2,141 +2,162 @@
 
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
-import { Label } from "@/components/ui/label";
 import { ReviewPublic } from "@/api/services/review.service";
 import type { Review } from "@/api/types/review.types";
+import Image from "next/image";
+
+const PER_VIEW = 4;
 
 function Stars({ value }: { value: number }) {
   return (
-    <div className="flex gap-1 text-amber-400 mb-3">
+    <div className="flex gap-1.5 mb-4">
       {[1, 2, 3, 4, 5].map((s) => (
-        <Star key={s} className={`size-4 ${s <= value ? "fill-current" : "text-gray-200"}`} />
+        <Star
+          key={s}
+          className={`size-3.5 ${s <= value ? "fill-amber-400 text-amber-400" : "text-[#e2e8f0] fill-[#e2e8f0]"}`}
+        />
       ))}
     </div>
   );
 }
 
 function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2) || "?";
+  return (
+    name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2) || "?"
+  );
+}
+
+function ReviewCard({ t }: { t: Review }) {
+  return (
+    <article
+      className="bg-white rounded-2xl border border-[#e2e8f0] overflow-hidden shadow-[0_2px_16px_rgba(15,37,87,0.06)] hover:shadow-[0_8px_32px_rgba(15,37,87,0.12)] transition-shadow duration-300"
+      style={{ width: `calc(25% - 18px)`, flexShrink: 0 }}
+    >
+      <div className="h-[3px] bg-[#1d4ed8] w-full" aria-hidden="true" />
+      <div className="p-5">
+        <Stars value={t.rating} />
+        <div className="relative">
+          <span className="absolute -top-2 -left-1 font-display text-[52px] leading-none text-[#1d4ed8] select-none" aria-hidden="true">
+            &ldquo;
+          </span>
+          <p className="pt-6 text-[13px] leading-relaxed text-[#0f172a] line-clamp-4">
+            {t.description}
+          </p>
+        </div>
+        <div className="mt-4 flex items-center gap-3 pt-4 border-t border-[#f1f5f9]">
+          <div className="size-9 rounded-full bg-[#0f2557] text-white ring-2 ring-[#bfdbfe] grid place-items-center font-bold text-[11px] shrink-0">
+            {getInitials(t.name)}
+          </div>
+          <div>
+            <p className="text-[13px] font-semibold text-[#0f2557]">{t.name}</p>
+            {t.rating >= 4 && (
+              <p className="text-[10.5px] text-[#1d4ed8] font-medium mt-0.5">Verified Client</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function SkeletonCard() {
+  return (
+    <div
+      className="bg-white rounded-2xl border border-[#e2e8f0] overflow-hidden"
+      style={{ width: `calc(25% - 18px)`, flexShrink: 0 }}
+    >
+      <div className="h-[3px] bg-[#e2e8f0] w-full animate-pulse" />
+      <div className="p-5 space-y-4">
+        <div className="flex gap-1.5">
+          {[1,2,3,4,5].map((s) => <div key={s} className="size-3.5 rounded bg-[#e2e8f0] animate-pulse" />)}
+        </div>
+        <div className="space-y-2 pt-4">
+          <div className="h-3 w-full rounded bg-[#f1f5f9] animate-pulse" />
+          <div className="h-3 w-11/12 rounded bg-[#f1f5f9] animate-pulse" />
+          <div className="h-3 w-3/4 rounded bg-[#f1f5f9] animate-pulse" />
+        </div>
+        <div className="pt-4 border-t border-[#f1f5f9] flex items-center gap-3">
+          <div className="size-9 rounded-full bg-[#e2e8f0] animate-pulse" />
+          <div className="space-y-1.5">
+            <div className="h-3 w-24 rounded bg-[#e2e8f0] animate-pulse" />
+            <div className="h-2.5 w-16 rounded bg-[#f1f5f9] animate-pulse" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function TestimonialsSection({ initialReviews }: { initialReviews?: Review[] }) {
   const [reviews, setReviews] = useState<Review[]>(initialReviews ?? []);
-  const [i, setI] = useState(0);
+  const [idx, setIdx] = useState(0);
 
   useEffect(() => {
     if (initialReviews) return;
     ReviewPublic.list().then((res) => setReviews(res.results ?? []));
   }, [initialReviews]);
-  const perView = 3;
-  const max = Math.max(0, reviews.length - perView);
-  const prev = () => setI((v) => Math.max(0, v - 1));
-  const next = () => setI((v) => Math.min(max, v + 1));
 
-  if (reviews.length === 0) {
-    return (
-      <section className="bg-off-white py-16 sm:py-28" aria-label="Customer testimonials">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <div>
-              <div className="h-5 w-24 rounded-full bg-light-gray/50 animate-pulse mb-3" />
-              <div className="h-8 w-64 rounded-lg bg-light-gray/50 animate-pulse" />
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="size-11 rounded-full bg-light-gray/30 animate-pulse" />
-              <div className="size-11 rounded-full bg-light-gray/30 animate-pulse" />
-            </div>
-          </div>
-          <div className="mt-10 flex gap-6">
-            {[1,2,3].map((i) => (
-              <div key={i} className="shrink-0 w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] bg-white rounded-2xl p-6 border border-light-gray/40">
-                <div className="flex gap-1 mb-3">
-                  {[1,2,3,4,5].map((s) => <div key={s} className="size-4 rounded bg-light-gray/30 animate-pulse" />)}
-                </div>
-                <div className="space-y-2">
-                  <div className="h-3 w-full rounded bg-light-gray/40 animate-pulse" />
-                  <div className="h-3 w-11/12 rounded bg-light-gray/40 animate-pulse" />
-                  <div className="h-3 w-3/4 rounded bg-light-gray/40 animate-pulse" />
-                </div>
-                <div className="mt-5 flex items-center gap-3">
-                  <div className="size-11 rounded-full bg-light-gray/30 animate-pulse" />
-                  <div className="space-y-1.5">
-                    <div className="h-3 w-24 rounded bg-light-gray/40 animate-pulse" />
-                    <div className="h-2.5 w-16 rounded bg-light-gray/30 animate-pulse" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
+  const loading = reviews.length === 0;
+  const max = Math.max(0, reviews.length - PER_VIEW);
 
   return (
-    <section className="bg-off-white py-16 sm:py-28" aria-label="Customer testimonials">
+    <section className="bg-[#f8fafc] py-16 sm:py-28 border-t border-[#e2e8f0]" aria-label="Customer testimonials">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div>
-            <Label className="text-xs font-semibold tracking-[0.15em] w-fit  uppercase text-brand-primary bg-brand-primary/5 px-3 py-1 rounded-full">Testimonials</Label>
-            <h2 className="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl text-brand-dark">
-              What Our Clients Say
-            </h2>
+
+        {/* Header */}
+        <div className="flex flex-wrap items-end justify-between gap-6 mb-10">
+          <div className="flex items-center gap-4">
+            <Image
+              src="/video-gif/review-animation.svg"
+              alt="Client reviews illustration"
+              width={176}
+              height={112}
+              className="shrink-0 object-contain"
+              unoptimized
+            />
+            <div>
+              <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-[#1d4ed8] bg-[#eff6ff] border border-[#bfdbfe] px-3 py-1 rounded-full mb-2">
+                Testimonials
+              </span>
+              <h2 className="font-display text-[26px] sm:text-[32px] font-bold text-[#0f2557] leading-tight">
+                What Our Clients Say
+              </h2>
+            </div>
           </div>
+
           <div className="flex items-center gap-2">
             <button
-              onClick={prev}
+              onClick={() => setIdx((v) => Math.max(0, v - 1))}
+              disabled={idx === 0}
               aria-label="Previous"
-              className="size-11 rounded-full border border-light-gray bg-white grid place-items-center hover:border-brand-primary hover:text-brand-primary transition"
+              className="size-10 rounded-xl bg-[#f1f5f9] border border-[#e2e8f0] grid place-items-center text-[#475569] hover:bg-[#1d4ed8] hover:text-white hover:border-[#1d4ed8] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <ChevronLeft className="size-5" />
+              <ChevronLeft className="size-4" />
             </button>
             <button
-              onClick={next}
+              onClick={() => setIdx((v) => Math.min(max, v + 1))}
+              disabled={idx >= max}
               aria-label="Next"
-              className="size-11 rounded-full border border-light-gray bg-white grid place-items-center hover:border-brand-primary hover:text-brand-primary transition"
+              className="size-10 rounded-xl bg-[#1d4ed8] border border-[#1d4ed8] grid place-items-center text-white hover:bg-[#1e40af] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <ChevronRight className="size-5" />
+              <ChevronRight className="size-4" />
             </button>
           </div>
         </div>
 
-        <div className="mt-10 overflow-hidden">
+        {/* Carousel — 4 cards visible, slide by 1 */}
+        <div className="overflow-hidden">
           <div
-            className="flex gap-6 transition-transform duration-500"
-            style={{
-              transform: `translateX(calc(-${i} * (100% / 3) - ${i} * 1.5rem / 3))`,
-            }}
+            className="flex gap-6 transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
+            style={{ transform: `translateX(calc(-${idx} * (25% + 4.5px)))` }}
             aria-live="polite"
           >
-            {reviews.map((t) => (
-              <article
-                key={t.id}
-                className="shrink-0 w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] bg-white rounded-2xl p-6 border border-light-gray/40 shadow-[0_4px_24px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] transition-shadow duration-300"
-              >
-                <Stars value={t.rating} />
-                <p className="text-brand-dark italic leading-relaxed">
-                  <span className="text-brand-primary font-display text-xl">&ldquo;</span>
-                  {t.description}
-                  <span className="text-brand-primary font-display text-xl">&rdquo;</span>
-                </p>
-                <div className="mt-5 flex items-center gap-3">
-                  <div className="size-11 rounded-full bg-brand-secondary text-white grid place-items-center font-semibold text-sm">
-                    {getInitials(t.name)}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-brand-secondary">{t.name}</p>
-                  </div>
-                </div>
-              </article>
-            ))}
+            {loading
+              ? [1, 2, 3, 4].map((k) => <SkeletonCard key={k} />)
+              : reviews.map((t) => <ReviewCard key={t.id} t={t} />)}
           </div>
         </div>
+
       </div>
     </section>
   );

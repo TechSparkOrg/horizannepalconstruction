@@ -1,32 +1,52 @@
 import { Users, MapPin } from "lucide-react";
 import { getSocialIcon } from "@/lib/social-icons";
 import type { TeamMember } from "@/api/types/team.types";
+import Image from "next/image";
 
 export function TeamSection({ members }: { members: TeamMember[] }) {
   if (members.length === 0) return null;
 
   return (
-    <section className="bg-off-white py-16 sm:py-28">
+    <section className="bg-[#f8fafc] py-16 sm:py-28 border-t border-[#e2e8f0]">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-end justify-between flex-wrap gap-4 mb-8">
+
+        {/* Header — flex row: heading | SVG | description */}
+        <div className="flex items-end justify-between flex-wrap gap-4 mb-10">
+
+          {/* Left: eyebrow + heading */}
           <div>
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wider uppercase text-brand-secondary bg-brand-secondary/10 border border-brand-secondary/20 px-3 py-1 rounded-full mb-3">
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold tracking-[0.2em] uppercase text-[#1d4ed8] bg-[#eff6ff] border border-[#bfdbfe] px-3 py-1 rounded-full mb-3">
               <Users className="size-3" />
               Our Team
             </span>
-            <h2 className="font-display text-2xl sm:text-3xl text-brand-dark leading-tight">
+            <h2 className="font-display text-[26px] sm:text-[32px] font-bold text-[#0f2557] leading-tight">
               The crew behind<br />every build
             </h2>
           </div>
-          <p className="text-sm text-mid-gray max-w-[260px] text-right leading-relaxed">
+
+          {/* Centre: SVG illustration */}
+          <Image
+            src="/video-gif/work-team.svg"
+            alt="Team illustration"
+            width={176}
+            height={112}
+            className="shrink-0 object-contain"
+            unoptimized
+          />
+
+          {/* Right: sub-copy */}
+          <p className="text-[13.5px] text-[#475569] max-w-[240px] text-right leading-relaxed">
             Architects, engineers, and site specialists — each vetted and experienced in Nepal&apos;s construction landscape.
           </p>
         </div>
 
-        <div className="border border-light-gray rounded-xl overflow-hidden">
-          <div className="grid grid-cols-[2fr_1.5fr_1fr] gap-2 px-5 py-2.5 bg-light-gray/20 border-b border-light-gray">
+        {/* Table */}
+        <div className="rounded-2xl overflow-hidden border border-[#e2e8f0] shadow-sm">
+
+          {/* Column headers */}
+          <div className="grid grid-cols-[2fr_1.5fr_1fr] gap-2 px-5 py-3 bg-[#f1f5f9] border-b border-[#e2e8f0]">
             {["Team member", "Department", "Contact"].map((h) => (
-              <span key={h} className="text-xs font-semibold uppercase tracking-wider text-mid-gray">{h}</span>
+              <span key={h} className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748b]">{h}</span>
             ))}
           </div>
 
@@ -41,18 +61,20 @@ export function TeamSection({ members }: { members: TeamMember[] }) {
             return (
               <div
                 key={m.id}
-                className="grid grid-cols-[2fr_1.5fr_1fr] gap-2 items-center px-5 py-3.5 bg-white hover:bg-light-gray/10 transition-colors border-b border-light-gray last:border-b-0"
+                className="grid grid-cols-[2fr_1.5fr_1fr] gap-2 items-center px-5 py-4 bg-white hover:bg-[#f8faff] transition-colors border-b border-[#e2e8f0] last:border-b-0"
               >
-                <div className="flex items-center gap-2.5">
-                  <div className="size-8 rounded-lg bg-brand-secondary/10 border border-brand-secondary/20 flex items-center justify-center text-xs font-bold text-brand-secondary shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="size-9 rounded-xl bg-[#eff6ff] border border-[#bfdbfe] flex items-center justify-center text-[11px] font-bold text-[#1d4ed8] shrink-0">
                     {initials}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-brand-dark">{m.name}</p>
-                    <p className="text-xs text-mid-gray mt-0.5">{m.designation}</p>
+                    <p className="text-[13.5px] font-semibold text-[#0f2557]">{m.name}</p>
+                    <p className="text-[11.5px] text-[#64748b] mt-0.5">{m.designation}</p>
                   </div>
                 </div>
-                <span className="text-sm text-mid-gray">{m.department}</span>
+
+                <span className="text-[13px] text-[#475569]">{m.department}</span>
+
                 <div className="flex gap-1.5">
                   {m.social_links?.map((link) => {
                     const Icon = getSocialIcon(link.platform);
@@ -63,7 +85,7 @@ export function TeamSection({ members }: { members: TeamMember[] }) {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={link.platform}
-                        className="size-6 rounded-md border border-light-gray flex items-center justify-center text-mid-gray hover:bg-brand-secondary hover:text-white hover:border-brand-secondary transition-all"
+                        className="size-7 rounded-lg border border-[#e2e8f0] flex items-center justify-center text-[#64748b] hover:bg-[#1d4ed8] hover:text-white hover:border-[#1d4ed8] transition-all duration-150 focus-visible:ring-2 focus-visible:ring-[#1d4ed8] focus-visible:ring-offset-1"
                       >
                         <Icon className="size-3" />
                       </a>
@@ -74,16 +96,18 @@ export function TeamSection({ members }: { members: TeamMember[] }) {
             );
           })}
 
-          <div className="flex items-center justify-between flex-wrap gap-2 px-5 py-3 bg-light-gray/20 border-t border-light-gray text-xs text-mid-gray">
-            <span className="flex items-center gap-1.5">
-              <Users className="size-3.5" />
-              <strong className="font-semibold text-brand-dark">{members.length}</strong> core members
+          {/* Footer row */}
+          <div className="flex items-center justify-between flex-wrap gap-2 px-5 py-3.5 bg-[#f1f5f9] border-t border-[#e2e8f0]">
+            <span className="flex items-center gap-1.5 text-[12px] text-[#64748b]">
+              <Users className="size-3.5 text-[#1d4ed8]" />
+              <strong className="font-semibold text-[#0f2557]">{members.length}</strong>&nbsp;core members
             </span>
-            <span className="flex items-center gap-1.5">
-              <MapPin className="size-3.5" />
-              Based in <strong className="font-semibold text-brand-dark">Kathmandu</strong>
+            <span className="flex items-center gap-1.5 text-[12px] text-[#64748b]">
+              <MapPin className="size-3.5 text-[#1d4ed8]" />
+              Based in&nbsp;<strong className="font-semibold text-[#0f2557]">Kathmandu</strong>
             </span>
           </div>
+
         </div>
       </div>
     </section>

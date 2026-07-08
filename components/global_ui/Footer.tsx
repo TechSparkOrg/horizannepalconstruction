@@ -119,7 +119,7 @@ export function Footer() {
             <div className="max-w-[520px]">
               <div className="flex items-center gap-3 mb-4">
                 <span className="block w-6 h-px bg-brand-secondary shrink-0" aria-hidden="true" />
-                <span className="text-[10.5px] font-semibold tracking-[0.22em] uppercase text-brand-secondary">
+                <span className="text-[10.5px] font-semibold tracking-[0.22em] uppercase text-[#93c5fd]">
                   Ready to Build?
                 </span>
               </div>
@@ -143,7 +143,7 @@ export function Footer() {
                     <PhoneCall className="size-4" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">Call Us</p>
+                    <p className="text-[10px] text-white/60 uppercase tracking-widest font-bold">Call Us</p>
                     <p className="text-[14px] font-semibold text-white">{c.phone}</p>
                   </div>
                 </a>
@@ -184,7 +184,7 @@ export function Footer() {
                 </span>
               </Link>
 
-              <p className="text-[13.5px] text-white/45 leading-[1.75] mb-6 max-w-[270px]">
+              <p className="text-[13.5px] text-white/65 leading-[1.75] mb-6 max-w-[270px]">
                 Trusted architecture, engineering &amp; construction firm delivering innovative and sustainable designs across Nepal.
               </p>
 
@@ -196,7 +196,7 @@ export function Footer() {
                       href="https://maps.google.com"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-white/45 hover:text-white transition-colors leading-snug"
+                      className="text-white/65 hover:text-white transition-colors leading-snug"
                     >
                       {c.address}
                     </a>
@@ -204,15 +204,15 @@ export function Footer() {
                 )}
                 <li className="flex items-start gap-2.5">
                   <Building2 className="size-3.5 text-brand-secondary shrink-0 mt-[3px]" />
-                  <span className="text-white/45">Horizon Nepal Pvt. Ltd.</span>
+                  <span className="text-white/65">Horizon Nepal Pvt. Ltd.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <IdCard className="size-3.5 text-brand-secondary shrink-0 mt-[3px]" />
-                  <span className="text-white/45">VAT No: XXXXXXXXX</span>
+                  <span className="text-white/65">VAT No: XXXXXXXXX</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <Clock className="size-3.5 text-brand-secondary shrink-0 mt-[3px]" />
-                  <span className="text-white/45">Sun–Fri, 9:00 AM – 6:00 PM</span>
+                  <span className="text-white/65">Sun–Fri, 9:00 AM – 6:00 PM</span>
                 </li>
               </ul>
             </div>
@@ -278,7 +278,7 @@ export function Footer() {
 
               {/* Social links */}
               <div className="flex items-center gap-4">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Follow</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">Follow</span>
                 <div className="flex gap-2">
                   {social_links.map(({ url, label, platform }) => {
                     const Icon = getSocialIcon(platform ?? "");
@@ -301,7 +301,7 @@ export function Footer() {
               {/* Trust badges */}
               <div className="hidden md:flex items-center gap-6">
                 {trustBadges.map(({ Icon, label }) => (
-                  <div key={label} className="flex items-center gap-2 text-white/30 text-[12px]">
+                  <div key={label} className="flex items-center gap-2 text-white/60 text-[12px]">
                     <Icon className="size-[15px] text-brand-secondary/70" />
                     <span>{label}</span>
                   </div>
@@ -318,9 +318,9 @@ export function Footer() {
       <div className="bg-[#040c1e] border-t border-white/[0.05]">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p className="text-[11.5px] text-white/28">
+            <p className="text-[11.5px] text-white/60">
               &copy; {year}{" "}
-              <span className="text-white/40 font-medium">Horizon Nepal Pvt. Ltd.</span>
+              <span className="text-white/60 font-medium">Horizon Nepal Pvt. Ltd.</span>
               {" "}All rights reserved.
             </p>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
@@ -330,7 +330,7 @@ export function Footer() {
                   href={l.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[11.5px] text-white/28 hover:text-white/65 transition-colors"
+                  className="text-[11.5px] text-white/55 hover:text-white/80 transition-colors"
                 >
                   {l.label}
                 </a>
