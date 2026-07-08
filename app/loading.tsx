@@ -4,7 +4,7 @@ export default function MainLoading() {
   return (
     <div className="bg-off-white">
       <HeroSkeleton />
-
+{/* 
       <SectionSkeleton>
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="space-y-3">
@@ -30,7 +30,7 @@ export default function MainLoading() {
           </div>
           <AccordionSkeleton />
         </div>
-      </SectionSkeleton>
+      </SectionSkeleton> */}
     </div>
   );
 }

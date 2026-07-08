@@ -21,7 +21,7 @@ function LogoGrid({ items }: { items: (EmiBank | PublicVendor)[] }) {
           >
             <div className="size-11 relative flex items-center justify-center">
               {logo ? (
-                <Image src={logo} alt={`${name} logo`} fill className="object-contain" />
+                <Image src={logo} alt={`${name} logo`} fill sizes="69px" className="object-contain" />
               ) : (
                 <BankMark name={name} />
               )}
