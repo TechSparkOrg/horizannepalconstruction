@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const config: NextConfig = {
   reactStrictMode: true,
+  cacheComponents: true,
+  cacheLife: {
+    homepage: { stale: 300, revalidate: 3600, expire: 86400 },
+  },
 
   images: {
     formats: ["image/avif", "image/webp"],
@@ -18,6 +22,7 @@ const config: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react"],
     inlineCss: true,
+    staleTimes: { dynamic: 30, static: 180 },
     staticGenerationMaxConcurrency: 8,
 
 

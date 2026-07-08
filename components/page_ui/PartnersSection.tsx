@@ -8,33 +8,61 @@ import { getBanks } from "@/api/services/emi.service"
 import type { PublicVendor } from "@/api/types/material.types"
 import type { EmiBank } from "@/api/types/emi.types"
 
-function LogoStrip({ title, items }: { title: string; items: (EmiBank | PublicVendor)[] }) {
+function LogoGrid({ items }: { items: (EmiBank | PublicVendor)[] }) {
   return (
-    <div className="rounded-xl border border-[#e8edf5] bg-white overflow-hidden">
-      <div className="flex flex-wrap items-stretch">
-        {items.map((item, i) => {
-          const logo = "logo" in item ? item.logo : ""
-          const name = item.name
-          const id = item.id
-          return (
-            <div
-              key={id}
-              className="flex flex-col items-center justify-center gap-2 px-6 py-5 border-r border-[#e8edf5] last:border-r-0 flex-1 min-w-[130px]"
-            >
-              <div className="size-10 relative">
-                {logo ? (
-                  <Image src={logo} alt={`${name} logo`} fill className="object-contain" />
-                ) : (
-                  <BankMark name={name} />
-                )}
-              </div>
-              <span className="text-[11px] font-semibold text-[#3d526e] text-center leading-snug">
-                {name}
-              </span>
+    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+      {items.map((item) => {
+        const logo = "logo" in item ? item.logo : ""
+        const name = item.name
+        return (
+          <div
+            key={item.id}
+            className="group bg-[#f8fafc] rounded-2xl border border-[#e2e8f0] p-5 flex flex-col items-center gap-3 hover:border-[#1d4ed8]/40 hover:bg-[#eff6ff] hover:-translate-y-0.5 transition-all duration-200 cursor-default"
+          >
+            <div className="size-12 relative flex items-center justify-center">
+              {logo ? (
+                <Image
+                  src={logo}
+                  alt={`${name} logo`}
+                  fill
+                  className="object-contain"
+                />
+              ) : (
+                <BankMark name={name} />
+              )}
             </div>
-          )
-        })}
-      </div>
+            <span className="text-[11px] font-semibold text-[#475569] text-center leading-snug">
+              {name}
+            </span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function SkeletonGrid() {
+  return (
+    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div
+          key={i}
+          className="bg-[#f8fafc] rounded-2xl border border-[#e2e8f0] p-5 flex flex-col items-center gap-3"
+        >
+          <div className="size-12 rounded-xl bg-[#e2e8f0] animate-pulse" />
+          <div className="h-3 w-16 rounded bg-[#e2e8f0] animate-pulse" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function SubLabel({ text }: { text: string }) {
+  return (
+    <div className="flex items-center justify-center gap-3 mb-5">
+      <span className="h-px w-10 bg-[#e2e8f0]" aria-hidden="true" />
+      <span className="text-[10px] font-bold uppercase tracking-[.15em] text-[#64748b]">{text}</span>
+      <span className="h-px w-10 bg-[#e2e8f0]" aria-hidden="true" />
     </div>
   )
 }
@@ -53,57 +81,54 @@ export function PartnersSection() {
     })
   }, [])
 
-  if (vendors === null || banks === null) {
-    return (
-      <section className="bg-[#f4f6fb] py-16 sm:py-20 border-t border-[#e8edf5]">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-3 mb-10">
-            <div className="mx-auto h-3 w-16 rounded bg-[#e8edf5] animate-pulse" />
-            <div className="mx-auto h-7 w-56 rounded bg-[#e8edf5] animate-pulse" />
-          </div>
-          <div className="rounded-xl border border-[#e8edf5] bg-white h-24 animate-pulse" />
-        </div>
-      </section>
-    )
-  }
+  const loading = vendors === null || banks === null
+  const empty   = !loading && vendors!.length === 0 && banks!.length === 0
 
-  if (vendors.length === 0 && banks.length === 0) return null
+  if (empty) return null
 
   return (
-    <section className="bg-[#f4f6fb] py-16 sm:py-20 border-t border-[#e8edf5]">
+    <section className="bg-white py-20 sm:py-28 border-t border-[#e2e8f0]">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
-        <div className="text-center">
-          <p className="text-[11px] font-bold uppercase tracking-[.16em] text-[#cd2028]">
+        <div className="text-center mb-12">
+          <p className="text-[11px] font-bold uppercase tracking-[.16em] text-[#b91c1c]">
             Our Partners
           </p>
-          <div className="w-10 h-[3px] bg-[#cd2028] mx-auto mt-2.5 mb-4" />
+          <div className="w-10 h-[3px] bg-[#b91c1c] mx-auto mt-2.5 mb-4" />
           <h2 className="text-[28px] sm:text-[32px] font-bold text-[#0f2557] tracking-tight leading-tight font-display">
             Banks &amp; Vendors We Trust
           </h2>
-          <p className="mt-3 text-sm text-[#5a6e8a] max-w-md mx-auto leading-relaxed">
+          <p className="mt-3 text-sm text-[#475569] max-w-sm mx-auto leading-relaxed">
             Backed by Nepal&apos;s leading financial institutions and trusted material suppliers.
           </p>
         </div>
 
-        {/* Banks */}
-        {banks.length > 0 && (
-          <div className="mt-10">
-            <p className="text-[10px] font-bold uppercase tracking-[.12em] text-[#8fa3c8] text-center mb-4">
-              Partner Banks
-            </p>
-            <LogoStrip title="Partner Banks" items={banks} />
+        {loading ? (
+          <div className="space-y-10">
+            <div>
+              <SubLabel text="Partner Banks" />
+              <SkeletonGrid />
+            </div>
+            <div>
+              <SubLabel text="Trusted Vendors" />
+              <SkeletonGrid />
+            </div>
           </div>
-        )}
-
-        {/* Vendors */}
-        {vendors.length > 0 && (
-          <div className="mt-10">
-            <p className="text-[10px] font-bold uppercase tracking-[.12em] text-[#8fa3c8] text-center mb-4">
-              Trusted Vendors
-            </p>
-            <LogoStrip title="Trusted Vendors" items={vendors} />
+        ) : (
+          <div className="space-y-10">
+            {banks!.length > 0 && (
+              <div>
+                <SubLabel text="Partner Banks" />
+                <LogoGrid items={banks!} />
+              </div>
+            )}
+            {vendors!.length > 0 && (
+              <div>
+                <SubLabel text="Trusted Vendors" />
+                <LogoGrid items={vendors!} />
+              </div>
+            )}
           </div>
         )}
 

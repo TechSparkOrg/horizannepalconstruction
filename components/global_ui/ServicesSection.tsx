@@ -33,7 +33,6 @@ function ServiceCard({ service, index }: { service: ServiceCategory; index: numb
       href={`/services/${service.slug}`}
       className="group relative flex flex-col gap-5 bg-white p-7 hover:bg-[#f8faff] transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-inset"
     >
-      {/* Index badge */}
       <span
         className="absolute top-5 right-5 text-[11px] font-bold tracking-wide text-light-gray group-hover:text-brand-primary transition-colors duration-150"
         aria-hidden="true"
@@ -41,12 +40,10 @@ function ServiceCard({ service, index }: { service: ServiceCategory; index: numb
         {String(index + 1).padStart(2, "0")}
       </span>
 
-      {/* Icon */}
       <div className="size-11 rounded-xl flex items-center justify-center bg-accent text-brand-primary group-hover:bg-brand-dark group-hover:text-white transition-colors duration-200 shrink-0">
         <Icon className="size-[18px]" />
       </div>
 
-      {/* Text */}
       <div className="flex-1">
         <h3 className="text-[14.5px] font-semibold text-brand-dark leading-snug mb-2">
           {service.name}
@@ -56,13 +53,11 @@ function ServiceCard({ service, index }: { service: ServiceCategory; index: numb
         </p>
       </div>
 
-      {/* Arrow */}
       <div className="flex items-center gap-1.5 text-[12px] font-semibold text-brand-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200">
         Learn more
         <ArrowRight className="size-3.5 translate-x-0 group-hover:translate-x-0.5 transition-transform duration-200" />
       </div>
 
-      {/* Bottom accent line */}
       <div
         className="absolute bottom-0 left-7 right-7 h-px rounded-full bg-brand-primary origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"
         aria-hidden="true"
@@ -84,20 +79,23 @@ function ServiceSkeleton() {
   )
 }
 
-export function ServicesSection() {
+export function ServicesSection({ initialServices }: { initialServices?: ServiceCategory[] }) {
   const [services, setServices] = useState<ServiceCategory[] | null>(null)
 
   useEffect(() => {
+    if (initialServices) {
+      setServices(initialServices)
+      return undefined
+    }
     getServiceCategories()
       .then(setServices)
       .catch(() => setServices([]))
-  }, [])
+  }, [initialServices])
 
   return (
     <section className="py-20 bg-white">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Section header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12">
           <div className="max-w-[480px]">
             <div className="flex items-center gap-3 mb-4">
@@ -122,9 +120,6 @@ export function ServicesSection() {
           </Link>
         </div>
 
-      
-
-        {/* Grid */}
         <div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 rounded-2xl overflow-hidden border border-light-gray"
           style={{ background: "var(--color-light-gray)", gap: "1px" }}
@@ -137,7 +132,6 @@ export function ServicesSection() {
         </div>
 
       </div>
-   
     </section>
   )
 }

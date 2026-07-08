@@ -5,6 +5,9 @@ import "./globals.css";
 import type { ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { Toaster } from "sonner";
+import { SettingsLoader } from "@/components/global_ui/SettingsLoader";
+import { TrackingScripts } from "@/components/global_ui/TrackingScripts";
+import { ScriptInjector } from "@/components/global_ui/ScriptInjector";
 
 const Header = dynamic(() => import("@/components/global_ui/Header").then((m) => ({ default: m.Header })));
 const WhatsAppButton = dynamic(() => import("@/components/global_ui/WhatsAppButton").then((m) => ({ default: m.WhatsAppButton })));
@@ -30,7 +33,22 @@ const playfairDisplay = Playfair_Display({
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
-}
+  title: {
+    default: "Horizan Nepal — Architecture, Engineering & Construction",
+    template: "%s | Horizan Nepal",
+  },
+  description:
+    "Horizan Nepal — trusted architecture, engineering, and construction firm delivering innovative and sustainable designs across Nepal.",
+  openGraph: {
+    type: "website",
+    siteName: "Horizan Nepal",
+    locale: "en_US",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -40,14 +58,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
-      <head>
-
-      </head>
       <body className="min-h-full flex flex-col">
         <Header />
         <main id="main-content">{children}</main>
         <WhatsAppButton />
         <Footer />
+        <SettingsLoader />
+        <TrackingScripts />
+        <ScriptInjector />
         <Toaster position="top-right" richColors />
       </body>
     </html>

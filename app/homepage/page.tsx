@@ -1,35 +1,41 @@
-import dynamic from "next/dynamic";
-import Image from "next/image";
-import bulldozerSvg from "@/components/video-gif/construnction-bull-dozer.svg";
-import { ServicesSection } from "@/components/global_ui/ServicesSection";
-import { ImageGrid } from "@/components/global_ui/image-grid";
-import { FeaturedProjects } from "@/components/global_ui/FeaturedProjects";
+import { Suspense } from "react";
 import { QuoteBannerSecondary } from "@/components/page_ui/QuoteBannerSecondary";
-import { BlogSection } from "@/components/global_ui/BlogSection";
-import { FAQWrapper } from "@/components/global_ui/faq-accordion";
+import { ViewportSection } from "../_components/ViewportSection";
+import {
+  ServicesAsync,
+  GalleryAsync,
+  FeaturedAsync,
+  BlogAsync,
+  FAQAsync,
+} from "../_sections/homepage-sections";
 
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"))
-
-export default function HomepagePage({ description }: { description?: string }) {
+export default function HomepagePage() {
   return (
     <>
-
-      <ServicesSection />
-      <ImageGrid
-        slug="home-page-gallary"
-        label="Our Gallery"
-        heading="Photo Gallery"
-        description="Explore our portfolio of completed projects and ongoing works across Nepal."
-      />
-      <FeaturedProjects limit={4} />
+      <Suspense fallback={null}>
+        <ServicesAsync />
+      </Suspense>
+      <ViewportSection fallback={<div className="py-16 sm:py-24 bg-off-white" />}>
+        <Suspense fallback={null}>
+          <GalleryAsync />
+        </Suspense>
+      </ViewportSection>
+      <ViewportSection fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff]" />}>
+        <Suspense fallback={null}>
+          <FeaturedAsync />
+        </Suspense>
+      </ViewportSection>
       <QuoteBannerSecondary />
-      <BlogSection />
-      <FAQWrapper />
-      {description && (
-        <section className="max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-          <ParsedContent description={description} />
-        </section>
-      )}
+      <ViewportSection fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff]" />}>
+        <Suspense fallback={null}>
+          <BlogAsync />
+        </Suspense>
+      </ViewportSection>
+      <ViewportSection fallback={<div className="py-20 bg-[#f5f8ff]" />}>
+        <Suspense fallback={null}>
+          <FAQAsync />
+        </Suspense>
+      </ViewportSection>
     </>
   );
 }

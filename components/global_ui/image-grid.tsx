@@ -7,6 +7,7 @@ import type { MediaItem } from "@/api/types/media.types"
 
 interface ImageGridProps {
   slug: string
+  initialItems?: { id: string; url: string; alt?: string }[]
   label: string
   heading: string
   description: string
@@ -40,6 +41,7 @@ function Skeleton({ bg }: { bg?: string }) {
 
 export function ImageGrid({
   slug,
+  initialItems,
   label,
   heading,
   description,
@@ -50,8 +52,16 @@ export function ImageGrid({
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    BannerService.getBySlug(slug).then(setItems).catch(() => setItems([])).finally(() => setLoaded(true))
-  }, [slug])
+    if (initialItems) {
+      setItems(initialItems as MediaItem[])
+      setLoaded(true)
+      return undefined
+    }
+    BannerService.getBySlug(slug)
+      .then(setItems)
+      .catch(() => setItems([]))
+      .finally(() => setLoaded(true))
+  }, [slug, initialItems])
 
   const images = items.filter((b) => b.url)
 

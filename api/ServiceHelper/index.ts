@@ -1,3 +1,5 @@
+import { parseApiError, ApiError } from "./errorhandler";
+
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/+$/, "")
 
 export interface PaginatedResponse<T> {
@@ -9,7 +11,10 @@ export interface PaginatedResponse<T> {
 
 export async function apiGet<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, { cache: "no-store" })
-  if (!res.ok) throw new Error(`API ${res.status}: ${path}`)
+  if (!res.ok) {
+    const err = await parseApiError(res)
+    throw new ApiError(err.message, err.status, err.raw)
+  }
   return res.json()
 }
 
@@ -20,7 +25,10 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
     body: JSON.stringify(body),
     cache: "no-store",
   })
-  if (!res.ok) throw new Error(`API ${res.status}: ${path}`)
+  if (!res.ok) {
+    const err = await parseApiError(res)
+    throw new ApiError(err.message, err.status, err.raw)
+  }
   return res.json()
 }
 
@@ -29,6 +37,9 @@ export async function apiPostFormData<T>(path: string, formData: FormData): Prom
     method: "POST",
     body: formData,
   })
-  if (!res.ok) throw new Error(`API ${res.status}: ${path}`)
+  if (!res.ok) {
+    const err = await parseApiError(res)
+    throw new ApiError(err.message, err.status, err.raw)
+  }
   return res.json()
 }

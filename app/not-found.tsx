@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-white">
+    <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="max-w-md mx-auto px-4 text-center">
         <FileQuestion className="size-16 text-brand-primary/30 mx-auto mb-6" />
         <h1 className="font-display font-bold text-5xl sm:text-6xl text-brand-dark mb-3">
@@ -26,6 +26,6 @@ export default function NotFound() {
           Back to Home
         </Link>
       </div>
-    </main>
+    </div>
   );
 }
