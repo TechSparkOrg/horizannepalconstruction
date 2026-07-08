@@ -54,7 +54,7 @@ export function AboutTabs() {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto">
           <Label className="text-xs font-semibold tracking-[0.15em] uppercase text-[#1d4ed8] bg-[#1d4ed8]/8 px-3 py-1 rounded-full">Our Approach</Label>
-          <h2 className="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl text-[#0f2557]">
+          <h2 className="mt-3 font-display text-2xl sm:text-4xl lg:text-5xl text-[#0f2557]">
             Mission · Plan · Act
           </h2>
           <p className="mt-4 text-base leading-relaxed text-[#334155]">
@@ -71,7 +71,7 @@ export function AboutTabs() {
                 role="tab"
                 aria-selected={active === i}
                 onClick={() => setActive(i)}
-                className={`flex items-center gap-2 px-6 py-3.5 text-sm font-medium transition-colors duration-150 border-b-2 -mb-px ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-3.5 text-[13px] sm:text-sm font-medium transition-colors duration-150 border-b-2 -mb-px ${
                   active === i
                     ? "border-[#1d4ed8] text-[#1d4ed8]"
                     : "border-transparent text-[#334155] hover:text-[#0f2557]"
@@ -98,7 +98,7 @@ export function AboutTabs() {
             role="tabpanel"
           >
             {/* Left */}
-            <div className="bg-white p-8">
+            <div className="bg-white p-5 sm:p-8">
               <div className="size-12 rounded-xl bg-[#1d4ed8]/10 flex items-center justify-center mb-5">
                 <current.icon className="size-6 text-[#1d4ed8]" />
               </div>
@@ -108,7 +108,7 @@ export function AboutTabs() {
             </div>
 
             {/* Right */}
-            <div className="flex flex-col gap-5 p-8 bg-[#f8fafc]">
+            <div className="flex flex-col gap-5 p-5 sm:p-8 bg-[#f8fafc]">
               <p className="text-sm leading-relaxed text-[#334155]">
                 {current.body}
               </p>

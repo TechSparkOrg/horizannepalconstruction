@@ -66,7 +66,7 @@ export function ImageGrid({
                   i >= 6 ? "hidden md:block" : ""
                 } ${i === 0 || i === 7 ? "md:col-span-2 md:row-span-2" : ""}`}
               >
-                <div className={`relative ${i === 0 || i === 7 ? "aspect-[4/3]" : "aspect-square"}`}>
+                <div className={`relative ${i === 0 || i === 7 ? "aspect-square md:aspect-[4/3]" : "aspect-square"}`}>
                   <Image
                     src={b.url}
                     alt={b.alt || "Gallery image"}

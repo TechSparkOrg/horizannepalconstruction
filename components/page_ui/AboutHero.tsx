@@ -12,8 +12,7 @@ const stats = [
 export function AboutHero() {
   return (
     <section
-      className="relative w-full overflow-hidden bg-[#0f2557]"
-      style={{ minHeight: "115svh" }}
+      className="relative w-full overflow-hidden bg-[#0f2557] min-h-[85svh] sm:min-h-[115svh]"
     >
       {/* Full-bleed SVG background */}
       <Image
@@ -40,7 +39,7 @@ export function AboutHero() {
       />
 
       {/* Content — anchored to bottom, centered */}
-      <div className="absolute inset-x-0 bottom-2 z-20 px-4 sm:px-10 pb-14">
+      <div className="absolute inset-x-0 bottom-2 z-20 px-4 sm:px-10 pb-6 sm:pb-14">
 
         {/* Badge + heading */}
         <div className="mb-4 text-center">

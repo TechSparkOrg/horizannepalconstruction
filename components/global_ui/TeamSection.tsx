@@ -30,12 +30,12 @@ export function TeamSection({ members }: { members: TeamMember[] }) {
             alt="Team illustration"
             width={176}
             height={112}
-            className="shrink-0 object-contain"
+            className="w-[100px] h-[64px] sm:w-[176px] sm:h-[112px] shrink-0 object-contain"
             unoptimized
           />
 
           {/* Right: sub-copy */}
-          <p className="text-[13.5px] text-[#475569] max-w-[240px] text-right leading-relaxed">
+          <p className="text-[13.5px] text-[#475569] max-w-[240px] text-left sm:text-right leading-relaxed">
             Architects, engineers, and site specialists — each vetted and experienced in Nepal&apos;s construction landscape.
           </p>
         </div>
@@ -43,8 +43,8 @@ export function TeamSection({ members }: { members: TeamMember[] }) {
         {/* Table */}
         <div className="rounded-2xl overflow-hidden border border-[#e2e8f0] shadow-sm">
 
-          {/* Column headers */}
-          <div className="grid grid-cols-[2fr_1.5fr_1fr] gap-2 px-5 py-3 bg-[#f1f5f9] border-b border-[#e2e8f0]">
+          {/* Column headers — desktop only */}
+          <div className="hidden sm:grid grid-cols-[2fr_1.5fr_1fr] gap-2 px-5 py-3 bg-[#f1f5f9] border-b border-[#e2e8f0]">
             {["Team member", "Department", "Contact"].map((h) => (
               <span key={h} className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748b]">{h}</span>
             ))}
@@ -61,7 +61,7 @@ export function TeamSection({ members }: { members: TeamMember[] }) {
             return (
               <div
                 key={m.id}
-                className="grid grid-cols-[2fr_1.5fr_1fr] gap-2 items-center px-5 py-4 bg-white hover:bg-[#f8faff] transition-colors border-b border-[#e2e8f0] last:border-b-0"
+                className="flex flex-col sm:grid sm:grid-cols-[2fr_1.5fr_1fr] gap-3 sm:gap-2 sm:items-center px-5 py-4 bg-white hover:bg-[#f8faff] transition-colors border-b border-[#e2e8f0] last:border-b-0"
               >
                 <div className="flex items-center gap-3">
                   <div className="size-9 rounded-xl bg-[#eff6ff] border border-[#bfdbfe] flex items-center justify-center text-[11px] font-bold text-[#1d4ed8] shrink-0">
@@ -73,7 +73,10 @@ export function TeamSection({ members }: { members: TeamMember[] }) {
                   </div>
                 </div>
 
-                <span className="text-[13px] text-[#475569]">{m.department}</span>
+                <div>
+                  <span className="sm:hidden text-[10px] font-semibold uppercase tracking-wide text-[#94a3b8]">Dept</span>
+                  <span className="block text-[13px] text-[#475569]">{m.department}</span>
+                </div>
 
                 <div className="flex gap-1.5">
                   {m.social_links?.map((link) => {

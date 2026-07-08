@@ -10,7 +10,7 @@ import type { EmiBank } from "@/api/types/emi.types"
 
 function LogoGrid({ items }: { items: (EmiBank | PublicVendor)[] }) {
   return (
-    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
       {items.map((item) => {
         const logo = "logo" in item ? item.logo : ""
         const name = item.name
@@ -38,7 +38,7 @@ function LogoGrid({ items }: { items: (EmiBank | PublicVendor)[] }) {
 
 function SkeletonGrid() {
   return (
-    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="bg-[#f8fafc] rounded-2xl border border-[#e2e8f0] p-4 flex flex-col items-center gap-2.5">
           <div className="size-11 rounded-xl bg-[#e2e8f0] animate-pulse" />
@@ -85,7 +85,7 @@ export function PartnersSection() {
             alt="Partners illustration"
             width={148}
             height={92}
-            className="shrink-0 object-contain"
+            className="w-[100px] h-[62px] sm:w-[148px] sm:h-[92px] shrink-0 object-contain"
             unoptimized
           />
           <div>

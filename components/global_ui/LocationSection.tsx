@@ -33,13 +33,13 @@ export function LocationSection() {
             alt="Location pin illustration"
             width={140}
             height={90}
-            className="shrink-0 object-contain"
+            className="w-[90px] h-[58px] sm:w-[140px] sm:h-[90px] shrink-0 object-contain"
             unoptimized
           />
         </div>
 
         {/* Map + info card */}
-        <div className="relative rounded-2xl overflow-hidden border border-[#e2e8f0] shadow-sm h-[460px]">
+        <div className="relative rounded-2xl overflow-hidden border border-[#e2e8f0] shadow-sm h-[360px] sm:h-[460px]">
           <iframe
             title="Horizon Nepal office location in Kathmandu"
             src={MAP_SRC}
@@ -49,7 +49,7 @@ export function LocationSection() {
           />
 
           {/* Info card overlay */}
-          <div className="absolute bottom-4 left-4 z-10 bg-white rounded-xl border border-[#e2e8f0] shadow-lg p-4 min-w-[220px]">
+          <div className="absolute bottom-4 left-4 z-10 bg-white rounded-xl border border-[#e2e8f0] shadow-lg p-4 min-w-[180px] sm:min-w-[220px]">
             <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#1d4ed8] mb-3">
               Horizon Nepal
             </p>

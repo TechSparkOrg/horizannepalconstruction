@@ -82,7 +82,7 @@ export function ConsultationForm({ initialCategories }: { initialCategories?: Ca
 
       {/* ── LEFT PANEL ── */}
       <div
-        className="relative lg:w-[55%] flex flex-col px-8 sm:px-12 lg:px-14 py-10 lg:py-14 overflow-hidden"
+        className="relative lg:w-[55%] flex flex-col px-4 sm:px-8 lg:px-14 py-10 lg:py-14 overflow-hidden"
         style={{
           background: "#07112b",
           backgroundImage: "repeating-linear-gradient(45deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 16px)",
@@ -119,7 +119,7 @@ export function ConsultationForm({ initialCategories }: { initialCategories?: Ca
             alt="Consultation illustration"
             width={200}
             height={120}
-            className="object-contain"
+            className="w-[140px] h-[84px] sm:w-[200px] sm:h-[120px] object-contain"
             unoptimized
           />
         </div>
@@ -147,14 +147,14 @@ export function ConsultationForm({ initialCategories }: { initialCategories?: Ca
           {trust.map((t) => (
             <div key={t.txt} className="flex-1 rounded-xl bg-white/6 border border-white/10 px-3 py-3 text-center">
               <p className="text-[#cd2028] font-black text-[22px] leading-none">{t.num}</p>
-              <p className="text-white/55 text-[10px] font-semibold mt-1 uppercase tracking-wide">{t.txt}</p>
+              <p className="text-white/55 text-[9px] sm:text-[10px] font-semibold mt-1 uppercase tracking-wide">{t.txt}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* ── RIGHT PANEL ── */}
-      <div className="lg:w-[45%] bg-[#f8fafc] flex flex-col px-8 sm:px-12 lg:px-14 py-10 lg:py-14">
+      <div className="lg:w-[45%] bg-[#f8fafc] flex flex-col px-4 sm:px-8 lg:px-14 py-10 lg:py-14">
 
         <h3 className="font-display text-[20px] sm:text-[24px] font-bold text-[#0f2557] mb-5">
           Send Us a Message

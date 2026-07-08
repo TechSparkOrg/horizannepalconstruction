@@ -12,8 +12,8 @@ const ServicesSection = dynamic(() => import("@/components/global_ui/ServicesSec
 const AboutGallery = dynamic(() => import("@/components/global_ui/image-grid").then((m) => ({ default: m.ImageGrid })), { ssr: false })
 const TeamSection = dynamic(() => import("@/components/global_ui/TeamSection").then((m) => ({ default: m.TeamSection })))
 const TestimonialsSection = dynamic(() => import("@/components/global_ui/TestimonialsSection").then((m) => ({ default: m.TestimonialsSection })))
-const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then((m) => ({ default: m.ConsultationForm })), { ssr: false })
-const LocationSection = dynamic(() => import("@/components/global_ui/LocationSection").then((m) => ({ default: m.LocationSection })), { ssr: false })
+const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then((m) => ({ default: m.ConsultationForm })))
+const LocationSection = dynamic(() => import("@/components/global_ui/LocationSection").then((m) => ({ default: m.LocationSection })))
 const ParsedContent = dynamic(() => import("@/lib/Parse-Content"), { ssr: false })
 
 export function AboutClient({ page, team, gallery }: { page: Page | null; team: TeamMember[]; gallery: MediaItem[] }) {
