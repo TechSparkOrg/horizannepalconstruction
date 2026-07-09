@@ -1,33 +1,46 @@
 import type { Metadata } from "next"
 import { getPageBySlug } from "@/api/services/page.service"
-import { pageMetadataBase } from "@/lib/seo-utils"
+import { getSiteUrl } from "@/lib/seo-utils"
 import EmiCalculatorClient from "./EmiCalculatorClient"
 
 const SLUG = "emi-calculator"
-const pagePromise = getPageBySlug(SLUG).catch(() => null)
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await pagePromise
-  const base = pageMetadataBase(page, SLUG)
+  const page = await getPageBySlug(SLUG).catch(() => null)
+  const siteUrl = getSiteUrl()
+  const url = `${siteUrl}/${SLUG}`
+  const title = page?.meta_title || "EMI Calculator | Horizan Nepal"
+  const description = page?.meta_description || "Plan your construction project financing with Horizan Nepal's EMI calculator. Estimate monthly payments and check loan eligibility instantly."
+  const ogImage = page?.banner_images?.[0]?.url || undefined
+
   return {
-    title: page?.meta_title || "EMI Calculator | Horizan Nepal",
-    description: page?.meta_description || "Plan your construction project financing with Horizan Nepal's EMI calculator. Estimate monthly payments and check loan eligibility instantly.",
+    title,
+    description,
+    alternates: { canonical: url },
+    ...(page?.meta_keywords ? { keywords: page.meta_keywords } : {}),
     openGraph: {
-      ...base.openGraph,
-      title: page?.meta_title || "EMI Calculator | Horizan Nepal",
-      description: page?.meta_description || "Estimate monthly payments and check loan eligibility for your construction project.",
+      title,
+      description,
       type: "website",
+      url,
+      ...(ogImage && { images: [{ url: ogImage }] }),
     },
-    alternates: base.alternates,
-    ...(base.keywords ? { keywords: base.keywords } : {}),
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      ...(ogImage && { images: [ogImage] }),
+    },
   }
 }
 
 export default async function EmiCalculatorPage() {
-  const page = await pagePromise
+  const page = await getPageBySlug(SLUG).catch(() => null)
 
-  return <>
-  <h1>{page?.title || "Emi - calacutor check load on construction"}</h1>
-  <EmiCalculatorClient pageData={page} />
-  </>
+  return (
+    <>
+      <h1 className="sr-only">{page?.title || "EMI Calculator — Horizan Nepal Construction"}</h1>
+      <EmiCalculatorClient pageData={page} />
+    </>
+  )
 }

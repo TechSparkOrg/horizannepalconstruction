@@ -95,7 +95,7 @@ export function ScrollAiBot() {
           alt=""
           width={90}
           height={90}
-          className="w-[70px] sm:w-[90px] h-auto select-none"
+          className="w-[70px] sm:w-[90px] h-auto select-none" style={{ height: "auto" }}
           priority
           unoptimized
         />

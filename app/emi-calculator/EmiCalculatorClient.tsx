@@ -43,9 +43,9 @@ function SectionCard({
   children: React.ReactNode
 }) {
   return (
-    <div className="rounded-lg border border-light-gray bg-white overflow-hidden">
-      <div className="flex items-center justify-between border-b border-light-gray px-5 py-3">
-        <p className="text-[11px] font-bold uppercase tracking-[.07em] text-brand-dark">{label}</p>
+    <div className="rounded-xl border border-[#e2e8f0] bg-white overflow-hidden">
+      <div className="flex items-center justify-between border-b border-[#e2e8f0] px-5 py-3">
+        <p className="text-[11px] font-bold uppercase tracking-[.07em] text-[#0f2557]">{label}</p>
         {right}
       </div>
       <div className="px-5 py-4">{children}</div>
@@ -55,16 +55,16 @@ function SectionCard({
 
 function Row({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-light-gray last:border-none">
-      <span className={cn('text-xs', bold ? 'font-bold text-brand-dark' : 'text-muted-foreground')}>{label}</span>
-      <span className={cn('text-xs tabular-nums', bold ? 'font-extrabold text-brand-red' : 'font-semibold text-brand-dark')}>
+    <div className="flex items-center justify-between py-2 border-b border-[#e2e8f0] last:border-none">
+      <span className={cn('text-xs', bold ? 'font-bold text-[#0f2557]' : 'text-[#64748b]')}>{label}</span>
+      <span className={cn('text-xs tabular-nums', bold ? 'font-extrabold text-[#cd2028]' : 'font-semibold text-[#0f2557]')}>
         {value}
       </span>
     </div>
   )
 }
 
-const ctaBaseCls = 'flex h-10 items-center justify-center gap-1.5 rounded-lg bg-brand-red text-xs font-bold text-white transition hover:bg-brand-red-hover disabled:opacity-40 disabled:cursor-not-allowed'
+const ctaBaseCls = 'flex h-10 items-center justify-center gap-1.5 rounded-lg bg-[#cd2028] text-xs font-bold text-white transition hover:bg-[#b91c1c] disabled:opacity-40 disabled:cursor-not-allowed'
 
 export default function EmiCalculatorClient({ pageData }: { pageData?: Page | null }) {
   const [tab, setTab] = useState<Tab>('emi')
@@ -136,12 +136,12 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
     return { rate, monthlyEmi, dti, maxAffordable, incomeOk, creditOk, dtiOk, eligible }
   }, [inc, eLoan, eligTenure, oblig, creditScore])
 
-  const fieldCls = 'h-10 w-full rounded-lg border border-light-gray bg-[#f8fafd] pl-9 pr-3 text-sm font-bold text-brand-dark placeholder:text-[#b0bdd0] hover:border-[#b0bdd0] focus:border-brand-dark focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red/20 focus:shadow-sm transition-all'
-  const selectCls = 'h-10 w-full appearance-none rounded-lg border border-light-gray bg-[#f8fafd] pl-3 pr-9 text-sm font-semibold text-brand-dark focus:border-brand-dark focus:outline-none transition cursor-pointer'
+  const fieldCls = 'h-10 w-full rounded-lg border border-[#e2e8f0] bg-[#f8fafc] pl-9 pr-3 text-sm font-bold text-[#0f2557] placeholder:text-[#b0bdd0] hover:border-[#b0bdd0] focus:border-[#0f2557] focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#cd2028]/20 focus:shadow-sm transition-all'
+  const selectCls = 'h-10 w-full appearance-none rounded-lg border border-[#e2e8f0] bg-[#f8fafc] pl-3 pr-9 text-sm font-semibold text-[#0f2557] focus:border-[#0f2557] focus:outline-none transition cursor-pointer'
   const selectWrap = (sel: React.ReactNode) => (
     <div className="relative">
       {sel}
-      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 size-3.5 text-[#64748b]" />
     </div>
   )
 
@@ -153,17 +153,47 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
   return (
     <div className="min-h-screen bg-[#f4f6fb] mb-4">
 
-      <div className="bg-brand-dark pt-25">
-        <div className="mx-auto max-w-6xl px-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[.14em] text-[#8fa8d8]">
-            Horizon Nepal · Finance
-          </p>
-          <h1 className="mt-1.5 text-2xl font-bold text-white leading-snug">
+      {/* ── Hero ── */}
+      <div className="relative bg-[#0f2557] overflow-hidden">
+
+        {/* builder-constucntion.svg — right column */}
+        <div className="absolute right-0 bottom-0 h-full w-full lg:w-[48%] pointer-events-none select-none">
+          <Image
+            src="/video-gif/builder-constucntion.svg"
+            alt=""
+            aria-hidden="true"
+            fill
+            className="object-contain object-bottom lg:object-right-bottom"
+            unoptimized
+            priority
+          />
+          <div className="absolute inset-0 bg-[#0f2557]/85 lg:hidden" aria-hidden="true" />
+          <div
+            className="absolute inset-y-0 left-0 w-48 hidden lg:block pointer-events-none"
+            style={{ background: 'linear-gradient(to right, #0f2557 20%, transparent)' }}
+          />
+        </div>
+
+        <div className="absolute top-0 inset-x-0 h-1 bg-[#cd2028] z-20" aria-hidden="true" />
+        <div
+          className="absolute inset-x-0 bottom-0 h-16 z-10 pointer-events-none"
+          style={{ background: 'linear-gradient(to top, #0f2557 10%, transparent)' }}
+        />
+
+        <div className="relative z-20 max-w-[1200px] mx-auto px-4 sm:px-8 pt-28 pb-0">
+          <div className="inline-flex items-center gap-2.5 mb-3">
+            <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+            <span className="text-[10px] font-bold tracking-[0.28em] uppercase text-white/60">Finance Tools</span>
+            <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+          </div>
+          <h2
+            className="font-display font-black text-white leading-tight tracking-[-0.02em]"
+            style={{ fontSize: 'clamp(1.8rem, 4vw, 3rem)' }}
+          >
             {pageData?.title || 'EMI Calculator & Eligibility'}
-          </h1>
-          <p className="mt-2 text-sm text-[#8fa8d8] max-w-lg leading-relaxed">
-            Plan your construction project financing. Estimate monthly
-            payments or check loan eligibility instantly.
+          </h2>
+          <p className="mt-3 text-white/65 text-[15px] max-w-[460px] leading-relaxed">
+            Plan your construction project financing. Estimate monthly payments or check loan eligibility instantly.
           </p>
 
           <div className="flex gap-1 mt-8 border-t border-white/10">
@@ -174,8 +204,8 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                 className={cn(
                   'px-5 py-3 text-xs font-semibold border-b-2 transition-colors',
                   tab === t.id
-                    ? 'text-white border-brand-red'
-                    : 'text-[#6e8ec4] border-transparent hover:text-[#a8c0e0]',
+                    ? 'text-white border-[#cd2028]'
+                    : 'text-white/40 border-transparent hover:text-white/70',
                 )}
               >
                 {t.label}
@@ -185,7 +215,8 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-6 py-6">
+      {/* ── Content ── */}
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-8 py-6">
 
         {tab === 'emi' && (
           <div className="grid gap-5 lg:grid-cols-2 items-start">
@@ -193,7 +224,7 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
 
               <SectionCard label="Loan Amount">
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground select-none">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#64748b] select-none">
                     Rs.
                   </span>
                   <input
@@ -210,12 +241,12 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
               <SectionCard
                 label="Interest Rate"
                 right={
-                  <span className="bg-brand-dark text-white text-xs font-bold px-2.5 py-1 rounded-md">
+                  <span className="bg-[#0f2557] text-white text-xs font-bold px-2.5 py-1 rounded-md">
                     {interestRate}%
                   </span>
                 }
               >
-                <div className="[&_[data-slot=slider-thumb]]:bg-brand-red [&_[data-slot=slider-thumb]]:border-brand-red [&_[data-slot=slider-range]]:bg-brand-red">
+                <div className="[&_[data-slot=slider-thumb]]:bg-[#cd2028] [&_[data-slot=slider-thumb]]:border-[#cd2028] [&_[data-slot=slider-range]]:bg-[#cd2028]">
                   <Slider
                     value={[interestRate]}
                     onValueChange={([v]) => setInterestRate(v)}
@@ -224,7 +255,7 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                     step={0.5}
                   />
                 </div>
-                <div className="mt-2 flex justify-between text-[10px] font-medium text-muted-foreground">
+                <div className="mt-2 flex justify-between text-[10px] font-medium text-[#64748b]">
                   <span>0%</span><span>12%</span><span>24%</span>
                 </div>
               </SectionCard>
@@ -233,11 +264,11 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                 {loading ? (
                   <div className="grid gap-2 sm:grid-cols-2">
                     {Array.from({ length: 4 }, (_, i) => (
-                      <div key={i} className="h-14 animate-pulse rounded-lg bg-[#f0f4fb]" />
+                      <div key={i} className="h-14 animate-pulse rounded-lg bg-[#f1f5f9]" />
                     ))}
                   </div>
                 ) : banks.length === 0 ? (
-                  <p className="py-6 text-center text-sm text-muted-foreground">No banks available</p>
+                  <p className="py-6 text-center text-sm text-[#64748b]">No banks available</p>
                 ) : (
                   <div className="grid gap-2 sm:grid-cols-2">
                     {banks.map((bank) => {
@@ -249,11 +280,11 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                           className={cn(
                             'flex items-center gap-3 rounded-lg border p-3 text-left transition',
                             active
-                              ? 'border-brand-dark bg-[#ebf0fb] ring-1 ring-brand-dark/20'
-                              : 'border-light-gray bg-[#f8fafd] hover:border-[#b0bdd0] hover:bg-white',
+                              ? 'border-[#0f2557] bg-[#ebf0fb] ring-1 ring-[#0f2557]/20'
+                              : 'border-[#e2e8f0] bg-[#f8fafc] hover:border-[#b0bdd0] hover:bg-white',
                           )}
                         >
-                          <div className="size-9 shrink-0 overflow-hidden rounded-lg border border-light-gray bg-white flex items-center justify-center">
+                          <div className="size-9 shrink-0 overflow-hidden rounded-lg border border-[#e2e8f0] bg-white flex items-center justify-center">
                             {bank.logo ? (
                               <Image
                                 src={bank.logo}
@@ -267,14 +298,14 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                             )}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className={cn('truncate text-xs font-semibold', active ? 'text-brand-dark' : 'text-[#3d526e]')}>
+                            <p className={cn('truncate text-xs font-semibold', active ? 'text-[#0f2557]' : 'text-[#3d526e]')}>
                               {bank.name}
                             </p>
-                            <p className="text-[10px] text-muted-foreground">
+                            <p className="text-[10px] text-[#64748b]">
                               {bank.tenure_options?.length ?? 0} plans
                             </p>
                           </div>
-                          {active && <Check className="size-3 shrink-0 text-brand-dark" />}
+                          {active && <Check className="size-3 shrink-0 text-[#0f2557]" />}
                         </button>
                       )
                     })}
@@ -286,12 +317,12 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                 label="Repayment Tenure"
                 right={
                   tenure
-                    ? <span className="bg-light-gray text-brand-dark text-xs font-bold px-2.5 py-1 rounded-md">{tenure}m</span>
+                    ? <span className="bg-[#e2e8f0] text-[#0f2557] text-xs font-bold px-2.5 py-1 rounded-md">{tenure}m</span>
                     : undefined
                 }
               >
                 {tenureOptions.length === 0 ? (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-[#64748b]">
                     {selectedBank ? 'No plans configured' : 'Select a bank to continue'}
                   </p>
                 ) : (
@@ -303,8 +334,8 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                         className={cn(
                           'h-8 rounded-lg border px-3 text-xs font-semibold transition',
                           tenure === m
-                            ? 'border-brand-dark bg-brand-dark text-white'
-                            : 'border-light-gray bg-white text-[#3d526e] hover:border-brand-dark/40 hover:text-brand-dark',
+                            ? 'border-[#0f2557] bg-[#0f2557] text-white'
+                            : 'border-[#e2e8f0] bg-white text-[#3d526e] hover:border-[#0f2557]/40 hover:text-[#0f2557]',
                         )}
                       >
                         {m}m
@@ -316,15 +347,15 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
             </div>
 
             <div className="space-y-3 lg:sticky lg:top-4">
-              <div className="rounded-lg border border-light-gray bg-white overflow-hidden">
-                <div className="bg-brand-dark px-5 py-5">
-                  <p className="text-[10px] font-bold uppercase tracking-[.12em] text-[#8fa8d8]">
+              <div className="rounded-xl border border-[#e2e8f0] bg-white overflow-hidden">
+                <div className="bg-[#0f2557] px-5 py-5">
+                  <p className="text-[10px] font-bold uppercase tracking-[.12em] text-white/50">
                     Monthly EMI
                   </p>
                   <p className="mt-1 text-3xl font-extrabold text-white tracking-tight">
                     {emiResult ? formatRs(emiResult.emi) : 'Rs. —'}
                   </p>
-                  <p className="mt-1.5 text-xs text-[#8fa8d8]">
+                  <p className="mt-1.5 text-xs text-white/60">
                     {tenure && selectedBank
                       ? `${tenure} months · ${selectedBank.name}`
                       : 'Select amount, bank and tenure'}
@@ -357,11 +388,11 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                       { color: RED, label: 'Interest', val: emiResult ? formatRs(emiResult.totalInterest) : 'Rs. 0' },
                     ].map(({ color, label, val }) => (
                       <div key={label} className="flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <div className="flex items-center gap-1.5 text-[#64748b]">
                           <span className="size-2 rounded-sm shrink-0" style={{ background: color }} />
                           {label}
                         </div>
-                        <span className="font-semibold text-brand-dark tabular-nums">{val}</span>
+                        <span className="font-semibold text-[#0f2557] tabular-nums">{val}</span>
                       </div>
                     ))}
                   </div>
@@ -379,16 +410,16 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                   />
                 </div>
 
-                <div className="mx-5 mb-3 flex items-start gap-2 rounded-lg border border-light-gray bg-[#f8fafd] px-3 py-2.5">
-                  <Info className="mt-0.5 size-3 shrink-0 text-muted-foreground" />
-                  <p className="text-[10px] text-muted-foreground leading-relaxed">
+                <div className="mx-5 mb-3 flex items-start gap-2 rounded-lg border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2.5">
+                  <Info className="mt-0.5 size-3 shrink-0 text-[#64748b]" />
+                  <p className="text-[10px] text-[#64748b] leading-relaxed">
                     {interestRate === 0
                       ? 'Final rates subject to bank terms. Estimate only.'
                       : `Calculated at ${interestRate}% annual interest rate.`}
                   </p>
                 </div>
 
-                <div className="flex gap-2 px-5 pb-4 border-t border-light-gray pt-3">
+                <div className="flex gap-2 px-5 pb-4 border-t border-[#e2e8f0] pt-3">
                   <button
                     disabled={!canApply}
                     className={cn(ctaBaseCls, 'flex-1')}
@@ -397,13 +428,12 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                   </button>
                   <button
                     onClick={resetCalc}
-                    className="flex size-10 items-center justify-center rounded-lg border border-light-gray bg-white text-muted-foreground transition hover:border-brand-dark hover:text-brand-dark"
+                    className="flex size-10 items-center justify-center rounded-lg border border-[#e2e8f0] bg-white text-[#64748b] transition hover:border-[#0f2557] hover:text-[#0f2557]"
                   >
                     <RefreshCcw className="size-3.5" />
                   </button>
                 </div>
               </div>
-
             </div>
           </div>
         )}
@@ -415,7 +445,7 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
               <SectionCard label="Employment">
                 <div className="space-y-3">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-brand-dark">Employment type</label>
+                    <label className="text-xs font-semibold text-[#0f2557]">Employment type</label>
                     {selectWrap(
                       <select className={selectCls} onChange={() => {}}>
                         <option>Salaried</option>
@@ -425,9 +455,9 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                     )}
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-brand-dark">Monthly income</label>
+                    <label className="text-xs font-semibold text-[#0f2557]">Monthly income</label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground select-none">Rs.</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#64748b] select-none">Rs.</span>
                       <input
                         type="number"
                         min={0}
@@ -443,9 +473,9 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
               <SectionCard label="Loan Details">
                 <div className="space-y-3">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-brand-dark">Requested amount</label>
+                    <label className="text-xs font-semibold text-[#0f2557]">Requested amount</label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground select-none">Rs.</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#64748b] select-none">Rs.</span>
                       <input
                         type="number"
                         min={0}
@@ -456,7 +486,7 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-brand-dark">Loan tenure</label>
+                    <label className="text-xs font-semibold text-[#0f2557]">Loan tenure</label>
                     {selectWrap(
                       <select className={selectCls} value={eligTenure} onChange={(e) => setEligTenure(Number(e.target.value))}>
                         {[6, 12, 18, 24, 36].map((m) => (
@@ -466,9 +496,9 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                     )}
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-brand-dark">Existing monthly obligations</label>
+                    <label className="text-xs font-semibold text-[#0f2557]">Existing monthly obligations</label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground select-none">Rs.</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#64748b] select-none">Rs.</span>
                       <input
                         type="number"
                         min={0}
@@ -483,7 +513,7 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
 
               <SectionCard label="Credit Profile">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-brand-dark">Approximate credit score</label>
+                  <label className="text-xs font-semibold text-[#0f2557]">Approximate credit score</label>
                   {selectWrap(
                     <select className={selectCls} value={creditScore} onChange={(e) => setCreditScore(e.target.value as CreditScore)}>
                       <option value="excellent">Excellent (750+)</option>
@@ -497,11 +527,11 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
             </div>
 
             <div className="space-y-3 lg:sticky lg:top-4">
-              <div className="rounded-lg border border-light-gray bg-white overflow-hidden">
+              <div className="rounded-xl border border-[#e2e8f0] bg-white overflow-hidden">
                 <div
                   className={cn(
                     'px-5 py-5',
-                    eligibility.eligible ? 'bg-[#0a5c2e]' : !eligibility.incomeOk || !eligibility.creditOk ? 'bg-[#8c1a1a]' : 'bg-brand-dark',
+                    eligibility.eligible ? 'bg-[#0a5c2e]' : !eligibility.incomeOk || !eligibility.creditOk ? 'bg-[#8c1a1a]' : 'bg-[#0f2557]',
                   )}
                 >
                   <p className="text-[10px] font-bold uppercase tracking-[.12em] text-white/60">
@@ -529,8 +559,8 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                   <Row label="Max eligible amount" value={formatRs(Math.min(eligibility.maxAffordable, eLoan * 2))} />
                   <Row label="Estimated EMI" value={formatRs(eligibility.monthlyEmi)} />
                   <Row label="Debt-to-income ratio" value={inc > 0 ? `${eligibility.dti.toFixed(1)}%` : '—'} />
-                  <div className="flex items-center justify-between py-2 border-b border-light-gray">
-                    <span className="text-xs text-muted-foreground">Income check</span>
+                  <div className="flex items-center justify-between py-2 border-b border-[#e2e8f0]">
+                    <span className="text-xs text-[#64748b]">Income check</span>
                     <span className={cn(
                       'text-[10px] font-bold px-2 py-0.5 rounded',
                       eligibility.incomeOk ? 'bg-[#d4f0e0] text-[#0a5c2e]' : 'bg-[#fde0e0] text-[#8c1a1a]',
@@ -539,7 +569,7 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                     </span>
                   </div>
                   <div className="flex items-center justify-between py-2">
-                    <span className="text-xs text-muted-foreground">Credit score</span>
+                    <span className="text-xs text-[#64748b]">Credit score</span>
                     <span className={cn(
                       'text-[10px] font-bold px-2 py-0.5 rounded',
                       creditScore === 'excellent' || creditScore === 'good'
@@ -553,7 +583,7 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                   </div>
                 </div>
 
-                <div className="px-5 pb-4 border-t border-light-gray pt-3">
+                <div className="px-5 pb-4 border-t border-[#e2e8f0] pt-3">
                   <button
                     disabled={!eligibility.eligible}
                     className={cn(ctaBaseCls, 'w-full')}
@@ -563,22 +593,22 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
                 </div>
               </div>
 
-              <div className="rounded-lg border border-light-gray bg-white overflow-hidden">
-                <div className="border-b border-light-gray px-5 py-3">
-                  <p className="text-[11px] font-bold uppercase tracking-[.07em] text-brand-dark">How eligibility works</p>
+              <div className="rounded-xl border border-[#e2e8f0] bg-white overflow-hidden">
+                <div className="border-b border-[#e2e8f0] px-5 py-3">
+                  <p className="text-[11px] font-bold uppercase tracking-[.07em] text-[#0f2557]">How eligibility works</p>
                 </div>
                 {[
                   ['Income and obligations', 'We assess disposable income after existing commitments.'],
                   ['Debt-to-income ratio', 'Total obligations should stay under 40% of monthly income.'],
                   ['Credit score', 'A good score (650+) significantly improves approval chances.'],
                 ].map(([title, desc], i) => (
-                  <div key={i} className="flex gap-3 px-5 py-3 border-b border-light-gray last:border-none">
-                    <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-light-gray text-[9px] font-extrabold text-brand-dark">
+                  <div key={i} className="flex gap-3 px-5 py-3 border-b border-[#e2e8f0] last:border-none">
+                    <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-[#e2e8f0] text-[9px] font-extrabold text-[#0f2557]">
                       {i + 1}
                     </span>
                     <div>
-                      <p className="text-xs font-semibold text-brand-dark">{title}</p>
-                      <p className="mt-0.5 text-[11px] text-muted-foreground">{desc}</p>
+                      <p className="text-xs font-semibold text-[#0f2557]">{title}</p>
+                      <p className="mt-0.5 text-[11px] text-[#64748b]">{desc}</p>
                     </div>
                   </div>
                 ))}
@@ -589,7 +619,7 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
 
         {pageData?.content && (
           <div className="mt-10">
-            <p className="text-[11px] font-bold uppercase tracking-[.07em] text-brand-dark mb-4">
+            <p className="text-[11px] font-bold uppercase tracking-[.07em] text-[#0f2557] mb-4">
               About EMI & Financing
             </p>
             <BlogContent content={pageData.content} />
@@ -597,7 +627,7 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
         )}
 
         {pageData?.banner_images && pageData.banner_images.length > 0 && (
-          <div className="mt-10 mb-6 relative h-[300px] sm:h-[400px] rounded-lg overflow-hidden">
+          <div className="mt-10 mb-6 relative h-[300px] sm:h-[400px] rounded-xl overflow-hidden">
             <BannerCarousel initialBanners={pageData.banner_images} className="inset-0" imgClassName="object-contain" />
           </div>
         )}

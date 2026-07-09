@@ -54,7 +54,7 @@ const UnitConverterGrid = () => {
             alt=""
             aria-hidden="true"
             width={90} height={110}
-            className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0"
+            className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0" style={{ height: "auto" }}
             unoptimized
           />
           <div className="text-center shrink-0">
@@ -75,7 +75,7 @@ const UnitConverterGrid = () => {
             alt=""
             aria-hidden="true"
             width={90} height={110}
-            className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0 scale-x-[-1]"
+            className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0 scale-x-[-1]" style={{ height: "auto" }}
             unoptimized
           />
         </div>

@@ -271,7 +271,7 @@ export function Header() {
             alt="Horizon Nepal Construction"
             width={30}
             height={30}
-            className="object-contain w-auto h-auto"
+            className="object-contain w-auto h-auto" style={{ height: "auto" }}
             priority
           />
           <div className="flex flex-col gap-[3px]">
