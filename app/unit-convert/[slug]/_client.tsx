@@ -2,10 +2,10 @@
 
 import dynamic from "next/dynamic"
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel"
+import UnitConverterWidget from "@/components/page_ui/UnitConverterWidget.client"
 import type { PublicUnitConversionDetail } from "@/api/types/unit-converter.types"
 import type { MediaItem } from "@/api/types/media.types"
 
-const UnitConverterWidget = dynamic(() => import("@/components/page_ui/UnitConverterWidget.client"))
 const BlogContent = dynamic(() => import("@/components/page_ui/BlogContent.client"))
 const VideoEmbed = dynamic(() => import("@/components/global_ui/VideoEmbed.client"))
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"))
@@ -80,13 +80,11 @@ export function UnitConvertDetailClient({
       {item.description && <BlogContent content={item.description} />}
       {item.video_url && <VideoEmbed url={item.video_url} title="Video Guide" />}
 
-      {item.faq_category && (
-        <FaqClient
-          categorySlug={item.faq_category.slug}
-          type={item.faq_group_slug || undefined}
-          title="Frequently Asked Questions"
-        />
-      )}
+      <FaqClient
+        categorySlug={item.faq_category?.slug ?? item.slug}
+        type={item.faq_group_slug || undefined}
+        title="Frequently Asked Questions"
+      />
     </>
   )
 }
