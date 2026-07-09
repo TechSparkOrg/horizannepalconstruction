@@ -1,30 +1,25 @@
-'use client'
+"use client";
 
-import Image from 'next/image'
-import type { VastuNavItem } from '@/api/types/vastu.types'
-import { VastuRoomAnalyzer } from './VastuRoomAnalyzer'
-import { VastuDirectionAnalyzer } from './VastuDirectionAnalyzer'
+import Image from "next/image";
+import type { VastuNavItem } from "@/api/types/vastu.types";
+import { VastuAnalyzer } from "@/components/page_ui/VastuAnalyzer";
 
 interface Props {
-  roomOptions: VastuNavItem[]
-  directionOptions: VastuNavItem[]
+  roomOptions: VastuNavItem[];
+  directionOptions: VastuNavItem[];
 }
 
 export function VastuQuickTools({ roomOptions, directionOptions }: Props) {
   return (
-    <div id="vastu-tools" className="mt-16 border-t border-[#e2e8f0] pt-12 pb-4">
-
-      {/* Heading — SVGs flank the text */}
+    <div id="vastu-tools">
       <div className="flex items-center justify-center gap-6 mb-10">
-
         <Image
           src="/video-gif/Lord-Ganesha.svg"
           alt="Lord Ganesha — divine protector and remover of obstacles"
           width={90} height={140}
           className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0"
-          unoptimized
+          sizes="(max-width: 1024px) 70px, 90px"
         />
-
         <div className="text-center shrink-0">
           <div className="inline-flex items-center gap-3 mb-2">
             <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
@@ -36,23 +31,19 @@ export function VastuQuickTools({ roomOptions, directionOptions }: Props) {
             Select a room or direction for personalized Vastu recommendations.
           </p>
         </div>
-
         <Image
           src="/video-gif/saftey-warning.svg"
           alt="Vastu safety — follow principles for balanced energy"
           width={80} height={120}
           className="hidden sm:block w-[60px] lg:w-[80px] h-auto object-contain shrink-0"
-          unoptimized
+          sizes="(max-width: 1024px) 60px, 80px"
         />
-
       </div>
 
-      {/* Tool cards */}
       <div className="grid md:grid-cols-2 gap-5">
-        <VastuRoomAnalyzer roomOptions={roomOptions} />
-        <VastuDirectionAnalyzer directionOptions={directionOptions} />
+        <VastuAnalyzer options={roomOptions} type="room" icon={<span className="text-xl">🏠</span>} title="Room Vastu" subtitle="Room-specific Vastu recommendations" selectLabel="Select Room" />
+        <VastuAnalyzer options={directionOptions} type="direction" icon={<span className="text-xl">🧭</span>} title="Direction Vastu" subtitle="Directional energy analysis" selectLabel="Select Direction" />
       </div>
-
     </div>
-  )
+  );
 }
