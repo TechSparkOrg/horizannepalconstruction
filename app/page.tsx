@@ -4,14 +4,14 @@ import dynamic from "next/dynamic";
 import { getSettings } from "@/api/services/settings.service";
 import { HeroSection } from "@/components/global_ui/HeroSection";
 import { QuoteBannerSecondary } from "@/components/page_ui/QuoteBannerSecondary";
-import { ViewportSection } from "./_components/ViewportSection";
+import { ViewportSection } from "@/components/viewport/ViewportSection";
 import {
   ServicesAsync,
   GalleryAsync,
   FeaturedAsync,
   BlogAsync,
   FAQAsync,
-} from "./_sections/homepage-sections";
+} from "@/components/sections/homepage-sections";
 
 const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
 

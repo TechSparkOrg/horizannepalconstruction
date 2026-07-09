@@ -10,8 +10,7 @@ export interface FaqGroupResponse {
   id: string;
   title: string;
   slug: string;
-  category_slug: string;
-  items: FaqItem[];
+  items?: FaqItem[];
   order: number;
   is_active: boolean;
 }

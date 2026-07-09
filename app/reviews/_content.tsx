@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import { ViewportSection } from "@/app/_components/ViewportSection";
-import { ReviewsAsync } from "@/app/_sections/reviews-sections";
+import { ViewportSection } from "@/components/viewport/ViewportSection";
+import { ReviewsAsync } from "@/components/sections/reviews-sections";
 import type { Page } from "@/api/types/page.types";
 
 const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));

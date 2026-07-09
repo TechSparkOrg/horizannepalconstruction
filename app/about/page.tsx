@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { AboutHero } from "@/components/page_ui/AboutHero";
-import { LazyPlane } from "@/app/_components/LazyPlane";
+import { LazyPlane } from "@/components/viewport/LazyPlane";
 import { getPageBySlug } from "@/api/services/page.service";
 import { AboutContent } from "./_content";
 

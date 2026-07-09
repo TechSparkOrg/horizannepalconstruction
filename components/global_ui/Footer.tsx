@@ -98,7 +98,7 @@ export function Footer() {
 
       {/* ── Pre-footer CTA ───────────────────────────────────── */}
       <div
-        className="relative overflow-hidden border-t border-white/5"
+        className="relative border-t border-white/5"
         style={{ background: "linear-gradient(135deg, #0c1d4f 0%, #0f2557 60%, #0a1430 100%)" }}
       >
         {/* subtle grid */}
@@ -110,6 +110,8 @@ export function Footer() {
             backgroundSize: "48px 48px",
           }}
         />
+
+  
 
         <div className="relative max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
@@ -160,6 +162,20 @@ export function Footer() {
             </div>
 
           </div>
+        </div>
+      </div>
+
+      {/* Cat junction — h-0 adds zero layout height; cat bottom = boundary line */}
+      <div className="relative h-0 overflow-visible pointer-events-none select-none" aria-hidden="true">
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
+          <Image
+            src="/video-gif/cat-up-down.svg"
+            alt=""
+            width={120}
+            height={213}
+            className="w-[90px] sm:w-[110px] lg:w-[120px] h-auto object-contain"
+            unoptimized
+          />
         </div>
       </div>
 

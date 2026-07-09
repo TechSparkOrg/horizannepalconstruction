@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import { ViewportSection } from "@/app/_components/ViewportSection";
+import { ViewportSection } from "@/components/viewport/ViewportSection";
 import type { Page } from "@/api/types/page.types";
 import type { MediaItem } from "@/api/types/media.types";
 import {
@@ -10,7 +10,7 @@ import {
   AboutConsultAsync,
   AboutFaqAsync,
   AboutTeamAsync,
-} from "@/app/_sections/about-sections";
+} from "@/components/sections/about-sections";
 
 const AboutTabs = dynamic(() => import("@/components/page_ui/AboutTabs").then((m) => ({ default: m.AboutTabs })));
 const AboutGallery = dynamic(() => import("@/components/global_ui/image-grid").then((m) => ({ default: m.ImageGrid })));
