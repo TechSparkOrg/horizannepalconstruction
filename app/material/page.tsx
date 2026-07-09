@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { getPageBySlug } from "@/api/services/page.service";
 import { pageMetadataBase } from "@/lib/seo-utils";
+import { LazyPlane } from "@/components/viewport/LazyPlane";
 import { MaterialClient } from "./_client";
 
 const SLUG = "material"
-const pagePromise = getPageBySlug(SLUG).catch(() => null)
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await pagePromise
+  const page = await getPageBySlug(SLUG).catch(() => null)
   const base = pageMetadataBase(page, SLUG)
   return {
     title: page?.meta_title || "Construction Materials | Horizan Nepal",
@@ -23,10 +23,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MaterialPage() {
-  const page = await pagePromise
+  const page = await getPageBySlug(SLUG).catch(() => null)
 
   return (
     <>
+      <LazyPlane />
       <h1 className="sr-only">{page?.title || "Construction Materials — Horizan Nepal"}</h1>
       <MaterialClient page={page} />
     </>

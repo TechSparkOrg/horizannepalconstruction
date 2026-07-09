@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { MaterialCard } from "@/components/global_ui/MaterialCard";
 import { getMaterials } from "@/api/services/material-public.service";
@@ -43,16 +44,35 @@ const MaterialGrid = () => {
   return (
     <section className="bg-white py-16 sm:py-24">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <span className="inline-block text-[11px] font-bold tracking-[0.18em] uppercase text-brand-primary border border-brand-primary/20 px-3 py-1 rounded mb-4">
-            Materials
-          </span>
-          <h2 className="text-[30px] sm:text-[34px] font-bold text-brand-dark tracking-tight leading-[1.1]">
-            Construction Materials
-          </h2>
-          <p className="mt-3 text-[14px] text-mid-gray max-w-xl mx-auto leading-relaxed">
-            Explore our comprehensive range of construction materials sourced from trusted partners.
-          </p>
+        <div className="flex items-center justify-center gap-6 mb-12">
+          <Image
+            src="/video-gif/school-book.svg"
+            alt="Construction materials catalogue"
+            width={90} height={120}
+            className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0"
+            unoptimized
+          />
+          <div className="text-center shrink-0">
+            <div className="inline-flex items-center gap-3 mb-2">
+              <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+              <p className="text-[10px] font-bold tracking-[0.26em] uppercase text-[#cd2028]">Materials</p>
+              <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+            </div>
+            <h2 className="font-display font-bold text-[#0f2557] text-2xl sm:text-3xl tracking-tight">
+              Construction Materials
+            </h2>
+            <p className="mt-2 text-[13.5px] text-[#64748b] max-w-[480px] leading-relaxed">
+              Explore our comprehensive range of construction materials sourced from trusted partners.
+            </p>
+          </div>
+          <Image
+            src="/video-gif/school-book.svg"
+            alt=""
+            width={90} height={120}
+            className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0 scale-x-[-1]"
+            unoptimized
+            aria-hidden="true"
+          />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[18px]">
@@ -67,7 +87,7 @@ const MaterialGrid = () => {
               type="button"
               onClick={handleLoadMore}
               disabled={loading}
-              className="inline-flex items-center gap-2 h-10 px-6 rounded-full border border-[#e8edf5] text-[13px] font-semibold text-brand-dark hover:border-brand-primary hover:text-brand-primary transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 h-10 px-6 rounded-full border border-[#e2e8f0] text-[13px] font-semibold text-[#0f2557] hover:border-[#cd2028] hover:text-[#cd2028] transition-colors disabled:opacity-50"
             >
               {loading ? "Loading..." : "Load More"}
             </button>
@@ -75,7 +95,7 @@ const MaterialGrid = () => {
         )}
 
         {items.length === 0 && (
-          <p className="text-center text-mid-gray py-20">No materials found.</p>
+          <p className="text-center text-[#64748b] py-20">No materials found.</p>
         )}
       </div>
     </section>

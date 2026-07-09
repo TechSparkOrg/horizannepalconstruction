@@ -59,7 +59,15 @@ export default function FaqClient({ categorySlug, type, title, subtitle, initial
     );
   }
 
-  if (faqs.length === 0) return null;
+  if (faqs.length === 0) {
+    return (
+      <section className="bg-white py-12 sm:py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-sm text-muted-foreground">No questions in this category yet.</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-white py-12 sm:py-16">
