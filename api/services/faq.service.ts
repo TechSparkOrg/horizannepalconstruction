@@ -1,7 +1,7 @@
 import { apiGet, type PaginatedResponse } from "@/api/ServiceHelper"
 import type { FaqItem, FaqGroupResponse } from "@/api/types/faq.types"
 
-export function getFaqs(params?: { page?: number; page_size?: number }): Promise<PaginatedResponse<FaqItem>> {
+export function getFaqs(params?: Record<string, string | number>): Promise<PaginatedResponse<FaqItem>> {
   const qs = params ? `?${new URLSearchParams(params as Record<string, string>).toString()}` : "";
   return apiGet<PaginatedResponse<FaqItem>>(`/faq/${qs}`);
 }

@@ -100,12 +100,12 @@ export function FAQTimeline({ initialGroups }: Props) {
                     className={`flex items-center gap-3 px-4 py-3.5 rounded-lg text-left transition-all shrink-0 lg:shrink lg:w-full border ${
                       isActive
                         ? "bg-[#0f2557] border-[#0f2557] text-white shadow-sm"
-                        : "bg-white border-[#e8edf5] text-[#3d526e] hover:border-[#0f2557]/30 hover:text-[#0f2557]"
+                        : "bg-white border-[#e2e8f0] text-[#3d526e] hover:border-[#0f2557]/30 hover:text-[#0f2557]"
                     }`}
                   >
                     <div
                       className={`size-8 rounded-md flex items-center justify-center shrink-0 transition-colors ${
-                        isActive ? "bg-white/15" : "bg-[#0f2557]/8"
+                        isActive ? "bg-white/15" : "bg-[#eff6ff]"
                       }`}
                     >
                       <Icon className={`size-4 ${isActive ? "text-white" : "text-[#0f2557]"}`} />
@@ -136,14 +136,14 @@ export function FAQTimeline({ initialGroups }: Props) {
           {/* Right — Accordion panel */}
           <div className="flex-1 min-w-0">
             {!activeGroup ? (
-              <div className="hidden lg:flex h-72 flex-col items-center justify-center rounded-xl border border-dashed border-[#e8edf5] text-center gap-3">
+              <div className="hidden lg:flex h-72 flex-col items-center justify-center rounded-xl border border-dashed border-[#e2e8f0] text-center gap-3">
                 <HelpCircle className="size-8 text-[#e8edf5]" />
                 <p className="text-sm text-[#5a6e8a]/60">Select a category to see questions</p>
               </div>
             ) : (
-              <div className="bg-white rounded-xl border border-[#e8edf5] overflow-hidden">
+              <div className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden">
                 {/* Panel header */}
-                <div className="flex items-center gap-3 px-6 py-4 border-b border-[#e8edf5]">
+                <div className="flex items-center gap-3 px-6 py-4 border-b border-[#e2e8f0]">
                   {(() => { const Icon = activeGroup.icon; return <Icon className="size-4 text-[#cd2028] shrink-0" />; })()}
                   <h3 className="font-display font-bold text-[#0f2557] text-base">{activeGroup.title}</h3>
                   <span className="ml-auto text-xs text-[#5a6e8a]/60 font-semibold">
@@ -203,8 +203,8 @@ export function FAQTimeline({ initialGroups }: Props) {
               {groups
                 .filter((g) => activeCategory === null || g.id === activeCategory)
                 .map((group) => (
-                  <div key={group.id} className="bg-white rounded-xl border border-[#e8edf5] overflow-hidden">
-                    <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[#e8edf5]">
+                  <div key={group.id} className="bg-white rounded-xl border border-[#e2e8f0] overflow-hidden">
+                    <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[#e2e8f0]">
                       {(() => { const Icon = group.icon; return <Icon className="size-4 text-[#cd2028]" />; })()}
                       <h3 className="font-display font-bold text-[#0f2557] text-sm">{group.title}</h3>
                     </div>

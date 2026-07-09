@@ -15,6 +15,7 @@ export interface Page {
   author_name?: string
   author_image?: string
   author_team_id?: string
+  faq_group_slug?: string
   created_at?: string
   updated_at?: string
 }

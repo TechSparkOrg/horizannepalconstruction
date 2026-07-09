@@ -14,13 +14,15 @@ interface Props {
   type?: string;
   title?: string;
   subtitle?: string;
+  initialFaqs?: FaqDisplay[];
 }
 
-export default function FaqClient({ categorySlug, type, title, subtitle }: Props) {
-  const [faqs, setFaqs] = useState<FaqDisplay[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function FaqClient({ categorySlug, type, title, subtitle, initialFaqs }: Props) {
+  const [faqs, setFaqs] = useState<FaqDisplay[]>(initialFaqs ?? []);
+  const [loading, setLoading] = useState(!initialFaqs);
 
   useEffect(() => {
+    if (initialFaqs) return;
     let cancelled = false;
     setLoading(true);
     getFaqsByCategory(categorySlug, type)
@@ -40,7 +42,7 @@ export default function FaqClient({ categorySlug, type, title, subtitle }: Props
         if (!cancelled) setLoading(false);
       });
     return () => { cancelled = true; };
-  }, [categorySlug, type]);
+  }, [categorySlug, type, initialFaqs]);
 
   if (loading) {
     return (
