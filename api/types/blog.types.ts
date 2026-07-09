@@ -20,6 +20,7 @@ export interface BlogProjectRef {
 export interface BlogPost {
   slug: string
   title: string
+  faq_group_slug?: string
   image?: string
   category: { id: string; slug: string; name: string } | null
   project: BlogProjectRef | null

@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cacheLife } from "next/cache";
@@ -9,6 +9,8 @@ import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import type { MediaItem } from "@/api/types/media.types";
 import type { PublicUnitConversionDetail } from "@/api/types/unit-converter.types";
 import { UnitConvertDetailContent } from "./_content";
+
+const getConversion = cache(async (slug: string) => getUnitConversionBySlug(slug).catch(() => null));
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -25,7 +27,7 @@ function getMeta(item: PublicUnitConversionDetail, slug: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const item = await getUnitConversionBySlug(slug).catch(() => null);
+  const item = await getConversion(slug);
   if (!item) return { title: "Not Found", robots: { index: false } };
 
   const { url, description, ogImage } = getMeta(item, slug);
@@ -55,7 +57,7 @@ export default async function UnitConvertDetailPage({ params }: Props) {
   cacheLife("hours");
 
   const { slug } = await params;
-  const item = await getUnitConversionBySlug(slug).catch(() => null);
+  const item = await getConversion(slug);
   if (!item) notFound();
 
   const { url } = getMeta(item, slug);

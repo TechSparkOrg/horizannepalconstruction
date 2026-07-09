@@ -1,66 +1,72 @@
+import { Suspense, cache } from "react";
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { cacheLife } from "next/cache";
-import dynamic from "next/dynamic";
 import { getBlogBySlug } from "@/api/services/blog.service";
-import { getFaqs } from "@/api/services/faq.service";
 import { stripHtml } from "@/lib/extractTocItems";
-import { BlogDetailClient } from "./_client";
+import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
+import type { MediaItem } from "@/api/types/media.types";
+import { BlogPostInner } from "./_content";
 
-const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
+const getPost = cache(async (slug: string) => getBlogBySlug(slug).catch(() => null));
 
 interface Props {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  try {
-    const post = await getBlogBySlug(slug);
-    if (!post) return { title: "Blog Not Found" };
-    const description = post.meta_description || stripHtml(post.content || "").slice(0, 160) || post.title;
-    return {
+  const post = await getPost(slug);
+  if (!post) return { title: "Blog Not Found" };
+  const description = post.meta_description || stripHtml(post.content || "").slice(0, 160) || post.title;
+  return {
+    title: post.meta_title || post.title,
+    description,
+    openGraph: {
       title: post.meta_title || post.title,
       description,
-      openGraph: {
-        title: post.meta_title || post.title,
-        description,
-        type: "article",
-        ...(post.image && { images: [{ url: post.image }] }),
-      },
-    };
-  } catch {
-    return { title: "Blog Not Found" };
-  }
+      type: "article",
+      ...(post.image && { images: [{ url: post.image }] }),
+    },
+  };
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const { slug } = await params;
+  "use cache";
+  cacheLife("hours");
 
-  const post = await getBlogBySlug(slug).catch(() => null);
+  const { slug } = await params;
+  const post = await getPost(slug);
   if (!post) notFound();
 
-  const faqSlug = post.category?.slug ?? slug;
+  const bannerImages: MediaItem[] = (post.banner_images ?? []).map((b) => ({
+    id: b.id, url: b.url, alt: post.title, title: b.name,
+  }));
 
   return (
     <>
       <h1 className="sr-only">{post.title}</h1>
-      <BlogDetailClient post={post} slug={slug} />
-      <Suspense fallback={<div className="py-12 bg-white" />}>
-        <BlogPostFaqInner faqSlug={faqSlug} />
+
+      <section className="relative min-h-[75svh] sm:min-h-[80svh] flex items-end bg-[#0f2557] overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-1 bg-[#cd2028] z-20" aria-hidden="true" />
+        <BannerCarousel initialBanners={bannerImages} slug={slug} imgClassName="object-cover"
+          carousel={bannerImages.length > 1} />
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(to top, #0a1a3d 0%, rgba(15,37,87,0.5) 45%, transparent 100%)" }} />
+        {post.category && (
+          <div className="absolute bottom-0 left-0 right-0 z-20 max-w-[780px] mx-auto px-4 sm:px-6 lg:px-8 pb-5">
+            <div className="inline-flex items-center gap-2">
+              <span className="block w-4 h-px bg-[#cd2028]" aria-hidden="true" />
+              <span className="text-[10px] font-bold tracking-[0.26em] uppercase text-[#cd2028]">{post.category.name}</span>
+              <span className="block w-4 h-px bg-[#cd2028]" aria-hidden="true" />
+            </div>
+          </div>
+        )}
+      </section>
+
+      <Suspense fallback={<div className="py-16 bg-white" style={{ minHeight: 800 }} />}>
+        <BlogPostInner post={post} slug={slug} />
       </Suspense>
     </>
   );
-}
-
-async function BlogPostFaqInner({ faqSlug }: { faqSlug: string }) {
-  "use cache";
-  cacheLife("default");
-  const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch(() => ({ results: [] }));
-  const faqs = (res.results ?? []).map((item) => ({
-    q: item.question?.en ?? "",
-    a: item.answer?.en ?? "",
-  }));
-  return <FaqClient categorySlug={faqSlug} initialFaqs={faqs} />;
 }

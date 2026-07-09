@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -11,6 +11,8 @@ import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import type { MediaItem } from "@/api/types/media.types";
 import type { PublicMaterialDetail } from "@/api/types/material.types";
 import { MaterialDetailContent } from "./_content";
+
+const getMaterial = cache(async (slug: string) => getMaterialBySlug(slug).catch(() => null));
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 
@@ -27,7 +29,7 @@ function getMeta(item: PublicMaterialDetail, slug: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const item = await getMaterialBySlug(slug).catch(() => null);
+  const item = await getMaterial(slug);
   if (!item) return { title: "Material Not Found" };
 
   const { url, description, ogImage } = getMeta(item, slug);
@@ -58,7 +60,7 @@ export default async function MaterialDetailPage({ params }: Props) {
   cacheLife("hours");
 
   const { slug } = await params;
-  const item = await getMaterialBySlug(slug).catch(() => null);
+  const item = await getMaterial(slug);
   if (!item) notFound();
 
   const { url, description, ogImage } = getMeta(item, slug);

@@ -1,13 +1,17 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import dynamic from "next/dynamic"
 import Image from "next/image"
+import { cacheLife } from "next/cache"
 import { getServiceCategoryDetail } from "@/api/services/category.service"
+import { getFaqs } from "@/api/services/faq.service"
 import { LdJson } from "@/components/global_ui/JsonLd"
 import { breadcrumbList } from "@/lib/seo-utils"
 import { stripHtml } from "@/lib/extractTocItems"
 
 const ParsedContent = dynamic(() => import("@/lib/Parse-Content"))
+const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"))
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -32,7 +36,9 @@ export default async function ServiceDetailPage({ params }: Props) {
     <>
       <LdJson data={breadcrumbList(detail.name, `services/${detail.slug}`)} />
 
-      <section className="relative min-h-[55vh] flex items-end overflow-hidden bg-[#0f2557]">
+      {/* ── Hero ── */}
+      <section className="relative min-h-[60vh] flex items-end overflow-hidden bg-[#0f2557]">
+        <div className="absolute top-0 inset-x-0 h-1 bg-[#cd2028] z-20" aria-hidden="true" />
         {detail.banner_images?.[0]?.url && (
           <Image
             src={detail.banner_images[0].url}
@@ -42,42 +48,63 @@ export default async function ServiceDetailPage({ params }: Props) {
             priority
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0f2557]/90 via-[#0f2557]/40 to-transparent" />
-        <div className="relative max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 w-full pb-16 pt-32">
-          <span className="inline-block text-[11px] font-bold tracking-[0.18em] uppercase text-white/70 border border-white/20 px-3 py-1 rounded mb-4">
-            Services
-          </span>
-          <h1 className="text-[clamp(2rem,4vw,3.5rem)] font-bold text-white leading-[1.05] max-w-3xl">
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a1a3d]/95 via-[#0f2557]/50 to-transparent" />
+        <div className="relative z-10 max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 w-full pb-14 sm:pb-18 pt-32">
+          <div className="inline-flex items-center gap-2.5 mb-4">
+            <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+            <span className="text-[10px] font-bold tracking-[0.28em] uppercase text-white/60">Services</span>
+            <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+          </div>
+          <h1
+            className="font-display font-black text-white leading-[1.05] tracking-[-0.02em] max-w-3xl"
+            style={{ fontSize: "clamp(2rem, 4vw, 3.4rem)" }}
+          >
             {detail.name}
           </h1>
         </div>
       </section>
 
+      {/* ── Description ── */}
       <section className="max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <ParsedContent description={detail.description} />
       </section>
 
-      {(detail.roles.length > 0 || detail.attributes.length > 0) && (
-        <section className="bg-off-white py-16">
-          <div className="max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-            {detail.roles.length > 0 && (
+      {/* ── Roles & Attributes ── */}
+      {((detail.roles?.length ?? 0) > 0 || (detail.attributes?.length ?? 0) > 0) && (
+        <section className="bg-[#f8fafc] py-16 sm:py-20">
+          <div className="max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+            {(detail.roles?.length ?? 0) > 0 && (
               <div>
-                <h2 className="text-sm font-bold text-brand-dark/60 uppercase tracking-widest mb-4">Roles</h2>
+                <div className="inline-flex items-center gap-3 mb-4">
+                  <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+                  <p className="text-[10px] font-bold tracking-[0.26em] uppercase text-[#cd2028]">Roles</p>
+                  <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+                </div>
                 <div className="flex flex-wrap gap-2">
-                  {detail.roles.map((r) => (
-                    <span key={r.id} className="px-3 py-1.5 rounded-lg bg-white border border-light-gray text-sm text-mid-gray">
+                  {detail.roles!.map((r) => (
+                    <span
+                      key={r.id}
+                      className="px-3 py-1.5 rounded-full bg-white border border-[#e2e8f0] text-[13px] font-medium text-[#0f2557]"
+                    >
                       {r.name}
                     </span>
                   ))}
                 </div>
               </div>
             )}
-            {detail.attributes.length > 0 && (
+            {(detail.attributes?.length ?? 0) > 0 && (
               <div>
-                <h2 className="text-sm font-bold text-brand-dark/60 uppercase tracking-widest mb-4">Attributes</h2>
+                <div className="inline-flex items-center gap-3 mb-4">
+                  <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+                  <p className="text-[10px] font-bold tracking-[0.26em] uppercase text-[#cd2028]">Attributes</p>
+                  <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+                </div>
                 <div className="flex flex-wrap gap-2">
-                  {detail.attributes.map((a) => (
-                    <span key={a.id} className="px-3 py-1.5 rounded-lg bg-white border border-light-gray text-sm text-mid-gray">
+                  {detail.attributes!.map((a) => (
+                    <span
+                      key={a.id}
+                      className="px-3 py-1.5 rounded-full bg-white border border-[#e2e8f0] text-[13px] font-medium text-[#64748b]"
+                    >
                       {a.name}
                     </span>
                   ))}
@@ -87,6 +114,22 @@ export default async function ServiceDetailPage({ params }: Props) {
           </div>
         </section>
       )}
+
+      {/* ── FAQ ── */}
+      <Suspense fallback={<div className="py-12 bg-white" />}>
+        <ServiceFaqInner faqSlug={detail.faq_group_slug ?? detail.slug} />
+      </Suspense>
     </>
   )
+}
+
+async function ServiceFaqInner({ faqSlug }: { faqSlug: string }) {
+  "use cache"
+  cacheLife("default")
+  const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch(() => ({ results: [] }))
+  const faqs = (res.results ?? []).map((item) => ({
+    q: item.question?.en ?? "",
+    a: item.answer?.en ?? "",
+  }))
+  return <FaqClient categorySlug={faqSlug} initialFaqs={faqs} />
 }

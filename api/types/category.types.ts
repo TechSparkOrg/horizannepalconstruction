@@ -24,8 +24,9 @@ export interface ServiceCategoryDetail extends ServiceCategory {
   meta_keywords: string
   banner_images: BannerImage[]
   parent_id: string | null
-  roles: Array<{ id: string; name: string }>
-  attributes: Array<{ id: string; name: string }>
+  faq_group_slug?: string
+  roles?: Array<{ id: string; name: string }>
+  attributes?: Array<{ id: string; name: string }>
   created_at: string
   updated_at: string
 }
