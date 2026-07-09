@@ -9,4 +9,8 @@ export function getProjectBySlug(slug: string): Promise<Project> {
   return apiGet<Project>(`/projects/${slug}/`)
 }
 
+export function getProjectsByCategory(categorySlug: string): Promise<PaginatedResponse<Project>> {
+  return apiGet<PaginatedResponse<Project>>(`/projects/?category=${categorySlug}`)
+}
+
 export const ProjectPublic = { list: getProjects }

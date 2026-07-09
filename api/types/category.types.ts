@@ -27,6 +27,8 @@ export interface ServiceCategoryDetail extends ServiceCategory {
   faq_group_slug?: string
   roles?: Array<{ id: string; name: string }>
   attributes?: Array<{ id: string; name: string }>
+  blog_categories?: { name: string; slug: string }[]
+  project_categories?: { name: string; slug: string }[]
   created_at: string
   updated_at: string
 }
