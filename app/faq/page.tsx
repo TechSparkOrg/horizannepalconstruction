@@ -5,11 +5,13 @@ import { ArrowRight } from "lucide-react";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { FAQTimeline } from "@/components/page_ui/FAQTimeline";
 import { ConsultationForm } from "@/components/global_ui/ConsultationForm";
+import { QuestionForm } from "@/components/page_ui/QuestionForm";
 import { getFaqGroups } from "@/api/services/faq.service";
 import { getPageBySlug } from "@/api/services/page.service";
 import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
+import { LazyFeather } from "@/app/_components/LazyFeather";
 
-const BlogContent = dynamic(() => import("@/components/page_ui/BlogContent.client"))
+const ParsedContent = dynamic(() => import("@/lib/Parse-Content"))
 
 const SLUG = "faq"
 
@@ -42,6 +44,7 @@ export default async function FAQPage() {
   return (
     <>
       <LdJson data={breadcrumbList("FAQ", "faq")} />
+      <LazyFeather />
 
       {/* ── Hero ── */}
       <section className="relative w-full bg-[#0f2557] overflow-hidden min-h-[62svh] sm:min-h-[68svh]">
@@ -126,11 +129,51 @@ export default async function FAQPage() {
 
       <ConsultationForm />
 
+      {/* ── Question Me — feather lands here ── */}
+      <section id="question-me" className="relative bg-[#0f2557] py-16 sm:py-20 overflow-hidden">
+        <div className="max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+
+            {/* Left: text + form */}
+            <div className="flex-1 min-w-0">
+              <div className="inline-flex items-center gap-2.5 mb-4">
+                <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+                <span className="text-[10px] font-bold tracking-[0.28em] uppercase text-white/60">
+                  Still curious?
+                </span>
+                <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+              </div>
+              <h2 className="font-display font-bold text-white text-3xl sm:text-4xl leading-tight">
+                Ask Us <span className="text-[#93c5fd]">Anything</span>
+              </h2>
+              <p className="mt-3 text-white/60 text-sm sm:text-base max-w-[460px] leading-relaxed">
+                Didn&apos;t find your answer? Type your question below and our team will respond within 24 hours.
+              </p>
+              <QuestionForm />
+            </div>
+
+            {/* Right: Poetry.svg */}
+            <div className="shrink-0 flex items-center justify-center">
+              <Image
+                src="/video-gif/business-questions.svg"
+                alt="Ask us anything illustration"
+                width={320}
+                height={320}
+                className="w-[200px] sm:w-[280px] lg:w-[320px] h-auto object-contain"
+                unoptimized
+              />
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       {page?.content && (
         <div className="max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-          <BlogContent content={page.content} />
+          <ParsedContent description={page.content} />
         </div>
       )}
+
     </>
   );
 }

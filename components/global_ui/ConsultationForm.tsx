@@ -40,6 +40,7 @@ export function ConsultationForm({ initialCategories }: { initialCategories?: Ca
   }, [initialCategories]);
 
   const [submitted, setSubmitting2] = useState(false);
+  const [submitCount, setSubmitCount] = useState(0);
   const [name, setName]             = useState("");
   const [email, setEmail]           = useState("");
   const [phone, setPhone]           = useState("");
@@ -72,6 +73,7 @@ export function ConsultationForm({ initialCategories }: { initialCategories?: Ca
         sitePhotos.length > 0 ? sitePhotos : undefined,
       );
       setSubmitting2(true);
+      setSubmitCount((c) => c + 1);
     } finally {
       setSubmitting(false);
     }
@@ -162,9 +164,13 @@ export function ConsultationForm({ initialCategories }: { initialCategories?: Ca
 
         {submitted ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center py-16">
-            <div className="size-16 rounded-full bg-[#eff6ff] flex items-center justify-center mb-4">
-              <Check className="size-8 text-[#1d4ed8]" />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              key={submitCount}
+              src="/video-gif/email.svg"
+              alt="Message sent"
+              className="w-[110px] h-[110px] object-contain mb-4"
+            />
             <h4 className="font-display font-bold text-[22px] text-[#0f2557]">Thank You!</h4>
             <p className="mt-2 text-[#475569] text-[14px]">
               We&apos;ve received your message and will get back to you shortly.
