@@ -8,14 +8,15 @@ import type { PublicMaterialItem } from "@/api/types/material.types";
 
 const ITEMS_PER_PAGE = 9;
 
-const MaterialGrid = () => {
-  const [items, setItems] = useState<PublicMaterialItem[]>([]);
+const MaterialGrid = ({ initialItems, initialTotal }: { initialItems?: PublicMaterialItem[]; initialTotal?: number }) => {
+  const [items, setItems] = useState<PublicMaterialItem[]>(initialItems ?? []);
   const [page, setPage] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(initialTotal ?? 0);
   const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(!initialItems);
 
   useEffect(() => {
+    if (initialItems) return;
     getMaterials({ page: 1, page_size: ITEMS_PER_PAGE })
       .then((res) => {
         setItems(res.results ?? []);
@@ -23,7 +24,7 @@ const MaterialGrid = () => {
       })
       .catch(() => {})
       .finally(() => setInitialLoading(false));
-  }, []);
+  }, [initialItems]);
 
   const handleLoadMore = async () => {
     if (loading) return;
@@ -47,14 +48,10 @@ const MaterialGrid = () => {
     <section className="bg-white py-16 sm:py-24">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-center gap-6 mb-12">
-          <Image
-            src="/video-gif/school-book.svg"
-            alt=""
-            aria-hidden="true"
+          <Image src="/video-gif/school-book.svg" alt="" aria-hidden
             width={90} height={120}
             className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0"
-            unoptimized
-          />
+            sizes="(max-width: 1024px) 70px, 90px" />
           <div className="text-center shrink-0">
             <div className="inline-flex items-center gap-3 mb-2">
               <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
@@ -68,14 +65,10 @@ const MaterialGrid = () => {
               Explore our comprehensive range of construction materials sourced from trusted partners.
             </p>
           </div>
-          <Image
-            src="/video-gif/constuction-worker-building.svg"
-            alt=""
+          <Image src="/video-gif/constuction-worker-building.svg" alt="" aria-hidden
             width={90} height={120}
             className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0 scale-x-[-1]"
-            unoptimized
-            aria-hidden="true"
-          />
+            sizes="(max-width: 1024px) 70px, 90px" />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[18px]">
@@ -86,12 +79,8 @@ const MaterialGrid = () => {
 
         {hasMore && (
           <div className="mt-10 text-center">
-            <button
-              type="button"
-              onClick={handleLoadMore}
-              disabled={loading}
-              className="inline-flex items-center gap-2 h-10 px-6 rounded-full border border-[#e2e8f0] text-[13px] font-semibold text-[#0f2557] hover:border-[#cd2028] hover:text-[#cd2028] transition-colors disabled:opacity-50"
-            >
+            <button type="button" onClick={handleLoadMore} disabled={loading}
+              className="inline-flex items-center gap-2 h-10 px-6 rounded-full border border-[#e2e8f0] text-[13px] font-semibold text-[#0f2557] hover:border-[#cd2028] hover:text-[#cd2028] transition-colors disabled:opacity-50">
               {loading ? "Loading..." : "Load More"}
             </button>
           </div>

@@ -1,26 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { VendorCard } from "@/components/global_ui/VendorCard";
 import { getVendors } from "@/api/services/vendor-public.service";
 import type { PublicVendor } from "@/api/types/material.types";
 
-const VendorsSection = () => {
-  const [vendors, setVendors] = useState<PublicVendor[]>([]);
+const VendorsSection = ({ initialVendors }: { initialVendors?: PublicVendor[] }) => {
+  const [vendors, setVendors] = useState<PublicVendor[]>(initialVendors ?? []);
 
   useEffect(() => {
+    if (initialVendors) return;
     getVendors()
       .then((res) => setVendors(res.results ?? []))
       .catch(() => {});
-  }, []);
+  }, [initialVendors]);
 
   return (
     <section className="relative overflow-hidden bg-[#f8fafc] py-16 sm:py-24 min-h-[420px] sm:min-h-[520px]">
-      {/* truck-loading.svg — always visible, independent of vendor data */}
-      <img
+      <Image
         src="/video-gif/truck-loading.svg"
-        alt=""
-        aria-hidden="true"
+        alt="" aria-hidden fill
+        sizes="100vw"
         className="absolute inset-0 w-full h-full object-contain object-center pointer-events-none select-none"
         style={{ opacity: 0.2 }}
       />
