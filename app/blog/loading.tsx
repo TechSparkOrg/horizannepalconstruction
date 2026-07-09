@@ -3,7 +3,7 @@ import { HeroSkeleton, SectionSkeleton, CardSkeleton } from "@/components/global
 export default function BlogLoading() {
   return (
     <div className="bg-off-white">
-      <section className="relative min-h-[55vh] flex items-center bg-brand-dark px-4 sm:px-6 lg:px-8">
+      <section className="relative min-h-[80vh] flex items-center bg-brand-dark px-4 sm:px-6 lg:px-8">
         <div className="max-w-[800px] mx-auto w-full pt-32 pb-20 text-center space-y-4">
           <div className="mx-auto h-4 w-32 rounded-full bg-white/10 animate-pulse" />
           <div className="mx-auto h-12 w-[500px] max-w-full rounded-lg bg-white/10 animate-pulse" />

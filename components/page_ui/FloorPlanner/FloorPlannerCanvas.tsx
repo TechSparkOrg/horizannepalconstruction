@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import type { ElementType, ReactElement } from "react";
 import { Stage, Layer, Rect, Line, Text, Group, Transformer } from "react-konva";
 import type Konva from "konva";
@@ -130,11 +131,13 @@ export default function FloorPlannerCanvas() {
   const [zoom,          setZoom]          = useState(1);
   const [size,          setSize]          = useState({ w: 800, h: 600 });
   const [showFurniture, setShowFurniture] = useState(false);
+  const [furniturePos,  setFurniturePos]  = useState<{ top: number; left: number } | null>(null);
 
-  const stageRef    = useRef<Konva.Stage>(null);
-  const trRef       = useRef<Konva.Transformer>(null);
-  const containerRef= useRef<HTMLDivElement>(null);
-  const pendingSel  = useRef<string | null>(null);
+  const stageRef       = useRef<Konva.Stage>(null);
+  const trRef          = useRef<Konva.Transformer>(null);
+  const containerRef   = useRef<HTMLDivElement>(null);
+  const pendingSel     = useRef<string | null>(null);
+  const furnitureBtnRef= useRef<HTMLButtonElement>(null);
 
   // Canvas resize
   useEffect(() => {
@@ -164,6 +167,28 @@ export default function FloorPlannerCanvas() {
     return () => clearTimeout(t);
   }, [elements.length]);
 
+  // Clear transformer when switching away from select tool
+  useEffect(() => {
+    if (activeTool !== "select") {
+      trRef.current?.nodes([]);
+      trRef.current?.getLayer()?.batchDraw();
+    }
+  }, [activeTool]);
+
+  // Close furniture popup on outside click
+  useEffect(() => {
+    if (!showFurniture) return;
+    const handler = (e: MouseEvent) => {
+      const popup = document.getElementById("furniture-popup");
+      if (popup && !popup.contains(e.target as Node)) {
+        setShowFurniture(false);
+        setFurniturePos(null);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showFurniture]);
+
   const sel = elements.find((e) => e.id === selectedId);
 
   const patch = useCallback((id: string, p: Partial<FloorElement>) => {
@@ -184,8 +209,9 @@ export default function FloorPlannerCanvas() {
 
       const pos = e.target.getStage()?.getPointerPosition();
       if (!pos) return;
-      const px = showGrid ? snap(pos.x) : pos.x;
-      const py = showGrid ? snap(pos.y) : pos.y;
+      const scale = stageRef.current?.scaleX() ?? 1;
+      const px = showGrid ? snap(pos.x / scale) : pos.x / scale;
+      const py = showGrid ? snap(pos.y / scale) : pos.y / scale;
 
       if (activeTool === "room" || activeTool === "wall") {
         setDrawing(true);
@@ -228,8 +254,9 @@ export default function FloorPlannerCanvas() {
       if (!drawing || !drawStart) return;
       const pos = e.target.getStage()?.getPointerPosition();
       if (!pos) return;
-      const ex = showGrid ? snap(pos.x) : pos.x;
-      const ey = showGrid ? snap(pos.y) : pos.y;
+      const scale = stageRef.current?.scaleX() ?? 1;
+      const ex = showGrid ? snap(pos.x / scale) : pos.x / scale;
+      const ey = showGrid ? snap(pos.y / scale) : pos.y / scale;
       setPreview({
         x: Math.min(drawStart.x, ex),
         y: Math.min(drawStart.y, ey),
@@ -313,7 +340,7 @@ export default function FloorPlannerCanvas() {
   const clearAll = useCallback(() => {
     setElements([]); setSelectedId(null);
     setDrawing(false); setDrawStart(null); setPreview(null);
-    setShowFurniture(false);
+    setShowFurniture(false); setFurniturePos(null);
     pendingSel.current = null;
     trRef.current?.nodes([]);
     trRef.current?.getLayer()?.batchDraw();
@@ -322,7 +349,12 @@ export default function FloorPlannerCanvas() {
   const exportPng = useCallback(() => {
     const stage = stageRef.current;
     if (!stage) return;
+    const prevScale = stage.scaleX();
+    stage.scale({ x: 1, y: 1 });
+    stage.batchDraw();
     const uri = stage.toDataURL({ pixelRatio: 2, mimeType: "image/png" });
+    stage.scale({ x: prevScale, y: prevScale });
+    stage.batchDraw();
     const a = Object.assign(document.createElement("a"), { download: "floor-plan.png", href: uri });
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
   }, []);
@@ -516,43 +548,28 @@ export default function FloorPlannerCanvas() {
           <div className="w-5 h-px bg-slate-200 lg:w-px lg:h-5 my-0.5 lg:mx-auto" />
 
           {/* Furniture toggle */}
-          <div className="relative">
-            <button
-              onClick={() => setShowFurniture(!showFurniture)}
-              title="Furniture"
-              aria-label="Furniture"
-              className={`size-9 flex items-center justify-center rounded-lg transition-all ${
-                showFurniture || FURNITURE.some((f) => f.tool === activeTool)
-                  ? "bg-[#e8edf7] text-[#0f2557] ring-1 ring-[#0f2557]/20"
-                  : "text-slate-400 hover:bg-white hover:text-slate-700"
-              }`}
-            >
-              <Sofa size={16} strokeWidth={2} />
-            </button>
-
-            {showFurniture && (
-              <div className="absolute left-0 top-11 lg:left-12 lg:top-0 z-30 w-44 bg-white border border-slate-200 rounded-xl shadow-lg p-2">
-                <p className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest mb-1.5 px-1">Furniture</p>
-                <div className="grid grid-cols-3 gap-1">
-                  {FURNITURE.map((f) => (
-                    <button
-                      key={f.tool}
-                      onClick={() => { setActiveTool(f.tool); setShowFurniture(false); }}
-                      title={f.label}
-                      className={`flex flex-col items-center gap-1 py-2 px-1 rounded-lg text-slate-600 transition-all ${
-                        activeTool === f.tool
-                          ? "bg-[#e8edf7] text-[#0f2557] ring-1 ring-[#0f2557]/20"
-                          : "hover:bg-slate-50"
-                      }`}
-                    >
-                      <f.Icon size={15} strokeWidth={2} />
-                      <span className="text-[9px] font-medium leading-none">{f.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          <button
+            ref={furnitureBtnRef}
+            onClick={() => {
+              if (showFurniture) {
+                setShowFurniture(false);
+                setFurniturePos(null);
+              } else {
+                const r = furnitureBtnRef.current?.getBoundingClientRect();
+                if (r) setFurniturePos({ top: r.top, left: r.right + 4 });
+                setShowFurniture(true);
+              }
+            }}
+            title="Furniture"
+            aria-label="Furniture"
+            className={`size-9 flex items-center justify-center rounded-lg transition-all ${
+              showFurniture || FURNITURE.some((f) => f.tool === activeTool)
+                ? "bg-[#e8edf7] text-[#0f2557] ring-1 ring-[#0f2557]/20"
+                : "text-slate-400 hover:bg-white hover:text-slate-700"
+            }`}
+          >
+            <Sofa size={16} strokeWidth={2} />
+          </button>
         </div>
 
         {/* Canvas */}
@@ -693,6 +710,34 @@ export default function FloorPlannerCanvas() {
           )}
         </div>
       </div>
+
+      {/* Furniture popup — portaled to escape overflow:hidden on outer wrapper */}
+      {showFurniture && furniturePos && createPortal(
+        <div
+          id="furniture-popup"
+          style={{ position: "fixed", top: furniturePos.top, left: furniturePos.left, zIndex: 9999 }}
+          className="bg-white border border-slate-200 rounded-xl shadow-lg p-1.5"
+        >
+          <div className="grid grid-cols-3 gap-0.5">
+            {FURNITURE.map((f) => (
+              <button
+                key={f.tool}
+                onClick={() => { setActiveTool(f.tool); setShowFurniture(false); setFurniturePos(null); }}
+                title={f.label}
+                aria-label={f.label}
+                className={`size-9 flex items-center justify-center rounded-lg text-slate-600 transition-all ${
+                  activeTool === f.tool
+                    ? "bg-[#e8edf7] text-[#0f2557] ring-1 ring-[#0f2557]/20"
+                    : "hover:bg-slate-50"
+                }`}
+              >
+                <f.Icon size={17} strokeWidth={2} />
+              </button>
+            ))}
+          </div>
+        </div>,
+        document.body
+      )}
 
       {/* Bottom bar */}
       <div className="flex items-center justify-between gap-3 px-4 py-2 bg-white border-t border-slate-100 text-xs text-slate-400">

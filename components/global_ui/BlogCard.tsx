@@ -5,68 +5,84 @@ import { CategoryBadge } from "@/components/global_ui/CategoryBadge";
 import { stripHtml } from "@/lib/extractTocItems";
 import type { BlogPost } from "@/api/types/blog.types";
 
-type BlogCardPost = Pick<BlogPost,"slug" | "title" | "image" | "category" | "date" | "content">;
+type BlogCardPost = Pick<BlogPost, "slug" | "title" | "image" | "category" | "date" | "content">;
 
 interface BlogCardProps {
   post: BlogCardPost;
   variant?: "default" | "featured" | "compact";
 }
 
-function DateRow({ date, size = "sm" }: { date: string; size?: "sm" | "xs" }) {
+function DateLine({ date }: { date: string }) {
   return (
-    <div
-      className={`flex items-center gap-1.5 text-[#5a6e8a] leading-none ${
-        size === "xs" ? "text-[11px] mb-1.5" : "text-[11.5px] mb-2"
-      }`}
-    >
-      <Calendar className={size === "xs" ? "size-3 shrink-0" : "size-3.5 shrink-0"} />
+    <div className="flex items-center gap-1.5 text-white/55 text-[10.5px] leading-none mb-2">
+      <Calendar className="size-3 shrink-0" strokeWidth={1.8} />
       {date}
     </div>
   );
 }
 
-export function BlogCard({
-  post,
-  variant = "default",
-}: BlogCardProps) {
-  const category = post?.category ?? null;
-  const description = post?.content ? stripHtml(post.content).slice(0, 200) : null;
+function NoImage() {
+  return <div className="absolute inset-0 bg-gradient-to-br from-[#0f2557] to-[#1a3a7a]" />;
+}
 
+export function BlogCard({ post, variant = "default" }: BlogCardProps) {
+  const category = post?.category ?? null;
+  const description = post?.content ? stripHtml(post.content).slice(0, 180) : null;
+
+  // ── Featured ─────────────────────────────────────────────────────────────────
   if (variant === "featured") {
     return (
-      <Link prefetch={false}
+      <Link
+        prefetch={false}
         href={`/blog/${post?.slug}`}
-        className="group col-span-2 flex flex-col sm:flex-row bg-white rounded-lg border border-[#e8edf5] overflow-hidden hover:border-[#cd2028] transition-colors duration-200"
+        className="group relative block w-full overflow-hidden rounded-2xl"
+        style={{ aspectRatio: "21/8" }}
       >
-        <div className="relative w-full sm:w-1/2 aspect-[16/10] sm:aspect-auto shrink-0 overflow-hidden bg-[#e8edf5]">
-          {post?.image ? (
-            <Image
-              src={post.image}
-              alt={post?.title ?? ""}
-              fill
-              sizes="(max-width: 640px) 100vw, 50vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            />
-          ) : (
-            <div className="h-full w-full bg-[#e8edf5]" />
-          )}
-          {category && <CategoryBadge name={category.name ?? ""} slug={category.slug ?? undefined} />}
-        </div>
+        {/* Image */}
+        {post?.image ? (
+          <Image
+            src={post.image}
+            alt={post?.title ?? ""}
+            fill
+            sizes="100vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+            priority
+          />
+        ) : (
+          <NoImage />
+        )}
 
-        <div className="flex flex-col justify-center flex-1 p-6 sm:p-8">
-          {post?.date && <DateRow date={post.date} />}
+        {/* Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 pointer-events-none" />
 
-          <h3 className="text-xl sm:text-2xl font-bold text-[#0f2557] leading-snug group-hover:text-[#cd2028] transition-colors duration-150">
+        {/* Category badge — top left */}
+        {category && (
+          <div className="absolute top-4 left-4">
+            <CategoryBadge name={category.name ?? ""} slug={category.slug ?? undefined} />
+          </div>
+        )}
+
+        {/* Content — bottom */}
+        <div className="absolute inset-x-0 bottom-0 px-7 pb-8 sm:px-10 sm:pb-10 max-w-3xl">
+          <div className="inline-flex items-center gap-2 mb-3">
+            <span className="block w-4 h-px bg-[#cd2028]" aria-hidden="true" />
+            <span className="text-[10px] font-bold tracking-[0.24em] uppercase text-[#cd2028]">Featured</span>
+          </div>
+
+          {post?.date && <DateLine date={post.date} />}
+
+          <h3 className="text-white font-black leading-tight line-clamp-2 group-hover:text-[#f87171] transition-colors duration-200"
+            style={{ fontSize: "clamp(1.4rem, 3vw, 2rem)" }}>
             {post?.title}
           </h3>
 
           {description && (
-            <p className="mt-2.5 text-sm leading-relaxed text-[#3d526e] line-clamp-2">
+            <p className="mt-2.5 text-white/60 text-[13.5px] leading-relaxed line-clamp-2 max-w-xl">
               {description}
             </p>
           )}
 
-          <span className="mt-5 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#cd2028]">
+          <span className="mt-5 inline-flex items-center gap-2 text-[13px] font-semibold text-white/80 group-hover:text-white transition-colors duration-200">
             Read article
             <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-1" />
           </span>
@@ -75,82 +91,100 @@ export function BlogCard({
     );
   }
 
+  // ── Compact ───────────────────────────────────────────────────────────────────
   if (variant === "compact") {
     return (
-      <Link prefetch={false}
+      <Link
+        prefetch={false}
         href={`/blog/${post?.slug}`}
-        className="group bg-white rounded-lg border border-[#e8edf5] overflow-hidden hover:border-[#cd2028] transition-colors duration-200"
+        className="group relative block overflow-hidden rounded-xl"
+        style={{ aspectRatio: "4/3" }}
       >
-        <div className="relative h-40 overflow-hidden bg-[#e8edf5]">
-          {post?.image ? (
-            <Image
-              src={post.image}
-              alt={post?.title ?? ""}
-              fill
-              sizes="400px"
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            />
-          ) : (
-            <div className="h-full w-full bg-[#e8edf5]" />
-          )}
-          {category && <CategoryBadge name={category.name ?? ""} slug={category.slug ?? undefined} size="xs" />}
-        </div>
+        {post?.image ? (
+          <Image
+            src={post.image}
+            alt={post?.title ?? ""}
+            fill
+            sizes="400px"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+          />
+        ) : (
+          <NoImage />
+        )}
 
-        <div className="p-4">
-          {post?.date && <DateRow date={post.date} size="xs" />}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
 
-          <h3 className="text-[13.5px] font-semibold text-[#0f2557] leading-snug group-hover:text-[#cd2028] transition-colors duration-150 line-clamp-2">
+        {category && (
+          <div className="absolute top-3 left-3">
+            <CategoryBadge name={category.name ?? ""} slug={category.slug ?? undefined} size="xs" />
+          </div>
+        )}
+
+        <div className="absolute inset-x-0 bottom-0 p-4">
+          {post?.date && <DateLine date={post.date} />}
+          <h3 className="text-white text-[13px] font-semibold leading-snug line-clamp-2 group-hover:text-[#f87171] transition-colors duration-200">
             {post?.title}
           </h3>
-
-          <span className="mt-2.5 inline-flex items-center gap-1 text-[11px] font-semibold text-[#cd2028]">
-            Read
-            <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-0.5" />
+          <span className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-white/60">
+            Read <ArrowRight className="size-3 group-hover:translate-x-0.5 transition-transform duration-200" />
           </span>
         </div>
       </Link>
     );
   }
 
+  // ── Default ───────────────────────────────────────────────────────────────────
   return (
-    <Link prefetch={false}
+    <Link
+      prefetch={false}
       href={`/blog/${post?.slug}`}
-      className="group flex flex-col bg-white rounded-lg border border-[#e8edf5] overflow-hidden hover:border-[#cd2028] transition-colors duration-200"
+      className="group relative block overflow-hidden rounded-2xl"
+      style={{ aspectRatio: "3/4" }}
     >
-      <div className="relative h-[180px] overflow-hidden bg-[#e8edf5] shrink-0">
-        {post?.image ? (
-          <Image
-            src={post.image}
-            alt={post?.title ?? ""}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-          />
-        ) : (
-          <div className="h-full w-full bg-[#e8edf5]" />
-        )}
-        {category && <CategoryBadge name={category.name ?? ""} slug={category.slug ?? undefined} />}
-      </div>
+      {/* Image */}
+      {post?.image ? (
+        <Image
+          src={post.image}
+          alt={post?.title ?? ""}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+        />
+      ) : (
+        <NoImage />
+      )}
 
-      <div className="flex flex-col flex-1 px-[18px] pt-4 pb-[14px]">
-        {post?.date && <DateRow date={post.date} />}
+      {/* Gradient — bottom 65% */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
 
-        <h3 className="text-[14.5px] font-semibold text-[#0f2557] leading-snug group-hover:text-[#cd2028] transition-colors duration-150">
+      {/* Category — top */}
+      {category && (
+        <div className="absolute top-4 left-4">
+          <CategoryBadge name={category.name ?? ""} slug={category.slug ?? undefined} />
+        </div>
+      )}
+
+      {/* Red accent line on hover */}
+      <div className="absolute inset-x-0 bottom-0 h-[3px] bg-[#cd2028] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+
+      {/* Content */}
+      <div className="absolute inset-x-0 bottom-0 px-5 pb-6">
+        {post?.date && <DateLine date={post.date} />}
+
+        <h3 className="text-white font-bold text-[15px] leading-snug line-clamp-2 group-hover:text-[#f87171] transition-colors duration-200">
           {post?.title}
         </h3>
 
         {description && (
-          <p className="mt-1.5 text-[12.5px] leading-relaxed text-[#3d526e] flex-1 line-clamp-2">
+          <p className="mt-1.5 text-white/55 text-[12px] leading-relaxed line-clamp-2">
             {description}
           </p>
         )}
 
-        <div className="mt-3.5 pt-3 border-t border-[#e8edf5] flex items-center justify-between">
-          <span className="text-[12px] font-medium text-[#5a6e8a] leading-none">
-            Read article
-          </span>
-          <ArrowRight className="size-3.5 shrink-0 text-[#cd2028] transition-transform duration-200 group-hover:translate-x-1" />
-        </div>
+        <span className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-white/70 group-hover:text-white transition-colors duration-200">
+          Read article
+          <ArrowRight className="size-3.5 transition-transform duration-200 group-hover:translate-x-1" />
+        </span>
       </div>
     </Link>
   );

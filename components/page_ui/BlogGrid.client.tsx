@@ -48,7 +48,7 @@ export default function BlogGrid({ posts, categories }: Props) {
   const rest = first ? filtered.slice(1) : [];
 
   return (
-    <section className="bg-white py-4 sm:py-6">
+    <section className="bg-[#f8fafc] py-10 sm:py-14">
       <div className="max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8">
 
         {categories.length > 0 && (
@@ -58,8 +58,8 @@ export default function BlogGrid({ posts, categories }: Props) {
               className={cn(
                 "h-8 px-3.5 text-[12px] font-semibold rounded-full transition-colors duration-150",
                 active === null
-                  ? "bg-brand-dark text-white"
-                  : "bg-[#f1f5f9] text-mid-gray hover:bg-[#e2e8f0]"
+                  ? "bg-[#0f2557] text-white"
+                  : "bg-[#f1f5f9] text-[#64748b] hover:bg-[#e2e8f0] hover:text-[#0f2557]"
               )}
             >
               All
@@ -71,8 +71,8 @@ export default function BlogGrid({ posts, categories }: Props) {
                 className={cn(
                   "h-8 px-3.5 text-[12px] font-semibold rounded-full transition-colors duration-150",
                   active === cat.id
-                    ? "bg-brand-dark text-white"
-                    : "bg-[#f1f5f9] text-mid-gray hover:bg-[#e2e8f0]"
+                    ? "bg-[#0f2557] text-white"
+                    : "bg-[#f1f5f9] text-[#64748b] hover:bg-[#e2e8f0] hover:text-[#0f2557]"
                 )}
               >
                 {cat.name}
@@ -102,7 +102,7 @@ export default function BlogGrid({ posts, categories }: Props) {
         </div>
 
         {filtered.length === 0 && (
-          <p className="text-center text-mid-gray py-20">No posts found in this category.</p>
+          <p className="text-center text-[#64748b] py-20">No posts found in this category.</p>
         )}
       </div>
     </section>
