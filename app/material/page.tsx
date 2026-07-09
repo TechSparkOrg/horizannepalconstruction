@@ -101,7 +101,7 @@ export default async function MaterialPage() {
         </div>
       </section>
 
-      <Suspense fallback={<div className="py-16 sm:py-24 bg-[#f8fafc]" style={{ minHeight: 920 }} />}>
+      <Suspense fallback={<div className="py-16 sm:py-24 bg-[#f8fafc]" style={{ minHeight: 1320 }} />}>
         <MaterialContent page={page} />
       </Suspense>
     </>
