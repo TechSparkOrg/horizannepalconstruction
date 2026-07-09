@@ -145,7 +145,7 @@ function MobileSidebar() {
                 alt="Horizon Nepal"
                 width={22}
                 height={22}
-                className="object-contain w-auto h-auto"
+                className="object-contain w-auto h-auto" style={{ height: "auto" }}
               />
             </div>
             <div className="flex flex-col gap-[3px]">

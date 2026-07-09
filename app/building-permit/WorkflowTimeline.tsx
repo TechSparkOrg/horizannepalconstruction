@@ -28,7 +28,7 @@ export function WorkflowTimeline({ steps }: { steps: WorkflowStep[] }) {
           </div>
           <Image src="/video-gif/in-progress.svg" alt="Construction crane illustration"
             width={90} height={130}
-            className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0 scale-x-[-1]"
+            className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0 scale-x-[-1]" style={{ height: "auto" }}
             sizes="(max-width: 1024px) 70px, 90px" />
         </div>
 

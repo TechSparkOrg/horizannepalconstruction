@@ -6,8 +6,8 @@ import { ArrowRight } from "lucide-react"
 import type { Page } from "@/api/types/page.types"
 
 const VendorsSection = dynamic(() => import("@/components/page_ui/VendorsSection.client"))
-const MaterialGrid = dynamic(() => import("@/components/page_ui/MaterialGrid.client"), { ssr: false })
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"), { ssr: false })
+const MaterialGrid = dynamic(() => import("@/components/page_ui/MaterialGrid.client"))
+const ParsedContent = dynamic(() => import("@/lib/Parse-Content"))
 
 export function MaterialClient({ page }: { page?: Page | null }) {
   return (
@@ -19,7 +19,8 @@ export function MaterialClient({ page }: { page?: Page | null }) {
         <div className="absolute right-0 top-0 h-full w-full lg:w-[58%]">
           <Image
             src="/video-gif/road-reparing.svg"
-            alt="Road repair and construction materials illustration"
+            alt=""
+            aria-hidden="true"
             fill
             sizes="(max-width: 1024px) 100vw, 58vw"
             className="object-contain object-center lg:object-right"

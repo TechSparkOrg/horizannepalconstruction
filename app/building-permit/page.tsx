@@ -43,8 +43,8 @@ export default async function BuildingPermitPage() {
 
   return (
     <>
-      <LazyPlane />
-      <h1 className="sr-only">Building Permit Assistant — Horizan Nepal</h1>
+    
+      <h1 className="sr-only">{ page?.title || " Building Permit Assistant — Horizan Nepal"}</h1>
       <section className="relative min-h-[70svh] flex items-center overflow-hidden bg-[#0f2557]">
         <div className="absolute top-0 left-0 right-0 h-1 bg-[#cd2028]" aria-hidden="true" />
         <div className="absolute inset-0 pointer-events-none" aria-hidden="true"
@@ -78,6 +78,7 @@ export default async function BuildingPermitPage() {
           </div>
         </div>
       </section>
+        <LazyPlane />
 
       <Suspense fallback={<div className="py-16 sm:py-24 bg-white" />}>
         <BuildingPermitContent config={config} page={page} />

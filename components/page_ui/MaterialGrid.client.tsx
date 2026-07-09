@@ -13,6 +13,7 @@ const MaterialGrid = () => {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
     getMaterials({ page: 1, page_size: ITEMS_PER_PAGE })
@@ -20,7 +21,8 @@ const MaterialGrid = () => {
         setItems(res.results ?? []);
         setTotalCount(res.count ?? 0);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setInitialLoading(false));
   }, []);
 
   const handleLoadMore = async () => {
@@ -47,7 +49,8 @@ const MaterialGrid = () => {
         <div className="flex items-center justify-center gap-6 mb-12">
           <Image
             src="/video-gif/school-book.svg"
-            alt="Construction materials catalogue"
+            alt=""
+            aria-hidden="true"
             width={90} height={120}
             className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0"
             unoptimized
@@ -66,7 +69,7 @@ const MaterialGrid = () => {
             </p>
           </div>
           <Image
-            src="/video-gif/school-book.svg"
+            src="/video-gif/constuction-worker-building.svg"
             alt=""
             width={90} height={120}
             className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0 scale-x-[-1]"
@@ -94,7 +97,10 @@ const MaterialGrid = () => {
           </div>
         )}
 
-        {items.length === 0 && (
+        {initialLoading && (
+          <p className="text-center text-[#64748b] py-20">Loading materials…</p>
+        )}
+        {!initialLoading && items.length === 0 && (
           <p className="text-center text-[#64748b] py-20">No materials found.</p>
         )}
       </div>
