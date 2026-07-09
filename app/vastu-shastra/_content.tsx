@@ -36,7 +36,7 @@ export function VastuContent({ page }: Props) {
           <div className="flex justify-center mb-10" aria-hidden="true">
             <Image src="/video-gif/Kalash.svg" alt="" width={130} height={130}
               sizes="(max-width: 640px) 90px, 120px"
-              className="w-[90px] sm:w-[120px] h-auto object-contain opacity-50 select-none pointer-events-none" />
+              className="w-[90px] sm:w-[120px] h-auto object-contain opacity-50 select-none pointer-events-none" unoptimized />
           </div>
 
           {/* Guide sections — deferred, on scroll */}

@@ -41,7 +41,7 @@ export default async function MaterialPage() {
         <div className="absolute right-0 top-0 h-full w-full lg:w-[58%]">
           <Image src="/video-gif/road-reparing.svg" alt="" aria-hidden
             fill sizes="(max-width: 1024px) 100vw, 58vw"
-            className="object-contain object-center lg:object-right" priority />
+            className="object-contain object-center lg:object-right" priority unoptimized />
           <div className="absolute inset-0 bg-[#0f2557]/85 lg:hidden" />
           <div className="absolute inset-y-0 left-0 w-64 hidden lg:block pointer-events-none" aria-hidden
             style={{ background: "linear-gradient(to right, #0f2557 15%, transparent)" }} />

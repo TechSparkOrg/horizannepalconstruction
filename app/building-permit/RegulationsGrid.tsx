@@ -10,7 +10,7 @@ export function RegulationsGrid({ items }: { items: RegulationItem[] }) {
       <Image src="/video-gif/builder-constucntion.svg" alt="" fill
         sizes="100vw"
         className="object-contain object-center pointer-events-none select-none"
-        style={{ opacity: 0.1 }} aria-hidden="true" />
+        style={{ opacity: 0.1 }} aria-hidden="true" unoptimized />
       <div className="relative z-10 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-3 mb-3">

@@ -9,7 +9,7 @@ export function MunicipalityTable({ items }: { items: MunicipalityItem[] }) {
           <Image src="/video-gif/sign-document.svg" alt="Document signing illustration"
             width={80} height={120}
             className="hidden sm:block w-[65px] lg:w-[80px] h-auto object-contain shrink-0" style={{ height: "auto" }}
-            sizes="(max-width: 1024px) 65px, 80px" />
+            sizes="(max-width: 1024px) 65px, 80px" unoptimized />
           <div className="text-center shrink-0">
             <div className="inline-flex items-center gap-3 mb-2">
               <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
@@ -22,7 +22,7 @@ export function MunicipalityTable({ items }: { items: MunicipalityItem[] }) {
           <Image src="/video-gif/saftey-warning.svg" alt="Document signing illustration"
             width={80} height={120}
             className="hidden sm:block w-[65px] lg:w-[80px] h-auto object-contain shrink-0 scale-x-[-1]" style={{ height: "auto" }}
-            sizes="(max-width: 1024px) 65px, 80px" />
+            sizes="(max-width: 1024px) 65px, 80px" unoptimized />
         </div>
 
         <div className="rounded-2xl border border-[#e2e8f0] overflow-hidden">

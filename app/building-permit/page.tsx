@@ -73,7 +73,7 @@ export default async function BuildingPermitPage() {
                 width={380} height={380}
                 sizes="(max-width: 640px) 200px, (max-width: 1024px) 300px, 380px"
                 className="w-[200px] sm:w-[300px] lg:w-[380px] h-auto object-contain" style={{ height: "auto" }}
-                priority />
+                priority unoptimized />
             </div>
           </div>
         </div>

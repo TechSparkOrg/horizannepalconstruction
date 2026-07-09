@@ -300,8 +300,8 @@ export function ConsultationForm({ initialCategories }: { initialCategories?: Ca
                           <div className="flex flex-wrap gap-2 mt-3">
                             {sitePhotos.map((file, idx) => (
                               <div key={`${file.name}-${idx}`} className="relative group">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={URL.createObjectURL(file)} alt={`Site photo ${idx + 1}`}
+                                <Image src={URL.createObjectURL(file)} alt={`Site photo ${idx + 1}`}
+                                  width={80} height={80} unoptimized
                                   className="size-20 rounded-xl object-cover border border-[#e2e8f0]" />
                                 <button type="button" onClick={() => removePhoto(idx)}
                                   className="absolute -top-1.5 -right-1.5 size-5 rounded-full bg-[#ef4444] text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">

@@ -51,7 +51,7 @@ const MaterialGrid = ({ initialItems, initialTotal }: { initialItems?: PublicMat
           <Image src="/video-gif/school-book.svg" alt="" aria-hidden
             width={90} height={120}
             className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0"
-            sizes="(max-width: 1024px) 70px, 90px" />
+            sizes="(max-width: 1024px) 70px, 90px" unoptimized />
           <div className="text-center shrink-0">
             <div className="inline-flex items-center gap-3 mb-2">
               <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
@@ -68,7 +68,7 @@ const MaterialGrid = ({ initialItems, initialTotal }: { initialItems?: PublicMat
           <Image src="/video-gif/constuction-worker-building.svg" alt="" aria-hidden
             width={90} height={120}
             className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0 scale-x-[-1]"
-            sizes="(max-width: 1024px) 70px, 90px" />
+            sizes="(max-width: 1024px) 70px, 90px" unoptimized />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[18px]">

@@ -79,7 +79,7 @@ export default async function VastuShastraPage() {
                 width={420} height={420}
                 sizes="(max-width: 640px) 220px, (max-width: 1024px) 340px, 420px"
                 className="w-[220px] sm:w-[340px] lg:w-[420px] h-auto object-contain relative z-10"
-                priority />
+                priority unoptimized />
             </div>
           </div>
         </div>
