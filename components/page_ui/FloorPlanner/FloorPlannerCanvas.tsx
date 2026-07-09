@@ -477,7 +477,7 @@ export default function FloorPlannerCanvas() {
         <div className="flex items-center gap-1.5">
           <button
             onClick={exportPng}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#cd2028] hover:bg-[#b91c1c] active:scale-95 transition-all"
           >
             <Download size={13} />
             Export
@@ -505,7 +505,7 @@ export default function FloorPlannerCanvas() {
               aria-label={t.label}
               className={`size-9 flex items-center justify-center rounded-lg transition-all ${
                 activeTool === t.tool
-                  ? "bg-blue-600 text-white shadow-sm"
+                  ? "bg-[#0f2557] text-white shadow-sm"
                   : "text-slate-400 hover:bg-white hover:text-slate-700"
               }`}
             >
@@ -523,7 +523,7 @@ export default function FloorPlannerCanvas() {
               aria-label="Furniture"
               className={`size-9 flex items-center justify-center rounded-lg transition-all ${
                 showFurniture || FURNITURE.some((f) => f.tool === activeTool)
-                  ? "bg-blue-50 text-blue-600 ring-1 ring-blue-200"
+                  ? "bg-[#e8edf7] text-[#0f2557] ring-1 ring-[#0f2557]/20"
                   : "text-slate-400 hover:bg-white hover:text-slate-700"
               }`}
             >
@@ -541,7 +541,7 @@ export default function FloorPlannerCanvas() {
                       title={f.label}
                       className={`flex flex-col items-center gap-1 py-2 px-1 rounded-lg text-slate-600 transition-all ${
                         activeTool === f.tool
-                          ? "bg-blue-50 text-blue-600 ring-1 ring-blue-200"
+                          ? "bg-[#e8edf7] text-[#0f2557] ring-1 ring-[#0f2557]/20"
                           : "hover:bg-slate-50"
                       }`}
                     >
@@ -620,7 +620,7 @@ export default function FloorPlannerCanvas() {
                   value={sel.label}
                   onChange={(e) => patch(sel.id, { label: e.target.value })}
                   placeholder="Add label..."
-                  className="w-full px-2.5 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 bg-white placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
+                  className="w-full px-2.5 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 bg-white placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#0f2557]/20 focus:border-[#0f2557] transition-all"
                 />
               </div>
 
@@ -636,7 +636,7 @@ export default function FloorPlannerCanvas() {
                       min={MIN_SIZE}
                       value={Math.round(sel[dim])}
                       onChange={(e) => patch(sel.id, { [dim]: clampSize(Number(e.target.value)) })}
-                      className="w-full px-2.5 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
+                      className="w-full px-2.5 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#0f2557]/20 focus:border-[#0f2557] transition-all"
                     />
                   </div>
                 ))}
@@ -649,7 +649,7 @@ export default function FloorPlannerCanvas() {
                   type="number"
                   value={Math.round(sel.rotation)}
                   onChange={(e) => patch(sel.id, { rotation: Number(e.target.value) })}
-                  className="w-full px-2.5 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
+                  className="w-full px-2.5 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#0f2557]/20 focus:border-[#0f2557] transition-all"
                 />
               </div>
 
@@ -702,7 +702,7 @@ export default function FloorPlannerCanvas() {
               type="checkbox"
               checked={showGrid}
               onChange={() => setShowGrid((g) => !g)}
-              className="accent-blue-600 rounded"
+              className="accent-[#0f2557] rounded"
             />
             <Grid3X3 size={13} />
             Grid

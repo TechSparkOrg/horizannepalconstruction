@@ -11,7 +11,7 @@ import type { Page } from '@/api/types/page.types'
 import { Slider } from '@/components/ui/slider'
 import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { BankMark } from '@/components/global_ui/BankMark'
-import { BannerCarousel } from '@/components/global_ui/BannerCarousel'
+import { ImageGrid } from '@/components/global_ui/image-grid'
 import dynamic from 'next/dynamic'
 
 const BlogContent = dynamic(() => import('@/components/page_ui/BlogContent.client'))
@@ -154,7 +154,7 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
     <div className="min-h-screen bg-[#f4f6fb] mb-4">
 
       {/* ── Hero ── */}
-      <div className="relative bg-[#0f2557] overflow-hidden">
+      <div className="relative bg-[#0f2557] overflow-hidden min-h-[58svh] sm:min-h-[62svh]">
 
         {/* builder-constucntion.svg — right column */}
         <div className="absolute right-0 bottom-0 h-full w-full lg:w-[48%] pointer-events-none select-none">
@@ -163,7 +163,7 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
             alt=""
             aria-hidden="true"
             fill
-            className="object-contain object-bottom lg:object-right-bottom"
+            className="object-cover object-bottom lg:object-right-bottom"
             unoptimized
             priority
           />
@@ -627,9 +627,13 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
         )}
 
         {pageData?.banner_images && pageData.banner_images.length > 0 && (
-          <div className="mt-10 mb-6 relative h-[300px] sm:h-[400px] rounded-xl overflow-hidden">
-            <BannerCarousel initialBanners={pageData.banner_images} className="inset-0" imgClassName="object-contain" />
-          </div>
+          <ImageGrid
+            slug="emi-calculator-gallery"
+            initialItems={pageData.banner_images}
+            label="Gallery"
+            heading="Project Gallery"
+            description="Browse our completed construction and renovation projects."
+          />
         )}
       </div>
     </div>

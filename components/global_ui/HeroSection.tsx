@@ -19,6 +19,7 @@ export function HeroSection() {
         sizes="100vw"
         className="object-cover object-center"
         priority
+        unoptimized
       />
 
       {/* Top fade */}

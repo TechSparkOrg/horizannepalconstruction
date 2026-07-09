@@ -1,46 +1,50 @@
-import type { Metadata } from "next"
-import { getPageBySlug } from "@/api/services/page.service"
-import { getSiteUrl } from "@/lib/seo-utils"
-import EmiCalculatorClient from "./EmiCalculatorClient"
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
+import { getPageBySlug } from "@/api/services/page.service";
+import { EmiContent } from "./_content";
 
-const SLUG = "emi-calculator"
+const EmiCalculatorClient = dynamic(() => import("./EmiCalculatorClient"));
+
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+const SLUG = "emi-calculator";
+const emiPageP = getPageBySlug(SLUG).catch(() => null);
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlug(SLUG).catch(() => null)
-  const siteUrl = getSiteUrl()
-  const url = `${siteUrl}/${SLUG}`
-  const title = page?.meta_title || "EMI Calculator | Horizan Nepal"
-  const description = page?.meta_description || "Plan your construction project financing with Horizan Nepal's EMI calculator. Estimate monthly payments and check loan eligibility instantly."
-  const ogImage = page?.banner_images?.[0]?.url || undefined
-
+  const page = await emiPageP;
+  const url = `${SITE_URL}/${SLUG}`;
   return {
-    title,
-    description,
+    title: page?.meta_title || "EMI Calculator | Horizan Nepal",
+    description: page?.meta_description || "Plan your construction project financing with Horizan Nepal's EMI calculator. Estimate monthly payments and check loan eligibility instantly.",
     alternates: { canonical: url },
-    ...(page?.meta_keywords ? { keywords: page.meta_keywords } : {}),
+    keywords: page?.meta_keywords || undefined,
     openGraph: {
-      title,
-      description,
+      title: page?.meta_title || "EMI Calculator | Horizan Nepal",
+      description: page?.meta_description || "Plan your construction project financing with Horizan Nepal's EMI calculator.",
       type: "website",
       url,
-      ...(ogImage && { images: [{ url: ogImage }] }),
+      images: page?.banner_images?.[0]?.url ? [{ url: page.banner_images[0].url }] : [],
     },
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
-      ...(ogImage && { images: [ogImage] }),
+      title: page?.meta_title || "EMI Calculator | Horizan Nepal",
+      description: page?.meta_description || "Plan your construction project financing with Horizan Nepal's EMI calculator.",
     },
-  }
+  };
 }
 
 export default async function EmiCalculatorPage() {
-  const page = await getPageBySlug(SLUG).catch(() => null)
+  const page = await emiPageP;
 
   return (
-    <>
+    <div className="min-h-screen bg-[#f4f6fb]">
       <h1 className="sr-only">{page?.title || "EMI Calculator — Horizan Nepal Construction"}</h1>
-      <EmiCalculatorClient pageData={page} />
-    </>
-  )
+      <Suspense fallback={null}>
+        <EmiCalculatorClient pageData={page} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <EmiContent page={page} />
+      </Suspense>
+    </div>
+  );
 }

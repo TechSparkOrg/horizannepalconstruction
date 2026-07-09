@@ -44,11 +44,11 @@ type NavItem =
 /* ─── Desktop dropdown ───────────────────────────────────────── */
 function DropdownItem({ item }: { item: NavItem }) {
   const [open, setOpen] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout>>();
+  const timer = useRef<ReturnType<typeof setTimeout>>(null);
 
-  const show = () => { clearTimeout(timer.current); setOpen(true); };
+  const show = () => { clearTimeout(timer.current ?? undefined); setOpen(true); };
   const hide = () => { timer.current = setTimeout(() => setOpen(false), 120); };
-  useEffect(() => () => clearTimeout(timer.current), []);
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current) }, []);
 
   if (!item.children) {
     return (
