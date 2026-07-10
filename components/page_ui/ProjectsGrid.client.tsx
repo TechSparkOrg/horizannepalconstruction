@@ -14,15 +14,15 @@ export function ProjectsGrid({ projects }: Props) {
   const initialCat = searchParams.get("category") || "All";
   const categoryMap = new Map<string, string>();
   projects.forEach((p) => {
-    if (p.category_id && !categoryMap.has(p.category_id)) {
-      categoryMap.set(p.category_id, p.category_name || p.category_id);
+    if (p.category?.id && !categoryMap.has(p.category?.id)) {
+      categoryMap.set(p.category?.id, p.category?.name || p.category?.id);
     }
   });
 
   const [active, setActive] = useState("All");
 
   const filtered =
-    active === "All" ? projects : projects.filter((p) => p.category_id === active);
+    active === "All" ? projects : projects.filter((p) => p.category?.id === active);
 
   return (
     <>

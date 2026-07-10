@@ -7,3 +7,13 @@ export interface Model3D {
   image?: string
   updated_at?: string
 }
+
+export interface DesignModel {
+  id: string
+  title: string
+  slug: string
+  url: string
+  description: string
+  project: { slug: string; name: string } | null
+  category: { id: string; slug: string; name: string } | null
+}

@@ -2,18 +2,21 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpRight, MapPin, CheckCircle2, Clock3 } from "lucide-react";
+import { ArrowUpRight, MapPin, CheckCircle2, Clock3, PauseCircle } from "lucide-react";
 import type { Project } from "@/api/types/project.types";
+import { getProjectStatus } from "@/lib/project-status";
 
-const statusMap: Record<string, { label: string; icon: React.ElementType; cls: string }> = {
-  Completed: { label: "Completed", icon: CheckCircle2, cls: "text-emerald-700 bg-emerald-50" },
-  Ongoing:   { label: "Ongoing",   icon: Clock3,       cls: "text-blue-700 bg-blue-50"       },
+const statusStyle: Record<string, { icon: React.ElementType; cls: string }> = {
+  completed: { icon: CheckCircle2, cls: "text-emerald-700 bg-emerald-50" },
+  ongoing:   { icon: Clock3,       cls: "text-blue-700 bg-blue-50"       },
+  paused:    { icon: PauseCircle,  cls: "text-amber-700 bg-amber-50"     },
 };
 
 export function ProjectCard({ p, delay }: { p: Project; delay: number }) {
-  const statusKey = p.completion ? "Completed" : "Ongoing";
-  const { label, icon: StatusIcon, cls } = statusMap[statusKey] ?? statusMap.Ongoing;
-  const imgSrc = p.thumbnail || p.images?.[0] || "";
+  const status = getProjectStatus(p.status, p.completion);
+  const { icon: StatusIcon, cls } = statusStyle[status.key];
+  const label = status.label;
+  const imgSrc = p.thumbnail || p.images?.[0] || p.banner_images?.[0]?.url || "";
 
   return (
     <Link
@@ -38,9 +41,9 @@ export function ProjectCard({ p, delay }: { p: Project; delay: number }) {
         )}
 
         {/* Category badge */}
-        {p.category_id && (
+        {p.category?.id && (
           <span className="absolute top-3 left-3 inline-block px-2.5 py-1 rounded-md bg-white/90 backdrop-blur-sm text-[#0f2557] text-[9.5px] font-bold tracking-[0.16em] uppercase shadow-sm">
-            {p.category_name || p.category_id}
+            {p.category?.name}
           </span>
         )}
       </div>

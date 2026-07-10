@@ -42,7 +42,15 @@ async function CategoryFaq({ faqSlug }: { faqSlug: string }) {
     q: item.question?.en ?? "",
     a: item.answer?.en ?? "",
   }));
-  if (faqs.length === 0) return null;
+  if (faqs.length === 0) {
+    return (
+      <section className="py-12 sm:py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-sm text-muted-foreground">No FAQ in this category yet.</p>
+        </div>
+      </section>
+    );
+  }
   return <FaqClient categorySlug={faqSlug} initialFaqs={faqs} />;
 }
 

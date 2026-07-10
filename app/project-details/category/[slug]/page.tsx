@@ -80,7 +80,7 @@ export default async function ProjectCategoryDetailPage({ params }: Props) {
         </div>
       </section>
    <LazyAiBot />
-      <Suspense fallback={<div className="py-16 bg-white" style={{ minHeight: 800 }} />}>
+      <Suspense fallback={<div className="py-16 bg-white" style={{ minHeight: 1100 }} />}>
         <ProjectCategoryDetailInner detail={detail} />
       </Suspense>
 
