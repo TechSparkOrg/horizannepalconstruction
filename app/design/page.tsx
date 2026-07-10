@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import { PageHero } from "@/components/global_ui/page-hero";
+import { DesignHero } from "@/components/page_ui/DesignHero";
 import { DesignServices } from "@/components/page_ui/DesignServices";
+import { HowWeWorkDesignGrid } from "@/components/page_ui/HowWeWorkDesignGrid";
+import { DesignShowcaseSection } from "@/components/page_ui/DesignShowcaseSection";
 import { getProjects } from "@/api/services/project.service";
 import { getModels } from "@/api/services/model3d.service";
 import { getCategories } from "@/api/services/category.service";
@@ -85,8 +87,10 @@ export default async function DesignPage() {
   return (
     <>
       <LdJson data={breadcrumbList("Design", "design")} />
-      <PageHero slug="design-page-hero" badge="Design" srHeading="Architectural Design Services" heading="Design That Inspires" description="From concept to completion — our design team creates spaces that are beautiful, functional, and built to last." minHeight="80vh" initialBanners={page?.banner_images} />
+      <DesignHero />
       <DesignServices />
+      <HowWeWorkDesignGrid />
+      <DesignShowcaseSection />
       <Design3DShowcase initialItems={modelCards} />
       <ConsultationForm initialCategories={categories} />
       {page?.content && (

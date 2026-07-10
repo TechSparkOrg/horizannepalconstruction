@@ -35,4 +35,5 @@ export interface Project {
   social_links?: ProjectSocialLink[]
   updated_at?: string
   category_id?: string
+  category_name?: string
 }

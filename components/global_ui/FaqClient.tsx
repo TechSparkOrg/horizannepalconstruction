@@ -47,7 +47,7 @@ export default function FaqClient({ categorySlug, type, title, subtitle, initial
   if (loading) {
     return (
       <section className="bg-white py-12 sm:py-16">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1200px] mx-auto px-4">
           <div className="text-center mb-10">
             <div className="h-3 w-16 rounded bg-[#fee2e2] mx-auto mb-3 animate-pulse" />
             <div className="h-7 w-64 rounded bg-[#e2e8f0] mx-auto animate-pulse" />

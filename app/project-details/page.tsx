@@ -1,56 +1,44 @@
+import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import BlogContent from "@/components/page_ui/BlogContent.client";
-import { LdJson } from "@/components/global_ui/JsonLd";
 import { getPageBySlug } from "@/api/services/page.service";
-import { getSiteUrl, pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
+import { LazyPlane } from "@/components/viewport/LazyPlane";
+import { ProjectPageContent } from "./_content";
 
 const OurWorkHero = dynamic(() => import("@/components/page_ui/OurWorkHero").then((m) => ({ default: m.OurWorkHero })));
-const ProjectGalleryComponent = dynamic(() => import("@/components/global_ui/image-grid").then((m) => ({ default: m.ImageGrid })));
-const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then((m) => ({ default: m.ConsultationForm })));
 
-const SLUG = "our-work"
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+const SLUG = "project-details";
+const getPage = cache(async (slug: string) => getPageBySlug(slug).catch(() => null));
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlug(SLUG).catch(() => null)
-  const base = pageMetadataBase(page, SLUG)
+  const page = await getPage(SLUG);
   return {
-    title: page?.meta_title || "Our Work | Horizan Nepal",
-    description: page?.meta_description || "Browse Horizan Nepal's portfolio of completed architectural and construction projects.",
+    title: page?.meta_title || "Projects | Horizan Nepal",
+    description: page?.meta_description || "Browse Horizan Nepal's portfolio of completed architectural and construction projects across Nepal.",
+    alternates: { canonical: `${SITE_URL}/project-details` },
+    keywords: page?.meta_keywords || undefined,
     openGraph: {
-      ...base.openGraph,
-      title: page?.meta_title || "Our Work | Horizan Nepal",
+      title: page?.meta_title || "Projects | Horizan Nepal",
       description: page?.meta_description || "Browse Horizan Nepal's portfolio of completed architectural and construction projects across Nepal.",
       type: "website",
+      url: `${SITE_URL}/project-details`,
+      images: page?.banner_images?.[0]?.url ? [{ url: page.banner_images[0].url }] : [],
     },
-    alternates: base.alternates,
-    ...(base.keywords ? { keywords: base.keywords } : {}),
-  }
+  };
 }
 
-const collectionSchema = {
-  "@context": "https://schema.org",
-  "@type": "CollectionPage",
-  name: "Our Work | Horizan Nepal",
-  description: "Browse Horizan Nepal's portfolio of completed architectural and construction projects across Nepal.",
-  url: `${getSiteUrl()}/our-work`,
-};
-
-export default async function OurWorkPage() {
-  const page = await getPageBySlug(SLUG).catch(() => null)
+export default async function ProjectsPage() {
+  const page = await getPage(SLUG);
 
   return (
     <>
-      <LdJson data={breadcrumbList("Our Work", "our-work")} />
-      <LdJson data={collectionSchema} />
-      <OurWorkHero initialImages={page?.banner_images} />
-      <ProjectGalleryComponent slug="project-page-gallary-list" label="Project Gallery" heading="Our Work in Pictures" description="A visual journey through our completed projects and ongoing works." />
-      <ConsultationForm />
-      {page?.content && (
-        <div className="max-w-[1160px] mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-          <BlogContent content={page.content} />
-        </div>
-      )}
+      <h1 className="sr-only">{page?.title || "Projects — Horizan Nepal"}</h1>
+      <OurWorkHero />
+      <LazyPlane />
+      <Suspense fallback={<div className="py-16 sm:py-24 bg-[#f8fafc]" style={{ minHeight: 2600 }} />}>
+        <ProjectPageContent page={page} />
+      </Suspense>
     </>
   );
 }

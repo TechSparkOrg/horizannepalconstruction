@@ -60,24 +60,24 @@ export default async function HomePage() {
       <Suspense fallback={<ServicesSkeleton />}>
         <ServicesAsync />
       </Suspense>
-      <ViewportSection fallback={<div className="py-16 sm:py-24 bg-off-white" />}>
-        <Suspense fallback={<div className="py-16 sm:py-24 bg-off-white" />}>
+      <ViewportSection fallback={<div className="py-16 sm:py-24 bg-off-white min-h-[600px]" />}>
+        <Suspense fallback={<div className="py-16 sm:py-24 bg-off-white min-h-[600px]" />}>
           <GalleryAsync />
         </Suspense>
       </ViewportSection>
-      <ViewportSection fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff]" />}>
-        <Suspense fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff]" />}>
+      <ViewportSection fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff] min-h-[600px]" />}>
+        <Suspense fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff] min-h-[600px]" />}>
           <FeaturedAsync />
         </Suspense>
       </ViewportSection>
       <QuoteBannerSecondary />
-      <ViewportSection fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff]" />}>
-        <Suspense fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff]" />}>
+      <ViewportSection fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff] min-h-[400px]" />}>
+        <Suspense fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff] min-h-[400px]" />}>
           <BlogAsync />
         </Suspense>
       </ViewportSection>
-      <ViewportSection fallback={<div className="py-20 bg-[#f5f8ff]" />}>
-        <Suspense fallback={<div className="py-20 bg-[#f5f8ff]" />}>
+      <ViewportSection fallback={<div className="py-20 bg-[#f5f8ff] min-h-[500px]" />}>
+        <Suspense fallback={<div className="py-20 bg-[#f5f8ff] min-h-[500px]" />}>
           <FAQAsync />
         </Suspense>
       </ViewportSection>

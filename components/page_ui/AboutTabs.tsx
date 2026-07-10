@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Target, Map, Play } from "lucide-react";
-import { Label } from "@/components/ui/label";
+import { Target, Map, Play, CheckCircle2 } from "lucide-react";
 
 const tabs = [
   {
@@ -48,80 +47,92 @@ export function AboutTabs() {
   const current = tabs[active];
 
   return (
-    <section className="bg-[#f8fafc] py-16 sm:py-28">
+    <section className="bg-white py-16 sm:py-24">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Header */}
-        <div className="text-center max-w-2xl mx-auto">
-          <Label className="text-xs font-semibold tracking-[0.15em] uppercase text-[#1d4ed8] bg-[#1d4ed8]/8 px-3 py-1 rounded-full">Our Approach</Label>
-          <h2 className="mt-3 font-display text-2xl sm:text-4xl lg:text-5xl text-[#0f2557]">
+        {/* Section header — left-aligned, consistent with site pattern */}
+        <div className="max-w-xl mb-10">
+          <p className="text-[#cd2028] text-[11px] font-bold tracking-[0.24em] uppercase mb-3 flex items-center gap-2.5">
+            <span className="block w-4 h-px bg-[#cd2028]" aria-hidden="true" />
+            Our Approach
+          </p>
+          <h2
+            className="font-display font-black text-[#0f2557] leading-tight tracking-[-0.02em]"
+            style={{ fontSize: "clamp(1.7rem, 3.2vw, 2.5rem)" }}
+          >
             Mission · Plan · Act
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-[#334155]">
+          <p className="mt-3 text-[#64748b] text-[14.5px] leading-relaxed">
             A clear, three-phase approach that guides every project from idea to completion.
           </p>
         </div>
 
-        <div className="mt-10">
-          {/* Tab strip */}
-          <div className="flex border-b border-[#e2e8f0]" role="tablist">
-            {tabs.map((t, i) => (
-              <button
-                key={t.id}
-                role="tab"
-                aria-selected={active === i}
-                onClick={() => setActive(i)}
-                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-3.5 text-[13px] sm:text-sm font-medium transition-colors duration-150 border-b-2 -mb-px ${
+        {/* Tab strip */}
+        <div className="flex border-b border-[#e2e8f0]" role="tablist" aria-label="Our approach phases">
+          {tabs.map((t, i) => (
+            <button
+              key={t.id}
+              role="tab"
+              aria-selected={active === i}
+              aria-controls={`tab-panel-${t.id}`}
+              onClick={() => setActive(i)}
+              className={[
+                "flex items-center gap-2 px-4 sm:px-7 py-3.5 text-[13px] font-semibold transition-colors duration-150 border-b-2 -mb-px",
+                "focus-visible:ring-2 focus-visible:ring-[#cd2028] focus-visible:ring-offset-2",
+                active === i
+                  ? "border-[#cd2028] text-[#cd2028]"
+                  : "border-transparent text-[#64748b] hover:text-[#0f2557]",
+              ].join(" ")}
+            >
+              <span
+                className={[
+                  "inline-flex items-center justify-center size-5 rounded-full text-[10px] font-bold transition-colors",
                   active === i
-                    ? "border-[#1d4ed8] text-[#1d4ed8]"
-                    : "border-transparent text-[#334155] hover:text-[#0f2557]"
-                }`}
+                    ? "bg-[#cd2028]/10 text-[#cd2028]"
+                    : "bg-[#f1f5f9] text-[#64748b]",
+                ].join(" ")}
               >
-                <span
-                  className={`flex items-center justify-center size-5 rounded-full text-[10px] font-semibold transition-colors ${
-                    active === i
-                      ? "bg-[#1d4ed8]/10 text-[#1d4ed8]"
-                      : "bg-[#e2e8f0] text-[#334155]"
-                  }`}
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <t.icon className="size-3.5" />
-                {t.label}
-              </button>
-            ))}
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <t.icon className="size-3.5" />
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab panel */}
+        <div
+          id={`tab-panel-${current.id}`}
+          role="tabpanel"
+          className="grid lg:grid-cols-[1fr_1.6fr] border border-t-0 border-[#e2e8f0] rounded-b-2xl overflow-hidden bg-[#e2e8f0]"
+          style={{ gap: "1px" }}
+        >
+          {/* Left — icon + title */}
+          <div className="bg-white p-6 sm:p-9">
+            <div className="size-11 rounded-xl bg-[#0f2557]/8 flex items-center justify-center mb-5">
+              <current.icon className="size-5 text-[#0f2557]" />
+            </div>
+            <h3
+              className="font-display font-black text-[#0f2557] leading-snug tracking-[-0.015em]"
+              style={{ fontSize: "clamp(1.1rem, 2vw, 1.5rem)" }}
+            >
+              {current.title}
+            </h3>
           </div>
 
-          {/* Panel */}
-          <div className="grid lg:grid-cols-[1fr_1.5fr] rounded-b-2xl overflow-hidden border border-t-0 border-[#e2e8f0] bg-[#e2e8f0]"
-            style={{ gap: "1px" }}
-            role="tabpanel"
-          >
-            {/* Left */}
-            <div className="bg-white p-5 sm:p-8">
-              <div className="size-12 rounded-xl bg-[#1d4ed8]/10 flex items-center justify-center mb-5">
-                <current.icon className="size-6 text-[#1d4ed8]" />
-              </div>
-              <h3 className="font-display text-xl sm:text-2xl leading-snug text-[#0f2557]">
-                {current.title}
-              </h3>
-            </div>
+          {/* Right — body + highlights */}
+          <div className="flex flex-col gap-5 p-6 sm:p-9 bg-[#f8fafc]">
+            <p className="text-[14px] leading-[1.78] text-[#475569]">
+              {current.body}
+            </p>
 
-            {/* Right */}
-            <div className="flex flex-col gap-5 p-5 sm:p-8 bg-[#f8fafc]">
-              <p className="text-sm leading-relaxed text-[#334155]">
-                {current.body}
-              </p>
-
-              {/* Highlights list */}
-              <div className="rounded-xl overflow-hidden border divide-y bg-white border-[#e2e8f0]">
-                {current.highlights.map((h) => (
-                  <div key={h} className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-[#0f2557]">
-                    <span className="size-1.5 rounded-full bg-[#1d4ed8] shrink-0" />
-                    {h}
-                  </div>
-                ))}
-              </div>
+            <div className="rounded-xl overflow-hidden border border-[#e2e8f0] bg-white divide-y divide-[#e2e8f0]">
+              {current.highlights.map((h) => (
+                <div key={h} className="flex items-center gap-3 px-4 py-3.5">
+                  <CheckCircle2 className="size-4 text-[#cd2028] shrink-0" />
+                  <span className="text-[13.5px] font-medium text-[#0f2557]">{h}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>

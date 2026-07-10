@@ -16,14 +16,15 @@ const NAV = [
   {
     label: "Services",
     children: [
-      { href: "/design",          label: "Design"          },
-      { href: "/floor-planner",   label: "Floor Planner"   },
-      { href: "/vastu-shastra",   label: "Vastu Shastra"   },
-      { href: "/building-permit", label: "Building Permit" },
-      { href: "/material",        label: "Materials"       },
+      { href: "/design",          label: "Design"             },
+      { href: "/floor-planner",   label: "Floor Planner"      },
+      { href: "/vastu-shastra",   label: "Vastu Shastra"      },
+      { href: "/building-permit", label: "Building Permit"    },
+      { href: "/material",        label: "Materials"          },
+      { href: "/request",         label: "Request a Project"  },
     ],
   },
-  { href: "/our-work", label: "Projects" },
+  { href: "/project-details", label: "Projects" },
   {
     label: "Tools",
     children: [
