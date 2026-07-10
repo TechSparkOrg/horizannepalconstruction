@@ -50,8 +50,8 @@ export default async function DesignPage() {
       key: m.id,
       src: m.url,
       title: m.title,
-      subtitle: m.category?.name || m.project?.name || "",
-      href: m.project?.slug ? `/project-details/${m.project.slug}` : undefined,
+      subtitle: m.category?.name || m.project?.name || m.blog?.name || "",
+      href: m.project?.slug ? `/project-details/${m.project.slug}` : m.blog?.slug ? `/blog/${m.blog.slug}` : undefined,
     }))
   }
   modelCards ??= []

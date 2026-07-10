@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Clock3, PauseCircle, Tag, Calendar } from "lucide-react";
 import type { Project } from "@/api/types/project.types";
@@ -13,6 +13,7 @@ import { LazyAiBot } from "@/components/viewport/LazyAiBot";
 import { ProjectDetailContent } from "./_content";
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+const getProject = cache(async (slug: string) => getProjectBySlug(slug).catch(() => null));
 
 function heroImage(p: Project): string {
   const primary = p.banner_images?.find((b) => b.isPrimary)?.url;
@@ -21,7 +22,7 @@ function heroImage(p: Project): string {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug).catch(() => null);
+  const project = await getProject(slug);
   if (!project) return { title: "Project Not Found" };
   const desc = project.meta_description || stripHtml(project.description).slice(0, 160);
   const img = heroImage(project);
@@ -29,6 +30,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: project.meta_title || `${project.title} | Horizan Nepal`,
     description: desc,
     keywords: project.meta_keywords || undefined,
+    robots: { index: true, follow: true },
+    twitter: {
+      card: "summary_large_image",
+      title: project.meta_title || `${project.title} | Horizan Nepal`,
+      description: desc,
+    },
     alternates: { canonical: `${SITE_URL}/project-details/${slug}` },
     openGraph: {
       title: project.meta_title || `${project.title} | Horizan Nepal`,
@@ -48,12 +55,7 @@ const STATUS_HERO: Record<string, string> = {
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  let project: Project | null = null;
-  try {
-    project = await getProjectBySlug(slug);
-  } catch {
-    notFound();
-  }
+  const project = await getProject(slug);
   if (!project) notFound();
 
   const status = getProjectStatus(project.status, project.completion);
@@ -141,7 +143,47 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
 
       <LazyAiBot />
 
-      <Suspense fallback={<div className="py-14 bg-[#f8fafc]" style={{ minHeight: 700 }} />}>
+      <Suspense fallback={
+        <div className="bg-[#f8fafc] animate-pulse">
+          <section className="bg-white py-14 sm:py-20">
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-[1fr_300px] gap-10 lg:gap-12">
+              <div className="space-y-4">
+                <div className="h-3 w-28 rounded bg-muted-foreground/20" />
+                <div className="h-8 w-64 rounded-lg bg-muted-foreground/15" />
+                <div className="space-y-2 pt-1">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="h-4 rounded bg-muted-foreground/10" style={{ width: `${95 - i * 10}%` }} />
+                  ))}
+                </div>
+              </div>
+              <div className="h-[300px] rounded-2xl bg-muted-foreground/10" />
+            </div>
+          </section>
+          <section className="py-14 sm:py-20">
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+              <div className="h-3 w-24 rounded bg-muted-foreground/20" />
+              <div className="h-8 w-48 rounded-lg bg-muted-foreground/15" />
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="col-span-2 row-span-2 rounded-xl bg-muted-foreground/10" style={{ aspectRatio: "16/10" }} />
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="rounded-xl bg-muted-foreground/10" style={{ aspectRatio: "1/1" }} />
+                ))}
+              </div>
+            </div>
+          </section>
+          <section className="bg-white py-14 sm:py-20">
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+              <div className="space-y-2">
+                <div className="h-3 w-24 rounded bg-muted-foreground/20" />
+                <div className="h-8 w-56 rounded-lg bg-muted-foreground/15" />
+              </div>
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className="h-24 rounded-2xl bg-muted-foreground/10" />
+              ))}
+            </div>
+          </section>
+        </div>
+      }>
         <ProjectDetailContent project={project} />
       </Suspense>
     </>

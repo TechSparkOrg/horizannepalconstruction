@@ -4,11 +4,12 @@ import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { cacheLife } from "next/cache";
 import {
-  ArrowRight, ArrowLeft, PauseCircle,
-  MapPin, Wallet, Calendar, CalendarCheck, CalendarClock, Box, Sparkles,
+  ArrowRight, PauseCircle,
+  MapPin, Wallet, Calendar, CalendarCheck, CalendarClock, Box,
 } from "lucide-react";
 import { getFaqs } from "@/api/services/faq.service";
 import { getProjectStatus, formatProjectDate } from "@/lib/project-status";
+import { ViewportSection } from "@/components/viewport/ViewportSection";
 import type { Project, ProjectMilestone } from "@/api/types/project.types";
 
 const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
@@ -51,6 +52,7 @@ function SectionHead({ index, kicker, title, sub, dark }: {
 }
 
 export function ProjectDetailContent({ project }: { project: Project }) {
+  const F = (className: string) => <div className={className} />;
   const status = getProjectStatus(project.status, project.completion);
   const gallery = project.banner_images ?? [];
   const clients = project.clients ?? [];
@@ -157,63 +159,71 @@ export function ProjectDetailContent({ project }: { project: Project }) {
 
       {/* ── Gallery — slate-blue ── */}
       {gallery.length > 1 && (
-        <section className="relative bg-[#1b2f52] py-14 sm:py-20 overflow-hidden" style={{ backgroundImage: BLUEPRINT }}>
-          <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHead index="02" kicker="Site Documentation" title="Project Gallery" dark
-              sub="Photographs documenting each stage of the build." />
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              {gallery.map((img, i) => (
-                <div key={img.id}
-                  className="group relative rounded-xl overflow-hidden border border-white/10"
-                  style={{ aspectRatio: i === 0 ? "16/10" : "1/1", gridColumn: i === 0 ? "span 2" : undefined, gridRow: i === 0 ? "span 2" : undefined }}>
-                  <Image src={img.url} alt={img.name || `${project.title} photo ${i + 1}`} fill
-                    sizes="(max-width: 640px) 50vw, 25vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
-                </div>
-              ))}
+        <ViewportSection fallback={F("relative bg-[#1b2f52] py-14 sm:py-20 min-h-[400px]")}>
+          <section className="relative bg-[#1b2f52] py-14 sm:py-20 overflow-hidden" style={{ backgroundImage: BLUEPRINT }}>
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+              <SectionHead index="02" kicker="Site Documentation" title="Project Gallery" dark
+                sub="Photographs documenting each stage of the build." />
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {gallery.map((img, i) => (
+                  <div key={img.id}
+                    className="group relative rounded-xl overflow-hidden border border-white/10"
+                    style={{ aspectRatio: i === 0 ? "16/10" : "1/1", gridColumn: i === 0 ? "span 2" : undefined, gridRow: i === 0 ? "span 2" : undefined }}>
+                    <Image src={img.url} alt={img.name || `${project.title} photo ${i + 1}`} fill
+                      sizes="(max-width: 640px) 50vw, 25vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </ViewportSection>
       )}
 
       {/* ── Milestones ── */}
       {milestones.length > 0 && (
-        <section className="bg-white py-14 sm:py-20">
-          <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHead index="03" kicker="Progress" title="Project Milestones"
-              sub="Key stages from groundwork to completion." />
-            <ol className="relative space-y-5">
-              {milestones.map((m, i) => (
-                <MilestoneItem key={m.id} m={m} index={i} last={i === milestones.length - 1} />
-              ))}
-            </ol>
-          </div>
-        </section>
+        <ViewportSection fallback={F("bg-white py-14 sm:py-20 min-h-[300px]")}>
+          <section className="bg-white py-14 sm:py-20">
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+              <SectionHead index="03" kicker="Progress" title="Project Milestones"
+                sub="Key stages from groundwork to completion." />
+              <ol className="relative space-y-5">
+                {milestones.map((m, i) => (
+                  <MilestoneItem key={m.id} m={m} index={i} last={i === milestones.length - 1} />
+                ))}
+              </ol>
+            </div>
+          </section>
+        </ViewportSection>
       )}
 
       {/* ── 3D Models — slate-blue ── */}
       {models.length > 0 && (
-        <section className="relative bg-[#1b2f52] py-14 sm:py-20" style={{ backgroundImage: BLUEPRINT }}>
-          <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-            <SectionHead index="04" kicker="Interactive" title={models.length > 1 ? "3D Models" : "3D Model"} dark
-              sub="Explore the model — drag to rotate, scroll to zoom." />
-            <div className="grid gap-5">
-              {models.map((src) => (
-                <div key={src}
-                  className="relative w-full aspect-[16/9] max-h-[520px] rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] shadow-[0_16px_50px_rgba(0,0,0,0.4)]">
-                  <ModelViewerBlock src={src} />
-                </div>
-              ))}
+        <ViewportSection fallback={F("relative bg-[#1b2f52] py-14 sm:py-20 min-h-[400px]")}>
+          <section className="relative bg-[#1b2f52] py-14 sm:py-20" style={{ backgroundImage: BLUEPRINT }}>
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+              <SectionHead index="04" kicker="Interactive" title={models.length > 1 ? "3D Models" : "3D Model"} dark
+                sub="Explore the model — drag to rotate, scroll to zoom." />
+              <div className="grid gap-5">
+                {models.map((src) => (
+                  <div key={src}
+                    className="relative w-full aspect-[16/9] max-h-[520px] rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] shadow-[0_16px_50px_rgba(0,0,0,0.4)]">
+                    <ModelViewerBlock src={src} />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </ViewportSection>
       )}
 
       {/* ── FAQ ── */}
       {project.faq_group_slug && (
-        <Suspense fallback={<div className="py-14 bg-[#f8fafc] min-h-[200px]" />}>
-          <ProjectFaq faqSlug={project.faq_group_slug} />
-        </Suspense>
+        <ViewportSection fallback={F("py-14 bg-[#f8fafc] min-h-[200px]")}>
+          <Suspense fallback={F("py-14 bg-[#f8fafc] min-h-[200px]")}>
+            <ProjectFaq faqSlug={project.faq_group_slug} />
+          </Suspense>
+        </ViewportSection>
       )}
     </>
   );
