@@ -30,6 +30,7 @@ const NAV = [
     children: [
       { href: "/emi-calculator", label: "EMI Calculator" },
       { href: "/unit-convert",   label: "Unit Converter"  },
+            { href: "/cost-estimation",   label: "Cost Estimator"  },
     ],
   },
   { href: "/blog",    label: "Blog"    },

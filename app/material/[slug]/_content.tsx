@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { cacheLife } from "next/cache";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import { getFaqs } from "@/api/services/faq.service";
 import type { PublicMaterialDetail } from "@/api/types/material.types";
@@ -84,7 +83,6 @@ export function MaterialDetailContent({ item }: { item: PublicMaterialDetail }) 
 
 async function MaterialDetailFaqInner({ faqGroupSlug, title }: { faqGroupSlug: string; title?: string }) {
   "use cache";
-  cacheLife("default");
   const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch(() => ({ results: [] }));
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",

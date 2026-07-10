@@ -2,7 +2,6 @@ import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { cacheLife } from "next/cache";
 import { getMaterialBySlug } from "@/api/services/material-public.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LdJson } from "@/components/global_ui/JsonLd";
@@ -57,7 +56,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function MaterialDetailPage({ params }: Props) {
   "use cache";
-  cacheLife("hours");
 
   const { slug } = await params;
   const item = await getMaterial(slug);

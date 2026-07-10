@@ -1,4 +1,3 @@
-import { cacheLife } from "next/cache";
 import dynamic from "next/dynamic";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { getReviews } from "@/api/services/review.service";
@@ -7,7 +6,6 @@ const ReviewList = dynamic(() => import("@/components/page_ui/ReviewList").then(
 
 export async function ReviewsAsync() {
   "use cache";
-  cacheLife("default");
 
   const res = await getReviews().catch(() => ({ results: [], count: 0 }));
   const reviews = res.results ?? [];

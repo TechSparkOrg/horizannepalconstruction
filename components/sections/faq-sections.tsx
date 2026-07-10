@@ -1,4 +1,3 @@
-import { cacheLife } from "next/cache";
 import dynamic from "next/dynamic";
 import { getFaqGroups } from "@/api/services/faq.service";
 
@@ -6,7 +5,6 @@ const FAQTimeline = dynamic(() => import("@/components/page_ui/FAQTimeline").the
 
 export async function FaqGroupsAsync() {
   "use cache";
-  cacheLife("hours");
   const res = await getFaqGroups().catch(() => ({ results: [] }));
   return { groups: res.results ?? [] };
 }

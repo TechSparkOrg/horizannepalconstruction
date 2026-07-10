@@ -1,7 +1,6 @@
 import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { cacheLife } from "next/cache";
 import { getPageBySlug } from "@/api/services/page.service";
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import { CmsPageInner } from "./_content";
@@ -34,7 +33,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PageView({ params }: Props) {
   "use cache";
-  cacheLife("hours");
 
   const { slug } = await params;
   const page = await getPage(slug);

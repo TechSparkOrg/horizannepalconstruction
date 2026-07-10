@@ -2,7 +2,6 @@ import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { cacheLife } from "next/cache";
 import { getServiceCategoryDetail } from "@/api/services/category.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { ServiceDetailInner } from "./_content";
@@ -35,7 +34,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ServiceDetailPage({ params }: Props) {
   "use cache";
-  cacheLife("hours");
 
   const { slug } = await params;
   const detail = await getDetail(slug);

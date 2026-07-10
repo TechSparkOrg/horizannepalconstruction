@@ -1,7 +1,6 @@
 import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { cacheLife } from "next/cache";
 import { getBlogBySlug } from "@/api/services/blog.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
@@ -33,7 +32,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   "use cache";
-  cacheLife("hours");
 
   const { slug } = await params;
   const post = await getPost(slug);

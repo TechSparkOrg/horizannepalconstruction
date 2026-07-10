@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { cacheLife } from "next/cache";
 import { getBuildingPermitSingle } from "@/api/services/building-permit.service";
 import { getPageBySlug } from "@/api/services/page.service";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
@@ -33,7 +32,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function BuildingPermitPage() {
   "use cache";
-  cacheLife("hours");
 
   const [page, config] = await Promise.all([
     pageP,

@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { cacheLife } from "next/cache";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import { VastuNavAsync } from "@/components/sections/vastu-sections";
 import type { Page } from "@/api/types/page.types";
@@ -88,7 +87,6 @@ async function VastuToolsInner() {
 
 async function VastuFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
   "use cache";
-  cacheLife("default");
   const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch(() => ({ results: [] }));
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",

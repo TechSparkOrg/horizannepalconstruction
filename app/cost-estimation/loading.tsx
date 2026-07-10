@@ -1,49 +1,50 @@
 export default function CostEstimationLoading() {
   return (
-    <div className="bg-off-white">
-      <section className="relative min-h-[55vh] flex items-center bg-brand-dark px-4 sm:px-6 lg:px-8">
-        <div className="max-w-[800px] mx-auto w-full pt-32 pb-20 space-y-4">
-          <div className="h-4 w-32 rounded-full bg-white/10 animate-pulse" />
-          <div className="h-12 w-[550px] max-w-full rounded-lg bg-white/10 animate-pulse" />
-          <div className="h-5 w-[400px] max-w-full rounded bg-white/10 animate-pulse" />
+    <div className="animate-pulse">
+      {/* Hero skeleton */}
+      <section className="relative bg-[#07112b]" style={{ minHeight: "78vh" }}>
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-14 space-y-4">
+          <div className="h-3 w-24 rounded bg-white/10" />
+          <div className="h-14 w-[550px] max-w-full rounded-lg bg-white/10" />
+          <div className="h-5 w-[400px] max-w-full rounded bg-white/10" />
+          <div className="flex gap-2.5 pt-2">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-9 w-32 rounded-full bg-white/10" />
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="py-16 sm:py-28">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="max-w-3xl mx-auto text-center space-y-3">
-            <div className="mx-auto h-4 w-24 rounded-full bg-light-gray/40 animate-pulse" />
-            <div className="mx-auto h-8 w-64 rounded-lg bg-light-gray/40 animate-pulse" />
-            <div className="mx-auto h-4 w-80 rounded bg-light-gray/30 animate-pulse" />
-            <div className="mx-auto h-4 w-96 rounded bg-light-gray/30 animate-pulse" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-xl border border-light-gray/40 p-6 space-y-3">
-                <div className="h-6 w-24 rounded bg-light-gray/40 animate-pulse" />
-                <div className="h-1 w-full rounded bg-brand-primary/20 animate-pulse" />
-                <div className="h-8 w-32 rounded bg-light-gray/40 animate-pulse" />
-                <div className="space-y-2">
-                  {Array.from({ length: 4 }).map((_, j) => (
-                    <div key={j} className="h-3 w-full rounded bg-light-gray/30 animate-pulse" />
-                  ))}
+      {/* Calculator skeleton */}
+      <section className="bg-white py-16 sm:py-28">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          <div className="h-10 w-64 rounded-lg bg-muted-foreground/15 mx-auto" />
+          <div className="h-5 w-80 rounded bg-muted-foreground/10 mx-auto" />
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8">
+            <div className="space-y-6">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-4 w-32 rounded bg-muted-foreground/15" />
+                  <div className="h-10 w-full rounded-lg bg-muted-foreground/10" />
                 </div>
-              </div>
-            ))}
-          </div>
-          <div className="bg-white rounded-xl border border-light-gray/40 overflow-hidden">
-            <div className="p-6 space-y-4">
-              <div className="h-6 w-48 rounded bg-light-gray/40 animate-pulse" />
-              <div className="h-10 w-full rounded bg-light-gray/30 animate-pulse" />
+              ))}
+            </div>
+            <div className="rounded-2xl bg-muted-foreground/5 p-6 space-y-4">
+              <div className="h-6 w-40 rounded bg-muted-foreground/15" />
+              <div className="h-12 w-full rounded-lg bg-muted-foreground/10" />
+              <div className="h-px bg-muted-foreground/10" />
               <div className="space-y-2">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <div className="h-5 flex-1 rounded bg-light-gray/30 animate-pulse" />
-                    <div className="h-5 w-24 rounded bg-light-gray/40 animate-pulse" />
-                    <div className="h-5 w-24 rounded bg-light-gray/40 animate-pulse" />
-                    <div className="h-5 w-20 rounded bg-light-gray/40 animate-pulse" />
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="flex justify-between">
+                    <div className="h-4 w-24 rounded bg-muted-foreground/10" />
+                    <div className="h-4 w-20 rounded bg-muted-foreground/15" />
                   </div>
                 ))}
+              </div>
+              <div className="h-px bg-muted-foreground/10" />
+              <div className="flex justify-between">
+                <div className="h-5 w-16 rounded bg-muted-foreground/15" />
+                <div className="h-6 w-28 rounded bg-muted-foreground/20" />
               </div>
             </div>
           </div>

@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Link from "next/link";
+import Image from "next/image";
 import {
-  MessageCircle, Calculator, ArrowRight, Info, ChevronDown,
+  MessageCircle, Calculator, Info, ChevronDown,
   Package, Minus, AlignJustify, Circle, LayoutGrid, Waves, Grip,
   Building2, Ruler, Trophy, type LucideIcon,
 } from "lucide-react";
-import { Label } from "@/components/ui/label";
 import { useSettings } from "@/stores/settings-store";
 import { cn } from "@/lib/utils";
 
@@ -62,8 +61,8 @@ interface MatMeta {
 }
 
 const MAT_META: Record<MatKey, MatMeta> = {
-  ppcCement: { name: "PPC cement",    desc: "Plastering & brickwork",      unit: "bags", icon: Package,       color: "#4B5DDB", bg: "#EEEDFE" },
-  opcCement: { name: "OPC cement",    desc: "Slabs & structural work",     unit: "bags", icon: Package,       color: "#4B5DDB", bg: "#EEEDFE" },
+  ppcCement: { name: "PPC cement",    desc: "Plastering & brickwork",      unit: "bags", icon: Package,       color: "#1d4ed8", bg: "#eff6ff" },
+  opcCement: { name: "OPC cement",    desc: "Slabs & structural work",     unit: "bags", icon: Package,       color: "#1d4ed8", bg: "#eff6ff" },
   steel8mm:  { name: "8mm TMT rod",   desc: "Stirrups & ties",             unit: "kg",   icon: Minus,         color: "#B45309", bg: "#FEF3C7" },
   steel10mm: { name: "10mm TMT rod",  desc: "Slab distribution",           unit: "kg",   icon: Minus,         color: "#B45309", bg: "#FEF3C7" },
   steel12mm: { name: "12mm TMT rod",  desc: "Slab main bars",              unit: "kg",   icon: Minus,         color: "#B45309", bg: "#FEF3C7" },
@@ -84,33 +83,10 @@ interface MatGroup {
 }
 
 const GROUPS: MatGroup[] = [
-  { label: "Cement",               dot: "#4B5DDB", keys: ["ppcCement", "opcCement"] },
+  { label: "Cement",               dot: "#1d4ed8", keys: ["ppcCement", "opcCement"] },
   { label: "Steel reinforcement",  dot: "#B45309", keys: ["steel8mm", "steel10mm", "steel12mm", "steel16mm", "steel20mm"] },
   { label: "Pipes & fittings",     dot: "#0F766E", keys: ["pvcPipe", "cpvcPipe", "giPipe"] },
   { label: "Other materials",      dot: "#57534E", keys: ["bricks", "sand", "aggregate"] },
-];
-
-const FAQS: { q: string; a: string }[] = [
-  {
-    q: "What affects construction cost in Nepal?",
-    a: "Location, material quality, labour rates, design complexity, and project timeline. Kathmandu Valley typically has higher costs than rural areas.",
-  },
-  {
-    q: "How accurate is this estimate?",
-    a: "This is a preliminary estimate based on current market rates. Actual costs vary based on site conditions, material availability, and labour rates. Contact us for a detailed BOQ.",
-  },
-  {
-    q: "What's included in the per sq.ft cost?",
-    a: "Structural work (foundation, columns, slabs), basic finishing (plaster, flooring, painting), electrical and plumbing rough-in, and labour. Finishes like modular kitchen, wardrobe, and landscaping are extra.",
-  },
-  {
-    q: "How can I reduce construction costs?",
-    a: "Optimise the design (simple layout), use locally available materials, plan construction during dry season, and avoid frequent design changes during execution.",
-  },
-  {
-    q: "What payment schedule do contractors follow?",
-    a: "Typically 20–30% advance, then progress-based payments tied to milestones — foundation, slab casting, brickwork, finishing, and handover.",
-  },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -343,14 +319,14 @@ function GradeTabs({
           className={cn(
             "rounded-xl py-2.5 px-2 text-center border transition-all duration-150",
             value === key
-              ? "border-[#4B5DDB] bg-[#EEEDFE] border-[1.5px]"
-              : "border-light-gray/40 bg-off-white hover:border-light-gray",
+              ? "border-[#1d4ed8] bg-[#eff6ff] border-[1.5px]"
+              : "border-light-gray/50 bg-white hover:border-light-gray",
           )}
         >
-          <p className={cn("text-xs font-semibold", value === key ? "text-[#3C3489]" : "text-brand-dark")}>
+          <p className={cn("text-xs font-semibold", value === key ? "text-[#1e3a8a]" : "text-brand-dark")}>
             {label}
           </p>
-          <p className={cn("text-[10px] mt-0.5", value === key ? "text-[#534AB7]" : "text-mid-gray")}>
+          <p className={cn("text-[10px] mt-0.5", value === key ? "text-[#1d4ed8]" : "text-mid-gray")}>
             {price}
           </p>
         </button>
@@ -378,24 +354,46 @@ function MatCard({ matKey, value }: { matKey: MatKey; value: number }) {
   );
 }
 
+const FAQS: { q: string; a: string }[] = [
+  {
+    q: "What affects construction cost in Nepal?",
+    a: "Location, material quality, labour rates, design complexity, and project timeline. The Kathmandu Valley typically costs more than rural areas.",
+  },
+  {
+    q: "How accurate is this estimate?",
+    a: "It is a preliminary estimate based on current market rates. Actual costs vary with site conditions, material availability, and labour rates — contact us for a detailed BOQ.",
+  },
+  {
+    q: "What is included in the per sq.ft cost?",
+    a: "Structural work (foundation, columns, slabs), basic finishing (plaster, flooring, painting), electrical and plumbing rough-in, and labour. Premium finishes like modular kitchens and landscaping are extra.",
+  },
+  {
+    q: "How can I reduce construction costs?",
+    a: "Keep the design simple, use locally available materials, build during the dry season, and avoid frequent design changes during execution.",
+  },
+  {
+    q: "What payment schedule do contractors follow?",
+    a: "Typically 20–30% advance, then progress-based payments tied to milestones — foundation, slab casting, brickwork, finishing, and handover.",
+  },
+];
+
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-b border-light-gray/40 last:border-0">
+    <div className="rounded-xl border border-[#e2e8f0] bg-white overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center justify-between w-full py-3.5 gap-3 text-left"
+        aria-expanded={open}
+        className="flex items-center justify-between w-full px-5 py-4 gap-3 text-left focus-visible:ring-2 focus-visible:ring-[#1d4ed8] focus-visible:ring-inset"
       >
-        <span className="text-sm font-semibold text-brand-dark">{q}</span>
-        <ChevronDown
-        className={cn("size-4 text-mid-gray shrink-0 transition-transform duration-200", open && "rotate-180")}
-        />
+        <span className="text-[14px] font-bold text-[#0f2557]">{q}</span>
+        <ChevronDown className={cn("size-4 text-[#94a3b8] shrink-0 transition-transform duration-200", open && "rotate-180 text-[#1d4ed8]")} />
       </button>
-      <div
-        className={cn("overflow-hidden transition-all duration-200", open ? "max-h-[200px] opacity-100" : "max-h-0 opacity-0")}
-      >
-        <p className="text-[13px] text-mid-gray leading-relaxed pb-3.5">{a}</p>
+      <div className={cn("grid transition-all duration-200", open ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
+        <div className="overflow-hidden">
+          <p className="text-[13.5px] text-[#64748b] leading-relaxed px-5 pb-4">{a}</p>
+        </div>
       </div>
     </div>
   );
@@ -439,18 +437,28 @@ export function CostEstimator() {
       <section className="bg-white py-16 sm:py-24">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
 
-          <div className="max-w-2xl mb-10">
-            <Label className="text-xs font-semibold tracking-[0.15em] uppercase text-brand-primary bg-brand-primary/5 px-3 py-1 rounded-full">Construction Calculator</Label>
-            <h2 className="mt-2 font-display font-bold text-brand-secondary text-3xl sm:text-4xl lg:text-5xl leading-tight">
-              Estimate your build cost
-            </h2>
-            <p className="mt-3 text-mid-gray text-base leading-relaxed">
-              Preliminary material breakdown based on current Nepal market rates.
-            </p>
+          {/* Header band */}
+          <div className="flex items-center justify-between gap-8 mb-10">
+            <div className="max-w-xl">
+              <p className="text-[#cd2028] text-[11px] font-bold tracking-[0.24em] uppercase mb-3 flex items-center gap-2.5">
+                <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+                Construction Calculator
+              </p>
+              <h2 className="font-display font-black text-[#0f2557] leading-[1.05] tracking-[-0.02em]"
+                style={{ fontSize: "clamp(1.8rem, 3.6vw, 2.8rem)" }}>
+                Estimate Your Build Cost
+              </h2>
+              <p className="mt-3 text-[#64748b] text-[15px] leading-relaxed">
+                A preliminary, material-by-material breakdown based on current Nepal market rates.
+              </p>
+            </div>
+            <div className="relative shrink-0 w-[220px] h-[170px] hidden md:block select-none" aria-hidden="true">
+              <Image src="/video-gif/plan-making.svg" alt="" fill unoptimized className="object-contain object-center" />
+            </div>
           </div>
 
-          {/* Form + 3D preview */}
-          <div className="grid md:grid-cols-2 gap-8 items-start">
+          {/* Form + 3D preview panel */}
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-stretch rounded-2xl border border-[#e2e8f0] bg-[#f8fafc] p-5 sm:p-6">
 
             {/* Form */}
             <div className="space-y-4">
@@ -469,7 +477,7 @@ export function CostEstimator() {
                     value={area}
                     onChange={(e) => setArea(e.target.value)}
                     placeholder="e.g. 600"
-                    className="h-11 px-3 rounded-xl border border-light-gray/50 bg-off-white text-brand-dark text-sm focus:outline-none focus:ring-2 focus:ring-[#4B5DDB]/20 focus:border-[#4B5DDB] transition-all"
+                    className="h-11 px-3 rounded-xl border border-light-gray/60 bg-white text-brand-dark text-sm focus:outline-none focus:ring-2 focus:ring-[#1d4ed8]/20 focus:border-[#1d4ed8] transition-all"
                   />
                 </div>
 
@@ -484,7 +492,7 @@ export function CostEstimator() {
                     id="est-floors"
                     value={floors}
                     onChange={(e) => setFloors(Number(e.target.value))}
-                    className="h-11 px-3 rounded-xl border border-light-gray/50 bg-off-white text-brand-dark text-sm focus:outline-none focus:ring-2 focus:ring-[#4B5DDB]/20 focus:border-[#4B5DDB] transition-all"
+                    className="h-11 px-3 rounded-xl border border-light-gray/60 bg-white text-brand-dark text-sm focus:outline-none focus:ring-2 focus:ring-[#1d4ed8]/20 focus:border-[#1d4ed8] transition-all"
                   >
                     {[1, 2, 3, 4, 5].map((n) => (
                       <option key={n} value={n}>{n} {n === 1 ? "Floor" : "Floors"}</option>
@@ -503,7 +511,7 @@ export function CostEstimator() {
               <button
                 type="button"
                 onClick={handleCalculate}
-                className="w-full h-11 rounded-xl bg-[#4B5DDB] text-white text-sm font-bold tracking-wide flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition-all"
+                className="w-full h-11 rounded-xl bg-[#1d4ed8] text-white text-sm font-bold tracking-wide flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition-all"
               >
                 <Calculator className="size-4" />
                 Calculate estimate
@@ -513,14 +521,14 @@ export function CostEstimator() {
                 href={`https://wa.me/${waNum}?text=${encodeURIComponent(waText)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full h-10 rounded-xl border border-light-gray/50 bg-off-white text-mid-gray text-sm font-semibold flex items-center justify-center gap-2 hover:bg-[#e8fef2] hover:text-[#1a7a4a] hover:border-[#25D366] transition-all"
+                className="w-full h-10 rounded-xl border border-light-gray/50 bg-white text-mid-gray text-sm font-semibold flex items-center justify-center gap-2 hover:bg-[#e8fef2] hover:text-[#1a7a4a] hover:border-[#25D366] transition-all"
               >
                 <MessageCircle className="size-4 text-[#25D366]" />
                 Request quote on WhatsApp
               </a>
 
-              <div className="flex gap-2.5 items-start bg-off-white border-l-2 border-[#4B5DDB] rounded-r-xl px-3 py-2.5">
-                <Info className="size-3.5 text-[#4B5DDB] mt-0.5 shrink-0" />
+              <div className="flex gap-2.5 items-start bg-white border-l-2 border-[#1d4ed8] rounded-r-xl px-3 py-2.5">
+                <Info className="size-3.5 text-[#1d4ed8] mt-0.5 shrink-0" />
                 <p className="text-[11px] text-mid-gray leading-relaxed">
                   Preliminary estimate only. Actual costs vary by site, location, and labour rates.
                 </p>
@@ -531,117 +539,53 @@ export function CostEstimator() {
             <HousePreview floors={floors} area={areaNum} material={material} />
           </div>
 
-          {/* Results */}
+          {/* Results — coming soon placeholder (detailed calculation to be added) */}
           {result !== null ? (
-            <div className="mt-14 pt-10 border-t border-light-gray/40">
-
-              {/* Cost hero */}
-              <div className="flex items-end justify-between mb-6">
-                <div>
-                  <p className="text-[11px] font-semibold text-mid-gray uppercase tracking-widest mb-1">
-                    Estimated total cost
-                  </p>
-                  <p className="text-4xl font-bold text-brand-dark leading-none">
-                    Rs. {fmt(result.totalCost)}
-                  </p>
-                  <p className="text-xs text-mid-gray mt-2">
-                    Rs. {RATES[material].rate.toLocaleString("en-IN")}/sq.ft · {material} grade
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xl font-bold text-brand-dark">{fmt(result.totalArea)}</p>
-                  <p className="text-xs text-mid-gray mt-0.5">total sq.ft</p>
-                </div>
-              </div>
-
-              {/* Metric chips */}
-              <div className="grid grid-cols-3 gap-3 mb-8">
-                {(
-                  [
-                    { Icon: Building2, color: "#4B5DDB", val: String(floors),    lbl: "Floors"        },
-                    { Icon: Ruler,     color: "#0F766E", val: fmt(areaNum),       lbl: "sq.ft / floor" },
-                    { Icon: Trophy,    color: "#B45309", val: material.charAt(0).toUpperCase() + material.slice(1), lbl: "Grade" },
-                  ] as const
-                ).map(({ Icon, color, val, lbl }) => (
-                  <div key={lbl} className="bg-off-white rounded-xl p-3.5">
-                    <Icon className="size-5 mb-2" style={{ color }} strokeWidth={1.5} />
-                    <p className="text-base font-bold text-brand-dark">{val}</p>
-                    <p className="text-[11px] text-mid-gray mt-0.5">{lbl}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Material groups */}
-              <div className="space-y-6">
-                {GROUPS.map(({ label, dot, keys }) => (
-                  <div key={label}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="size-1.5 rounded-full shrink-0" style={{ background: dot }} />
-                      <span className="text-[11px] font-semibold text-mid-gray uppercase tracking-widest">
-                        {label}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
-                      {keys.map((k) => (
-                        <MatCard key={k} matKey={k} value={result.vals[k]} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
+            <div className="mt-12 pt-10 border-t border-light-gray/40">
+              <div className="flex flex-col items-center text-center py-4">
+                <p className="text-[11px] font-semibold text-mid-gray uppercase tracking-widest mb-5">
+                  Estimated Total Cost
+                </p>
+                <Image
+                  src="/video-gif/coming-soon.svg"
+                  alt="Detailed cost estimate coming soon"
+                  width={340}
+                  height={220}
+                  unoptimized
+                  className="w-[220px] sm:w-[300px] h-auto object-contain"
+                />
+                <p className="mt-6 text-sm text-mid-gray max-w-md leading-relaxed">
+                  Our detailed cost breakdown is coming soon. For a precise, site-specific quote,
+                  reach our team on WhatsApp.
+                </p>
               </div>
             </div>
           ) : (
             <p className="mt-10 text-center text-sm text-mid-gray">
               Fill in the form above and click{" "}
-              <strong className="text-brand-dark">Calculate estimate</strong> to
-              see a detailed material breakdown.
+              <strong className="text-brand-dark">Calculate estimate</strong> to continue.
             </p>
           )}
         </div>
       </section>
 
       {/* ── FAQ ── */}
-      {/* <section className="bg-off-white py-16 sm:py-24">
-        <div className="max-w-[720px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <Label className="text-xs font-semibold tracking-[0.15em] uppercase text-brand-primary bg-brand-primary/5 px-3 py-1 rounded-full">FAQ</Label>
-            <h2 className="mt-2 font-display font-bold text-brand-secondary text-3xl sm:text-4xl">
-              Common questions
+      <section className="bg-[#f8fafc] py-16 sm:py-24">
+        <div className="max-w-[760px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <p className="text-[#cd2028] text-[11px] font-bold tracking-[0.24em] uppercase mb-3 flex items-center gap-2.5">
+              <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+              FAQ
+            </p>
+            <h2 className="font-display font-black text-[#0f2557] leading-[1.1] tracking-[-0.02em]"
+              style={{ fontSize: "clamp(1.6rem, 3vw, 2.4rem)" }}>
+              Common Questions
             </h2>
           </div>
-          <div>
+          <div className="space-y-3">
             {FAQS.map((f) => (
               <FaqItem key={f.q} q={f.q} a={f.a} />
             ))}
-          </div>
-        </div>
-      </section> */}
-
-      {/* ── CTA ── */}
-      <section className="bg-brand-dark py-16 sm:py-20">
-        <div className="max-w-[720px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-display font-bold text-white text-3xl sm:text-4xl leading-tight">
-            Make a plan, then act
-          </h2>
-          <p className="mt-3 text-white/55 text-lg max-w-[480px] mx-auto">
-            Get a site-specific quote from our team and turn your estimate into a real project.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link prefetch={false}
-              href="/contact"
-              className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-brand-primary text-white text-sm font-bold hover:brightness-110 transition"
-            >
-              Get detailed quote <ArrowRight className="size-4" />
-            </Link>
-            <a
-              href={`https://wa.me/${waNum}?text=${encodeURIComponent(waText)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 h-11 px-6 rounded-full border border-white/20 text-white/75 text-sm font-bold hover:bg-white/10 transition"
-            >
-              <MessageCircle className="size-4" />
-              Chat on WhatsApp
-            </a>
           </div>
         </div>
       </section>

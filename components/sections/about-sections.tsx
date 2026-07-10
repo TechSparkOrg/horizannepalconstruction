@@ -1,4 +1,3 @@
-import { cacheLife } from "next/cache";
 import { getTeam } from "@/api/services/team.service";
 import { getServiceCategories } from "@/api/services/category.service";
 import { getVendors } from "@/api/services/vendor-public.service";
@@ -17,14 +16,12 @@ import { TeamSection } from "@/components/global_ui/TeamSection";
 
 export async function AboutServicesAsync() {
   "use cache";
-  cacheLife("default");
   const services = await getServiceCategories().catch(() => []);
   return <ServicesSection initialServices={services} />;
 }
 
 export async function AboutPartnersAsync() {
   "use cache";
-  cacheLife("default");
   const [vRes, bRes] = await Promise.all([
     getVendors().catch(() => ({ results: [] as PublicVendor[] })),
     getBanks().catch(() => [] as EmiBank[]),
@@ -39,21 +36,18 @@ export async function AboutPartnersAsync() {
 
 export async function AboutReviewsAsync() {
   "use cache";
-  cacheLife("default");
   const reviews = await ReviewPublic.list().catch(() => ({ results: [] }));
   return <TestimonialsSection initialReviews={reviews.results} />;
 }
 
 export async function AboutConsultAsync() {
   "use cache";
-  cacheLife("default");
   const cats = await CategoryPublic.list().catch(() => ({ results: [] }));
   return <ConsultationForm initialCategories={cats.results} />;
 }
 
 export async function AboutFaqAsync({ faqGroupSlug }: { faqGroupSlug: string }) {
   "use cache";
-  cacheLife("default");
   const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 10 }).catch(() => ({ results: [] }));
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",
@@ -64,7 +58,6 @@ export async function AboutFaqAsync({ faqGroupSlug }: { faqGroupSlug: string }) 
 
 export async function AboutTeamAsync() {
   "use cache";
-  cacheLife("default");
   const res = await getTeam().catch(() => ({ results: [] }));
   return <TeamSection members={res.results} />;
 }

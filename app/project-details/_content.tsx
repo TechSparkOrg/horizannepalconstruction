@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { cacheLife } from "next/cache";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import { getProjects } from "@/api/services/project.service";
 import { getFaqs } from "@/api/services/faq.service";
@@ -66,7 +65,6 @@ export function ProjectPageContent({ page }: Props) {
 
 async function ProjectsSection() {
   "use cache";
-  cacheLife("default");
   const res = await getProjects().catch(() => ({ results: [] }));
   const projects = res.results ?? [];
 
@@ -128,7 +126,6 @@ function ProjectsGridSkeleton() {
 
 async function ProjectFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
   "use cache";
-  cacheLife("default");
   const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch(() => ({ results: [] }));
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",

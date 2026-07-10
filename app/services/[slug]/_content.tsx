@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import { cacheLife } from "next/cache";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import { getFaqs } from "@/api/services/faq.service";
 import { getBlogsByCategory } from "@/api/services/blog.service";
@@ -91,7 +90,6 @@ export function ServiceDetailInner({ detail }: Props) {
 
 async function BlogCatSection({ categorySlug, categoryName }: { categorySlug: string; categoryName: string }) {
   "use cache";
-  cacheLife("default");
   const res = await getBlogsByCategory(categorySlug).catch(() => ({ results: [] }));
   const posts = (res.results ?? []).slice(0, 4);
   if (posts.length === 0) {
@@ -125,7 +123,6 @@ async function BlogCatSection({ categorySlug, categoryName }: { categorySlug: st
 
 async function ProjectCatSection({ categorySlug, categoryName }: { categorySlug: string; categoryName: string }) {
   "use cache";
-  cacheLife("default");
   const res = await getProjectsByCategory(categorySlug).catch(() => ({ results: [] }));
   const projects = (res.results ?? []).slice(0, 4);
   if (projects.length === 0) {
@@ -170,7 +167,6 @@ async function ProjectCatSection({ categorySlug, categoryName }: { categorySlug:
 
 async function ServiceFaqInner({ faqSlug }: { faqSlug: string }) {
   "use cache";
-  cacheLife("default");
   const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch(() => ({ results: [] }));
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",

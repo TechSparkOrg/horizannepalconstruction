@@ -1,7 +1,6 @@
 import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { cacheLife } from "next/cache";
 import { getUnitConversionBySlug } from "@/api/services/unit-converter-public.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
@@ -54,7 +53,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function UnitConvertDetailPage({ params }: Props) {
   "use cache";
-  cacheLife("hours");
 
   const { slug } = await params;
   const item = await getConversion(slug);

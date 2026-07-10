@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import { cacheLife } from "next/cache";
 import {
   ArrowRight, PauseCircle,
   MapPin, Wallet, Calendar, CalendarCheck, CalendarClock, Box,
@@ -300,7 +299,6 @@ function MilestoneItem({ m, index, last }: { m: ProjectMilestone; index: number;
 
 async function ProjectFaq({ faqSlug }: { faqSlug: string }) {
   "use cache";
-  cacheLife("default");
   const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch(() => ({ results: [] }));
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",

@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { cacheLife } from "next/cache";
 import { getProjectCategoryDetail } from "@/api/services/category.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
@@ -42,7 +41,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProjectCategoryDetailPage({ params }: Props) {
   "use cache";
-  cacheLife("hours");
 
   const { slug } = await params;
   const detail = await getDetail(slug);

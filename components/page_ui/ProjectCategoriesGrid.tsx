@@ -1,11 +1,9 @@
 import Image from "next/image";
-import { cacheLife } from "next/cache";
 import { getPublicProjectCategories } from "@/api/services/category.service";
 import { htmlToText } from "@/lib/htmlToText";
 
 export async function ProjectCategoriesGrid() {
   "use cache";
-  cacheLife("hours");
   const categories = await getPublicProjectCategories().catch(() => []);
 
   if (categories.length === 0) {

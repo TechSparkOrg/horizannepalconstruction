@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import { cacheLife } from "next/cache";
 import { getProjectsByCategory } from "@/api/services/project.service";
 import { getFaqs } from "@/api/services/faq.service";
 import { ProjectCard } from "@/components/global_ui/ProjectCard";
@@ -36,7 +35,6 @@ export function ProjectCategoryDetailInner({ detail }: Props) {
 
 async function CategoryFaq({ faqSlug }: { faqSlug: string }) {
   "use cache";
-  cacheLife("default");
   const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch(() => ({ results: [] }));
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",
@@ -56,7 +54,6 @@ async function CategoryFaq({ faqSlug }: { faqSlug: string }) {
 
 async function CategoryProjects({ slug, name }: { slug: string; name: string }) {
   "use cache";
-  cacheLife("default");
   const res = await getProjectsByCategory(slug).catch(() => ({ results: [] }));
   const projects = res.results ?? [];
 
