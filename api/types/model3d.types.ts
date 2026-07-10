@@ -15,5 +15,6 @@ export interface DesignModel {
   url: string
   description: string
   project: { slug: string; name: string } | null
+  blog: { slug: string; name: string } | null
   category: { id: string; slug: string; name: string } | null
 }
