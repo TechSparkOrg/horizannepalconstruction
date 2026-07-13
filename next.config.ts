@@ -1,4 +1,8 @@
 import type { NextConfig } from "next";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+
+// Enables Cloudflare bindings (getCloudflareContext) during `next dev`.
+initOpenNextCloudflareForDev();
 
 const config: NextConfig = {
   reactStrictMode: true,
