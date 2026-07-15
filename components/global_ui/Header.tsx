@@ -224,7 +224,7 @@ function MobileSidebar() {
             Call us now
           </a>
           <Link prefetch={false}
-            href="/contact"
+            href="/request"
             onClick={() => setIsOpen(false)}
             className="flex items-center justify-center gap-2 w-full h-11 rounded-xl bg-brand-dark hover:bg-[#0c1f4a] text-white font-semibold text-[13.5px] transition-colors"
           >
@@ -297,7 +297,7 @@ export function Header() {
         <div className="flex items-center gap-2.5 shrink-0">
           {/* Desktop CTA */}
           <Link prefetch={false}
-            href="/contact"
+            href="/request"
             className="hidden sm:inline-flex items-center h-9 px-5 rounded-full bg-white hover:bg-gray-100 text-brand-dark font-semibold text-[13px] leading-none transition-colors focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-1 focus-visible:ring-offset-brand-dark"
           >
             Get a Quote

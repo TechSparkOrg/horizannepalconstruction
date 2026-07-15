@@ -50,7 +50,7 @@
       "id": "vastu-shastra",
       "name": "Vastu Shastra Guide",
       "description": "Vastu-compliant building design principles and configuration data",
-      "endpoint": "https://api.horizonnepalconstruction.com/api/vastu/"
+      "endpoint": "https://api.horizonnepalconstruction.com/api/vastu/nav/"
     },
     {
       "id": "faq",
@@ -68,7 +68,7 @@
       "id": "banners",
       "name": "Banners & Images",
       "description": "Hero banners and featured images grouped by page slug",
-      "endpoint": "https://api.horizonnepalconstruction.com/api/banners/{slug}/"
+      "endpoint": "https://api.horizonnepalconstruction.com/api/media/banners/{slug}"
     },
     {
       "id": "consultation",
@@ -80,13 +80,7 @@
       "id": "page-content",
       "name": "Page Content",
       "description": "CMS-managed page content with bilingual (en/np) support",
-      "endpoint": "https://api.horizonnepalconstruction.com/api/pages/"
-    },
-    {
-      "id": "page-sections",
-      "name": "Page Sections",
-      "description": "Structured content sections by page, bilingual",
-      "endpoint": "https://api.horizonnepalconstruction.com/api/pages/sections/"
+      "endpoint": "https://api.horizonnepalconstruction.com/api/pages/{slug}"
     },
     {
       "id": "reviews",
@@ -104,7 +98,37 @@
       "id": "team",
       "name": "Team Members",
       "description": "Company team member directory with roles and bios",
-      "endpoint": "https://api.horizonnepalconstruction.com/api/team/"
+      "endpoint": "https://api.horizonnepalconstruction.com/api/team"
+    },
+    {
+      "id": "materials",
+      "name": "Construction Materials",
+      "description": "Material catalog with pricing information for construction cost estimation",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/materials/"
+    },
+    {
+      "id": "unit-converter",
+      "name": "Unit Converter",
+      "description": "Construction unit conversion tables for area, length, volume, and weight",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/unit-converter/"
+    },
+    {
+      "id": "vendors",
+      "name": "Vendor Directory",
+      "description": "List of construction material vendors and suppliers",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/vendors/"
+    },
+    {
+      "id": "emi-banks",
+      "name": "EMI Bank Rates",
+      "description": "Home loan EMI rates from partner banks",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/emi/banks"
+    },
+    {
+      "id": "categories",
+      "name": "Content Categories",
+      "description": "Taxonomy for blog posts, projects, and services by category",
+      "endpoint": "https://api.horizonnepalconstruction.com/api/categories/blog"
     }
   ],
   "wellKnown": {
