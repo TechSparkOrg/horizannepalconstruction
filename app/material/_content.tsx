@@ -7,7 +7,7 @@ import type { Page } from "@/api/types/page.types";
 const VendorsSection = dynamic(() => import("@/components/page_ui/VendorsSection.client"));
 const MaterialGrid = dynamic(() => import("@/components/page_ui/MaterialGrid.client"));
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 
 interface Props {
   page: Page | null;

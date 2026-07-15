@@ -3,7 +3,7 @@ import { ViewportSection } from "@/components/viewport/ViewportSection";
 import type { Page } from "@/api/types/page.types";
 
 const CostEstimator = dynamic(() => import("@/components/page_ui/CostEstimator").then(m => ({ default: m.CostEstimator })));
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 
 interface Props { page: Page | null }
 

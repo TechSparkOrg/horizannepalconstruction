@@ -7,7 +7,7 @@ import { getPageBySlug } from "@/api/services/page.service";
 import { LazyFeather } from "@/components/viewport/LazyFeather";
 import { FaqContent } from "./_content";
 
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 const SLUG = "faq";

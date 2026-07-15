@@ -9,7 +9,7 @@ import { RegulationsGrid } from "./RegulationsGrid";
 import { MunicipalityTable } from "./MunicipalityTable";
 
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 
 interface Props {
   config: BuildingPermitConfig;

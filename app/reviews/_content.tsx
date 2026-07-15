@@ -4,7 +4,7 @@ import { ViewportSection } from "@/components/viewport/ViewportSection";
 import { ReviewsAsync } from "@/components/sections/reviews-sections";
 import type { Page } from "@/api/types/page.types";
 
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 
 interface Props {
   page: Page | null;

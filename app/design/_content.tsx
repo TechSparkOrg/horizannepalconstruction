@@ -9,7 +9,7 @@ const Design3DShowcase = dynamic(() => import("@/components/page_ui/Design3DShow
 const ImageGrid = dynamic(() => import("@/components/global_ui/image-grid").then(m => ({ default: m.ImageGrid })));
 const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then(m => ({ default: m.ConsultationForm })));
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 
 interface Props {
   page: Page | null;

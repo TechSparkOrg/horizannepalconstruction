@@ -9,7 +9,7 @@ import type { Category } from "@/api/types/category.types";
 const BlogGrid = dynamic(() => import("@/components/page_ui/BlogGrid.client"));
 const ImageGrid = dynamic(() => import("@/components/global_ui/image-grid").then((m) => ({ default: m.ImageGrid })));
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 
 interface Props {
   page: Page | null;

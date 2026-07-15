@@ -3,9 +3,7 @@
 import { Clock } from "lucide-react";
 import Image from "next/image";
 import type { WorkflowStep } from "@/api/types/building-permit.types";
-import dynamic from "next/dynamic";
-
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/Parse-Content";
 
 export function WorkflowTimeline({ steps }: { steps: WorkflowStep[] }) {
   return (

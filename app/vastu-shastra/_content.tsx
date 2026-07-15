@@ -9,7 +9,7 @@ import FaqClient from "@/components/global_ui/FaqClient";
 import { VastuGuideClient } from "./VastuGuideClient";
 
 const VastuQuickTools = dynamic(() => import("./VastuQuickTools").then((m) => ({ default: m.VastuQuickTools })));
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 
 interface Props {
   page: Page | null;

@@ -5,7 +5,7 @@ import { getFaqs } from "@/api/services/faq.service";
 import { ProjectCard } from "@/components/global_ui/ProjectCard";
 import type { ProjectCategoryDetail } from "@/api/types/category.types";
 
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
 
 interface Props {

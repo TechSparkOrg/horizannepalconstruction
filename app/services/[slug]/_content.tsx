@@ -8,7 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { ServiceCategoryDetail } from "@/api/types/category.types";
 
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
 const BlogCard = dynamic(() => import("@/components/global_ui/BlogCard").then(m => ({ default: m.BlogCard })));
 

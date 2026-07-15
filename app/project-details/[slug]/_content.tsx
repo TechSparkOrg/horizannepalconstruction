@@ -11,7 +11,7 @@ import { getProjectStatus, formatProjectDate } from "@/lib/project-status";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import type { Project, ProjectMilestone } from "@/api/types/project.types";
 
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
 const ModelViewerBlock = dynamic(() => import("@/components/global_ui/model-viewer"));
 
