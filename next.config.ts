@@ -1,7 +1,4 @@
 import type { NextConfig } from "next";
-import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
-
-initOpenNextCloudflareForDev();
 
 const config: NextConfig = {
   reactStrictMode: true,
@@ -13,19 +10,14 @@ const config: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "assets.horizonnepalconstruction.com" },
       { protocol: "https", hostname: "www.instagram.com" },
-  
     ],
   },
-
-
 
   experimental: {
     optimizePackageImports: ["lucide-react"],
     inlineCss: true,
     staleTimes: { dynamic: 30, static: 180 },
     staticGenerationMaxConcurrency: 8,
-
-
   },
 
   compiler: {
