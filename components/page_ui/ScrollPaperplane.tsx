@@ -37,7 +37,7 @@ const PLANE_ANGLE_OFFSET = 0
 // Max tilt from mouse gesture (degrees)
 const MAX_MOUSE_TILT = 50
 
-export function ScrollPaperplane({ src = "/video-gif/Loading- Paperplane.svg" }: { src?: string }) {
+export function ScrollPaperplane({ src = "/video-gif/Loading-Paperplane.svg" }: { src?: string }) {
   const planeRef   = useRef<HTMLDivElement>(null)
   const current    = useRef({ x: 85, y: 14, angle: 0 })
   const target     = useRef({ x: 85, y: 14, angle: 0 })
@@ -131,6 +131,7 @@ export function ScrollPaperplane({ src = "/video-gif/Loading- Paperplane.svg" }:
           className="w-20 h-20 sm:w-[110px] sm:h-[110px]"
           sizes="(max-width: 640px) 80px, 110px"
           priority
+          unoptimized
         />
       </div>
     </div>

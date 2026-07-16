@@ -20,7 +20,7 @@ const VendorsSection = ({ initialVendors }: { initialVendors?: PublicVendor[] })
     <section className="relative overflow-hidden bg-[#f8fafc] py-16 sm:py-24 min-h-[420px] sm:min-h-[520px]">
       <Image
         src="/video-gif/truck-loading.svg"
-        alt="" aria-hidden fill
+        alt="" aria-hidden fill unoptimized
         sizes="100vw"
         className="absolute inset-0 w-full h-full object-contain object-center pointer-events-none select-none"
         style={{ opacity: 0.2 }}

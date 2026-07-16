@@ -102,6 +102,7 @@ export function TestimonialsSection({ initialReviews }: { initialReviews?: Revie
               alt="Client reviews illustration"
               width={140}
               height={88}
+              unoptimized
               className="w-[72px] h-[45px] sm:w-[140px] sm:h-[88px] shrink-0 object-contain"
               sizes="(max-width: 640px) 72px, 140px" />
             <div>

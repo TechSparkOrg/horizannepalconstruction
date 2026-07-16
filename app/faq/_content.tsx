@@ -45,6 +45,7 @@ export function FaqContent() {
                   alt="Ask us anything illustration"
                   width={320}
                   height={320}
+                  unoptimized
                   className="w-[200px] sm:w-[280px] lg:w-[320px] h-auto object-contain"
                   sizes="(max-width: 640px) 200px, (max-width: 1024px) 280px, 320px"
                 />

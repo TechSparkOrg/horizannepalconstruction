@@ -88,13 +88,14 @@ export function PartnersSection({
         {/* Header */}
         <div className="flex flex-wrap items-end justify-between gap-6 mb-12">
            <Image
-            src="/video-gif/Business.svg"
-            alt="Partners illustration"
-            width={148}
-            height={92}
-            className="w-[100px] h-[62px] sm:w-[148px] sm:h-[92px] shrink-0 object-contain"
-            sizes="(max-width: 640px) 100px, 148px"
-          />
+             src="/video-gif/Business.svg"
+             alt="Partners illustration"
+             width={148}
+             height={92}
+             unoptimized
+             className="w-[100px] h-[62px] sm:w-[148px] sm:h-[92px] shrink-0 object-contain"
+             sizes="(max-width: 640px) 100px, 148px"
+           />
           <div>
             <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-[#1d4ed8] bg-[#eff6ff] border border-[#bfdbfe] px-3 py-1 rounded-full mb-3">
               Our Partners

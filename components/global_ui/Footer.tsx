@@ -166,6 +166,7 @@ export function Footer() {
             alt=""
             width={120}
             height={213}
+            unoptimized
             className="w-[90px] sm:w-[110px] lg:w-[120px] h-auto object-contain"
             sizes="(max-width: 640px) 90px, (max-width: 1024px) 110px, 120px"
           />

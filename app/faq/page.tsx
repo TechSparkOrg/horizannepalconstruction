@@ -48,6 +48,7 @@ export default async function FAQPage() {
             sizes="(max-width: 1024px) 100vw, 55vw"
             className="object-contain object-center lg:object-right"
             priority
+            unoptimized
           />
           <div className="absolute inset-0 bg-[#0f2557]/80 lg:hidden" />
           <div className="absolute inset-y-0 left-0 w-56 hidden lg:block pointer-events-none" aria-hidden="true"

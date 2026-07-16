@@ -121,6 +121,7 @@ export function ConsultationForm({ initialCategories }: { initialCategories?: Ca
             alt="Consultation illustration"
             width={200}
             height={120}
+            unoptimized
             className="w-[140px] h-[84px] sm:w-[200px] sm:h-[120px] object-contain"
             sizes="(max-width: 640px) 140px, 200px"
           />

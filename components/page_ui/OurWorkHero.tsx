@@ -11,6 +11,7 @@ export function OurWorkHero() {
         className="object-contain object-center"
         sizes="100vw"
         priority
+        unoptimized
       />
 
       {/* Top fade — navy to transparent */}

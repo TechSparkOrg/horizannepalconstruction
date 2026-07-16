@@ -121,6 +121,7 @@ export function ServicesSection({ initialServices }: { initialServices?: Service
               alt="Construction in progress"
               width={56}
               height={56}
+              unoptimized
               className="object-contain shrink-0"
               sizes="56px"
             />

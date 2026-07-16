@@ -33,6 +33,7 @@ export function LocationSection() {
             alt="Location pin illustration"
             width={140}
             height={90}
+            unoptimized
             className="w-[90px] h-[58px] sm:w-[140px] sm:h-[90px] shrink-0 object-contain"
             sizes="(max-width: 640px) 90px, 140px"
           />

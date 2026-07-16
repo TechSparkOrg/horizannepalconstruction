@@ -107,6 +107,7 @@ export function FAQWrapper({ initialFaqs }: { initialFaqs?: FaqItem[] }) {
             sizes="100vw"
             className="object-contain object-center"
             priority={false}
+            unoptimized
           />
         </div>
 

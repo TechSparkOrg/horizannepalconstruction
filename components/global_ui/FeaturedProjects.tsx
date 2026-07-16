@@ -129,6 +129,7 @@ export function FeaturedProjects({
             sizes="100vw"
             className="object-cover"
             priority={false}
+            unoptimized
             aria-hidden="true"
           />
         </div>

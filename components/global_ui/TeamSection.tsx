@@ -30,6 +30,7 @@ export function TeamSection({ members }: { members: TeamMember[] }) {
             alt="Team illustration"
             width={176}
             height={112}
+            unoptimized
             className="w-[100px] h-[64px] sm:w-[176px] sm:h-[112px] shrink-0 object-contain"
             sizes="(max-width: 640px) 100px, 176px"
           />

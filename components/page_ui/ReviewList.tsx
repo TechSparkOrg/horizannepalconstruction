@@ -144,6 +144,7 @@ export function ReviewList({ initialReviews, initialTotal }: Props) {
           sizes="100vw"
           className="object-contain object-center"
           priority
+          unoptimized
         />
         <div
           className="absolute inset-x-0 top-0 h-40 z-10 pointer-events-none"
@@ -232,8 +233,8 @@ export function ReviewList({ initialReviews, initialTotal }: Props) {
                   alt="Social media connection animation"
                   width={500}
                   height={220}
+                  unoptimized
                   className="h-auto object-contain"
-                 
                 />
                 <p className="text-white/50 text-xs text-center max-w-[220px] leading-relaxed">
                   Stay connected — follow us for project updates and design inspiration.

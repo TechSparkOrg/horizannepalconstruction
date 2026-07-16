@@ -17,6 +17,7 @@ export function VastuQuickTools({ roomOptions, directionOptions }: Props) {
           src="/video-gif/Lord-Ganesha.svg"
           alt="Lord Ganesha — divine protector and remover of obstacles"
           width={90} height={140}
+          unoptimized
           className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0"
           sizes="(max-width: 1024px) 70px, 90px"
         />
@@ -35,6 +36,7 @@ export function VastuQuickTools({ roomOptions, directionOptions }: Props) {
           src="/video-gif/saftey-warning.svg"
           alt="Vastu safety — follow principles for balanced energy"
           width={80} height={120}
+          unoptimized
           className="hidden sm:block w-[60px] lg:w-[80px] h-auto object-contain shrink-0"
           sizes="(max-width: 1024px) 60px, 80px"
         />
