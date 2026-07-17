@@ -3,7 +3,8 @@ import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import { DesignShowcaseSection } from "@/components/page_ui/DesignShowcaseSection";
 import { getFaqs } from "@/api/services/faq.service";
-import type { Page } from "@/api/types/page.types";
+import type { Page, PageSvgItem } from "@/api/types/page.types";
+import { getSvgUrl } from "@/lib/svg-utils";
 
 const Design3DShowcase = dynamic(() => import("@/components/page_ui/Design3DShowcase").then(m => ({ default: m.Design3DShowcase })));
 const ImageGrid = dynamic(() => import("@/components/global_ui/image-grid").then(m => ({ default: m.ImageGrid })));
@@ -15,9 +16,10 @@ interface Props {
   page: Page | null;
   modelCards: { key: string; src: string; title: string; subtitle?: string; href?: string }[];
   categories: { id: string; name: string; slug: string }[];
+  svgItems?: PageSvgItem[];
 }
 
-export function DesignContent({ page, modelCards, categories }: Props) {
+export function DesignContent({ page, modelCards, categories, svgItems }: Props) {
   const F = (className: string) => <div className={className} />;
   const bannerItems = (page?.banner_images ?? []).map((b) => ({
     id: b.id, url: b.url, alt: b.alt ?? b.title ?? "",
@@ -40,7 +42,7 @@ export function DesignContent({ page, modelCards, categories }: Props) {
       )}
 
       <ViewportSection fallback={F("min-h-[600px] mx-auto max-w-6xl bg-[#f8fafc]")}>
-        <ConsultationForm initialCategories={categories} />
+        <ConsultationForm initialCategories={categories} headerSvgUrl={getSvgUrl(svgItems, 0, "/video-gif/customer-inquires.svg")} emailSvgUrl={getSvgUrl(svgItems, 1, "/video-gif/email.svg")} />
       </ViewportSection>
 
       {page?.faq_group_slug && (
@@ -64,7 +66,7 @@ export function DesignContent({ page, modelCards, categories }: Props) {
 
 async function DesignFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
   "use cache"
-  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch(() => ({ results: [] }))
+  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; })
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",
     a: item.answer?.en ?? "",

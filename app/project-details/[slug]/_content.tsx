@@ -146,7 +146,7 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                   className="flex items-center justify-center gap-2 h-11 rounded-xl bg-[#cd2028] hover:bg-[#b91c1c] text-white font-bold text-[13px] transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#07112b]">
                   Start a Similar Project <ArrowRight className="size-4" />
                 </Link>
-                <Link href="/contact"
+                <Link href="/request"
                   className="flex items-center justify-center gap-2 h-11 rounded-xl border border-white/20 hover:border-white/40 text-white font-semibold text-[13px] transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#07112b]">
                   Get in Touch
                 </Link>
@@ -299,7 +299,7 @@ function MilestoneItem({ m, index, last }: { m: ProjectMilestone; index: number;
 
 async function ProjectFaq({ faqSlug }: { faqSlug: string }) {
   "use cache";
-  const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch(() => ({ results: [] }));
+  const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",
     a: item.answer?.en ?? "",

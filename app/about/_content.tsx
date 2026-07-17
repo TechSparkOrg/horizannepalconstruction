@@ -1,8 +1,9 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import type { Page } from "@/api/types/page.types";
+import type { Page, PageSvgItem } from "@/api/types/page.types";
 import type { MediaItem } from "@/api/types/media.types";
+import { getSvgUrl } from "@/lib/svg-utils";
 import {
   AboutServicesAsync,
   AboutPartnersAsync,
@@ -20,9 +21,10 @@ import ParsedContent from "@/lib/ParseContent.server";
 interface Props {
   page: Page | null;
   gallery: MediaItem[];
+  svgItems?: PageSvgItem[];
 }
 
-export function AboutContent({ page, gallery }: Props) {
+export function AboutContent({ page, gallery, svgItems }: Props) {
   const F = (className: string) => <div className={className} />;
 
   return (
@@ -32,17 +34,17 @@ export function AboutContent({ page, gallery }: Props) {
       </ViewportSection>
       <ViewportSection fallback={F("py-20 bg-white")}>
         <Suspense fallback={F("py-20 bg-white")}>
-          <AboutServicesAsync />
+          <AboutServicesAsync svgUrl={getSvgUrl(svgItems, 0, "/video-gif/in-progress.svg")} />
         </Suspense>
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-28 bg-[#f8fafc]")}>
         <Suspense fallback={F("py-16 sm:py-28 bg-[#f8fafc]")}>
-          <AboutTeamAsync />
+          <AboutTeamAsync svgUrl={getSvgUrl(svgItems, 1, "/video-gif/work-team.svg")} />
         </Suspense>
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-24 bg-white")}>
         <Suspense fallback={F("py-16 sm:py-24 bg-white")}>
-          <AboutPartnersAsync />
+          <AboutPartnersAsync svgUrl={getSvgUrl(svgItems, 2, "/video-gif/Business.svg")} />
         </Suspense>
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-24 bg-off-white")}>
@@ -58,12 +60,15 @@ export function AboutContent({ page, gallery }: Props) {
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-24 bg-white")}>
         <Suspense fallback={F("py-16 sm:py-24 bg-white")}>
-          <AboutReviewsAsync />
+          <AboutReviewsAsync svgUrl={getSvgUrl(svgItems, 3, "/video-gif/review-animation.svg")} />
         </Suspense>
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-24 bg-white")}>
         <Suspense fallback={F("py-16 sm:py-24 bg-white")}>
-          <AboutConsultAsync />
+          <AboutConsultAsync
+            headerSvgUrl={getSvgUrl(svgItems, 4, "/video-gif/customer-inquires.svg")}
+            emailSvgUrl={getSvgUrl(svgItems, 5, "/video-gif/email.svg")}
+          />
         </Suspense>
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-24 bg-white")}>

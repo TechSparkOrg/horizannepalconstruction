@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import { getFaqs } from "@/api/services/faq.service";
-import type { Page } from "@/api/types/page.types";
+import type { Page, PageSvgItem } from "@/api/types/page.types";
+import { getSvgUrl } from "@/lib/svg-utils";
 
 const VendorsSection = dynamic(() => import("@/components/page_ui/VendorsSection.client"));
 const MaterialGrid = dynamic(() => import("@/components/page_ui/MaterialGrid.client"));
@@ -11,21 +12,22 @@ import ParsedContent from "@/lib/ParseContent.server";
 
 interface Props {
   page: Page | null;
+  svgItems?: PageSvgItem[];
 }
 
-export function MaterialContent({ page }: Props) {
+export function MaterialContent({ page, svgItems }: Props) {
   const F = (className: string) => <div className={className} />;
 
   return (
     <>
       <div id="vendors">
         <ViewportSection fallback={F("py-16 sm:py-24 bg-[#f8fafc] min-h-[520px]")}>
-          <VendorsSection />
+          <VendorsSection svgUrl={getSvgUrl(svgItems, 0, "/video-gif/truck-loading.svg")} />
         </ViewportSection>
       </div>
       <div id="materials">
         <ViewportSection fallback={F("py-16 sm:py-24 bg-white min-h-[400px]")}>
-          <MaterialGrid />
+          <MaterialGrid svgUrl1={getSvgUrl(svgItems, 1, "/video-gif/school-book.svg")} svgUrl2={getSvgUrl(svgItems, 2, "/video-gif/constuction-worker-building.svg")} />
         </ViewportSection>
       </div>
       {page?.faq_group_slug && (
@@ -46,7 +48,7 @@ export function MaterialContent({ page }: Props) {
 
 async function MaterialFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
   "use cache";
-  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch(() => ({ results: [] }));
+  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",
     a: item.answer?.en ?? "",

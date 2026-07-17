@@ -35,8 +35,8 @@ export default function FaqClient({ categorySlug, type, title, subtitle, initial
           })),
         );
       })
-      .catch(() => {
-        if (!cancelled) setFaqs([]);
+      .catch((err) => {
+        if (!cancelled) { console.error("Failed to fetch FAQs:", err); setFaqs([]); }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);

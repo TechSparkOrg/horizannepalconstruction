@@ -1,17 +1,18 @@
 "use client";
 
+import { getSvgUrl } from "@/lib/svg-utils";
 import { Clock } from "lucide-react";
 import Image from "next/image";
 import type { WorkflowStep } from "@/api/types/building-permit.types";
 import ParsedContent from "@/lib/Parse-Content";
 
-export function WorkflowTimeline({ steps }: { steps: WorkflowStep[] }) {
+export function WorkflowTimeline({ steps, svgItems }: { steps: WorkflowStep[]; svgItems?: import("@/api/types/page.types").PageSvgItem[] }) {
   return (
     <section id="workflow" className="bg-white py-16 sm:py-24">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
 
         <div className="flex items-center justify-center gap-6 mb-12">
-          <Image src="/video-gif/constuction-up-carain.svg" alt="Construction crane illustration"
+          <Image src={getSvgUrl(svgItems, 0, "/video-gif/constuction-up-carain.svg")} alt="Construction crane illustration"
             width={90} height={130}
             className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0" style={{ height: "auto" }}
             sizes="(max-width: 1024px) 70px, 90px" unoptimized />
@@ -24,7 +25,7 @@ export function WorkflowTimeline({ steps }: { steps: WorkflowStep[] }) {
             <h2 className="font-display font-bold text-[#0f2557] text-2xl sm:text-3xl tracking-tight">Nepal Permit Workflow</h2>
             <p className="mt-1.5 text-[13px] text-[#64748b] max-w-[360px] leading-relaxed">Follow this step-by-step process to obtain your building permit.</p>
           </div>
-          <Image src="/video-gif/in-progress.svg" alt="Construction crane illustration"
+          <Image src={getSvgUrl(svgItems, 1, "/video-gif/in-progress.svg")} alt="Construction crane illustration"
             width={90} height={130}
             className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0 scale-x-[-1]" style={{ height: "auto" }}
             sizes="(max-width: 1024px) 70px, 90px" unoptimized />

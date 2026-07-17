@@ -20,7 +20,8 @@ export const useSettings = create<SettingsState>((set) => ({
         set({ settings: data, loaded: true })
         pendingFetch = null
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("Failed to fetch settings:", err)
         set({ loaded: true })
         pendingFetch = null
       })

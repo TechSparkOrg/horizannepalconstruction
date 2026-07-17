@@ -1,13 +1,14 @@
+import { getSvgUrl } from "@/lib/svg-utils";
 import Image from "next/image";
 import { Building2, TriangleAlert, Flame, Wind } from "lucide-react";
 import type { RegulationItem } from "@/api/types/building-permit.types";
 
 const REG_ICONS = [Building2, TriangleAlert, Flame, Wind];
 
-export function RegulationsGrid({ items }: { items: RegulationItem[] }) {
+export function RegulationsGrid({ items, svgItems }: { items: RegulationItem[]; svgItems?: import("@/api/types/page.types").PageSvgItem[] }) {
   return (
     <section id="regulations" className="relative bg-[#f8fafc] py-16 sm:py-24 overflow-hidden">
-      <Image src="/video-gif/builder-constucntion.svg" alt="" fill
+      <Image src={getSvgUrl(svgItems, 0, "/video-gif/builder-constucntion.svg")} alt="" fill
         sizes="100vw"
         className="object-contain object-center pointer-events-none select-none"
         style={{ opacity: 0.1 }} aria-hidden="true" unoptimized />

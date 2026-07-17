@@ -1,12 +1,13 @@
+import { getSvgUrl } from "@/lib/svg-utils";
 import Image from "next/image";
 import type { MunicipalityItem } from "@/api/types/building-permit.types";
 
-export function MunicipalityTable({ items }: { items: MunicipalityItem[] }) {
+export function MunicipalityTable({ items, svgItems }: { items: MunicipalityItem[]; svgItems?: import("@/api/types/page.types").PageSvgItem[] }) {
   return (
     <section className="bg-white py-16 sm:py-24">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-center gap-6 mb-12">
-          <Image src="/video-gif/sign-document.svg" alt="Document signing illustration"
+          <Image src={getSvgUrl(svgItems, 0, "/video-gif/sign-document.svg")} alt="Document signing illustration"
             width={80} height={120}
             className="hidden sm:block w-[65px] lg:w-[80px] h-auto object-contain shrink-0" style={{ height: "auto" }}
             sizes="(max-width: 1024px) 65px, 80px" unoptimized />
@@ -19,7 +20,7 @@ export function MunicipalityTable({ items }: { items: MunicipalityItem[] }) {
             <h2 className="font-display font-bold text-[#0f2557] text-2xl sm:text-3xl tracking-tight">Municipality Directory</h2>
             <p className="mt-1.5 text-[13px] text-[#64748b] max-w-[360px] leading-relaxed">Contact your local municipality for permit inquiries.</p>
           </div>
-          <Image src="/video-gif/saftey-warning.svg" alt="Document signing illustration"
+          <Image src={getSvgUrl(svgItems, 1, "/video-gif/saftey-warning.svg")} alt="Document signing illustration"
             width={80} height={120}
             className="hidden sm:block w-[65px] lg:w-[80px] h-auto object-contain shrink-0 scale-x-[-1]" style={{ height: "auto" }}
             sizes="(max-width: 1024px) 65px, 80px" unoptimized />

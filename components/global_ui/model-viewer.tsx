@@ -8,7 +8,9 @@ export default function ModelViewerBlock({ src }: { src: string }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    import("@google/model-viewer").then(() => setReady(true));
+    let mounted = true;
+    import("@google/model-viewer").then(() => { if (mounted) setReady(true); }).catch((err) => { if (mounted) console.error("Failed to load model-viewer:", err); });
+    return () => { mounted = false; };
   }, []);
 
   useEffect(() => {

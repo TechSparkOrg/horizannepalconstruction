@@ -31,7 +31,7 @@ const steps = [
 ];
 
 export default async function RequestPage() {
-  const categoriesRes = await getCategories().catch(() => ({ results: [] as never[] }));
+  const categoriesRes = await getCategories().catch((err) => { console.error("Failed to fetch categories:", err); return { results: [] as never[] }; });
   const categories = categoriesRes?.results ?? [];
 
   return (

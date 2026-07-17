@@ -10,6 +10,7 @@ import type { EmiBank } from '@/api/types/emi.types'
 import type { Page } from '@/api/types/page.types'
 import { Slider } from '@/components/ui/slider'
 import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import { getSvgUrl } from '@/lib/svg-utils'
 import { BankMark } from '@/components/global_ui/BankMark'
 import { ImageGrid } from '@/components/global_ui/image-grid'
 import dynamic from 'next/dynamic'
@@ -66,7 +67,7 @@ function Row({ label, value, bold }: { label: string; value: string; bold?: bool
 
 const ctaBaseCls = 'flex h-10 items-center justify-center gap-1.5 rounded-lg bg-[#cd2028] text-xs font-bold text-white transition hover:bg-[#b91c1c] disabled:opacity-40 disabled:cursor-not-allowed'
 
-export default function EmiCalculatorClient({ pageData }: { pageData?: Page | null }) {
+export default function EmiCalculatorClient({ pageData, svgItems }: { pageData?: Page | null; svgItems?: import("@/api/types/page.types").PageSvgItem[] }) {
   const [tab, setTab] = useState<Tab>('emi')
 
   const [banks, setBanks] = useState<EmiBank[]>([])
@@ -83,7 +84,9 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
   const [creditScore, setCreditScore] = useState<CreditScore>('good')
 
   useEffect(() => {
-    getBanks().then(setBanks).catch(() => {}).finally(() => setLoading(false))
+    let mounted = true;
+    getBanks().then((res) => { if (mounted) setBanks(res); }).catch((err) => { if (mounted) console.error("Failed to fetch banks:", err); }).finally(() => { if (mounted) setLoading(false); });
+    return () => { mounted = false; };
   }, [])
 
   const selectedBank = useMemo(
@@ -159,7 +162,7 @@ export default function EmiCalculatorClient({ pageData }: { pageData?: Page | nu
         {/* builder-constucntion.svg — right column */}
         <div className="absolute right-0 bottom-0 h-full w-full lg:w-[48%] pointer-events-none select-none">
           <Image
-            src="/video-gif/builder-constucntion.svg"
+            src={getSvgUrl(svgItems, 0, "/video-gif/builder-constucntion.svg")}
             alt=""
             aria-hidden="true"
             fill

@@ -7,18 +7,17 @@ import { LazyAiBot } from "@/components/viewport/LazyAiBot";
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import type { MediaItem } from "@/api/types/media.types";
 import type { PublicUnitConversionDetail } from "@/api/types/unit-converter.types";
+import { siteUrl } from "@/lib/constants";
 import { UnitConvertDetailContent } from "./_content";
 
-const getConversion = cache(async (slug: string) => getUnitConversionBySlug(slug).catch(() => null));
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+const getConversion = cache(async (slug: string) => getUnitConversionBySlug(slug).catch((err) => { console.error("Failed to fetch conversion:", err); return null; }));
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
 function getMeta(item: PublicUnitConversionDetail, slug: string) {
-  const url = `${SITE_URL}/unit-convert/${slug}`;
+  const url = `${siteUrl}/unit-convert/${slug}`;
   const description = item.meta_description || stripHtml(item.description || "").slice(0, 160) || item.title;
   const ogImage = item.banner_images?.[0]?.url || undefined;
   return { url, description, ogImage };
@@ -71,8 +70,8 @@ export default async function UnitConvertDetailPage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Unit Converter", item: `${SITE_URL}/unit-convert` },
+      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Unit Converter", item: `${siteUrl}/unit-convert` },
       { "@type": "ListItem", position: 3, name: item.title, item: url },
     ],
   };

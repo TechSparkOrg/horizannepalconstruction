@@ -70,13 +70,15 @@ function SkeletonCard() {
   );
 }
 
-export function TestimonialsSection({ initialReviews }: { initialReviews?: Review[] }) {
+export function TestimonialsSection({ initialReviews, svgUrl }: { initialReviews?: Review[]; svgUrl?: string }) {
   const [reviews, setReviews] = useState<Review[]>(initialReviews ?? []);
   const [idx, setIdx] = useState(0);
 
   useEffect(() => {
     if (initialReviews) return;
-    ReviewPublic.list().then((res) => setReviews(res.results ?? []));
+    let mounted = true;
+    ReviewPublic.list().then((res) => { if (mounted) setReviews(res.results ?? []); }).catch((err) => { if (mounted) console.error("Failed to fetch reviews:", err); });
+    return () => { mounted = false; };
   }, [initialReviews]);
 
   /* Reset carousel index when viewport drops to mobile */
@@ -98,10 +100,11 @@ export function TestimonialsSection({ initialReviews }: { initialReviews?: Revie
 
           <div className="flex items-center gap-3 sm:gap-4">
             <Image
-              src="/video-gif/review-animation.svg"
+              src={svgUrl || "/video-gif/review-animation.svg"}
               alt="Client reviews illustration"
               width={140}
               height={88}
+              unoptimized
               className="w-[72px] h-[45px] sm:w-[140px] sm:h-[88px] shrink-0 object-contain"
               sizes="(max-width: 640px) 72px, 140px" />
             <div>

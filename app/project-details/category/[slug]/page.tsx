@@ -13,15 +13,14 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-const getDetail = cache(async (slug: string) => getProjectCategoryDetail(slug).catch(() => null));
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+import { siteUrl } from "@/lib/constants";
+const getDetail = cache(async (slug: string) => getProjectCategoryDetail(slug).catch((err) => { console.error("Failed to fetch project category detail:", err); return null; }));
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const detail = await getDetail(slug);
   if (!detail) return {};
-  const url = `${SITE_URL}/project-details/category/${slug}`;
+  const url = `${siteUrl}/project-details/category/${slug}`;
   const desc = detail.meta_description || stripHtml(detail.description).substring(0, 160);
   const ogImage = detail.banner_images?.[0]?.url || detail.image;
   return {

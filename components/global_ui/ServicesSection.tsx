@@ -82,17 +82,19 @@ function ServiceSkeleton() {
   )
 }
 
-export function ServicesSection({ initialServices }: { initialServices?: ServiceCategory[] }) {
+export function ServicesSection({ initialServices, svgUrl }: { initialServices?: ServiceCategory[]; svgUrl?: string }) {
   const [services, setServices] = useState<ServiceCategory[] | null>(null)
 
   useEffect(() => {
     if (initialServices) {
       setServices(initialServices)
-      return undefined
+      return
     }
+    let mounted = true;
     getServiceCategories()
-      .then(setServices)
-      .catch(() => setServices([]))
+      .then((res) => { if (mounted) setServices(res); })
+      .catch((err) => { if (mounted) { console.error("Failed to fetch services:", err); setServices([]); } });
+    return () => { mounted = false; };
   }, [initialServices])
 
   return (
@@ -117,12 +119,13 @@ export function ServicesSection({ initialServices }: { initialServices?: Service
 
           <div className="flex sm:flex-col items-center sm:items-end gap-4 sm:gap-3">
             <Image
-              src="/video-gif/in-progress.svg"
+              src={svgUrl || "/video-gif/in-progress.svg"}
               alt="Construction in progress"
               width={56}
               height={56}
+              unoptimized
               className="object-contain shrink-0"
-              sizes="56px"
+              // sizes="56px"
             />
             <Link prefetch={false}
               href="/services"
@@ -141,7 +144,7 @@ export function ServicesSection({ initialServices }: { initialServices?: Service
           {services === null
             ? Array.from({ length: 6 }).map((_, i) => <ServiceSkeleton key={i} />)
             : services.length === 0
-              ? null
+              ? <div className="col-span-full text-center py-16 text-[#94a3b8] text-sm">No services available yet.</div>
               : services.map((s, i) => <ServiceCard key={s.id} service={s} index={i} />)}
         </div>
 

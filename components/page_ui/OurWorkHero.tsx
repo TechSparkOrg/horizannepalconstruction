@@ -1,16 +1,17 @@
 import Image from "next/image";
 
-export function OurWorkHero() {
+export function OurWorkHero({ svgUrl }: { svgUrl?: string }) {
   return (
     <section className="relative w-full overflow-hidden bg-[#0f2557] min-h-[85svh] sm:min-h-[115svh]">
       {/* Full-bleed SVG background */}
       <Image
-        src="/video-gif/maintainace-building.svg"
+        src={svgUrl || "/video-gif/maintainace-building.svg"}
         alt="Construction and building projects illustration"
         fill
         className="object-contain object-center"
         sizes="100vw"
         priority
+        unoptimized
       />
 
       {/* Top fade — navy to transparent */}

@@ -19,9 +19,10 @@ interface GroupInfo {
 
 interface Props {
   initialGroups: FaqGroupResponse[];
+  svgUrl?: string;
 }
 
-export function FAQTimeline({ initialGroups }: Props) {
+export function FAQTimeline({ initialGroups, svgUrl }: Props) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [openItems, setOpenItems] = useState<Record<string, number | null>>({});
   const [groupItems, setGroupItems] = useState<Record<string, FaqDisplay[]>>({});
@@ -75,7 +76,7 @@ export function FAQTimeline({ initialGroups }: Props) {
   if (groups.length === 0) {
     return (
       <section className="relative py-16 sm:py-28 overflow-hidden">
-        <Image src="/video-gif/plan-making.svg" fill alt="" aria-hidden className="object-cover object-center" sizes="100vw" unoptimized />
+        <Image src={svgUrl || "/video-gif/plan-making.svg"} fill alt="" aria-hidden className="object-cover object-center" sizes="100vw" unoptimized />
         <div className="absolute inset-0 bg-[#f5f7fb]/88" aria-hidden />
         <div className="relative z-10 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-sm text-[#5a6e8a] py-10">No FAQs available yet.</p>
@@ -86,7 +87,7 @@ export function FAQTimeline({ initialGroups }: Props) {
 
   return (
     <section className="relative py-16 sm:py-28 overflow-hidden">
-      <Image src="/video-gif/plan-making.svg" fill alt="" aria-hidden className="object-cover object-center" sizes="100vw" unoptimized />
+      <Image src={svgUrl || "/video-gif/plan-making.svg"} fill alt="" aria-hidden className="object-cover object-center" sizes="100vw" unoptimized />
       <div className="absolute inset-0 bg-[#f5f7fb]/88" aria-hidden />
 
       <div className="relative z-10 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">

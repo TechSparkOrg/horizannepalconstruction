@@ -35,7 +35,7 @@ export function ProjectCategoryDetailInner({ detail }: Props) {
 
 async function CategoryFaq({ faqSlug }: { faqSlug: string }) {
   "use cache";
-  const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch(() => ({ results: [] }));
+  const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",
     a: item.answer?.en ?? "",
@@ -54,7 +54,7 @@ async function CategoryFaq({ faqSlug }: { faqSlug: string }) {
 
 async function CategoryProjects({ slug, name }: { slug: string; name: string }) {
   "use cache";
-  const res = await getProjectsByCategory(slug).catch(() => ({ results: [] }));
+  const res = await getProjectsByCategory(slug).catch((err) => { console.error("Failed to fetch projects by category:", err); return { results: [] }; });
   const projects = res.results ?? [];
 
   return (

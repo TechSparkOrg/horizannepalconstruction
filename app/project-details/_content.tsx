@@ -6,7 +6,8 @@ import { getProjects } from "@/api/services/project.service";
 import { getFaqs } from "@/api/services/faq.service";
 import { ProjectCategoriesGrid } from "@/components/page_ui/ProjectCategoriesGrid";
 import { ProjectsGrid } from "@/components/page_ui/ProjectsGrid.client";
-import type { Page } from "@/api/types/page.types";
+import type { Page, PageSvgItem } from "@/api/types/page.types";
+import { getSvgUrl } from "@/lib/svg-utils";
 
 const ImageGrid = dynamic(() => import("@/components/global_ui/image-grid").then((m) => ({ default: m.ImageGrid })));
 const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then((m) => ({ default: m.ConsultationForm })));
@@ -15,9 +16,10 @@ import ParsedContent from "@/lib/ParseContent.server";
 
 interface Props {
   page: Page | null;
+  svgItems?: PageSvgItem[];
 }
 
-export function ProjectPageContent({ page }: Props) {
+export function ProjectPageContent({ page, svgItems }: Props) {
   const F = (className: string) => <div className={className} />;
   const bannerItems = (page?.banner_images ?? []).map((b) => ({
     id: b.id, url: b.url, alt: b.alt ?? b.title ?? "",
@@ -27,7 +29,7 @@ export function ProjectPageContent({ page }: Props) {
     <>
 
       <Suspense fallback={<div className="py-12 bg-[#f8fafc] min-h-[500px]" />}>
-        <ProjectCategoriesGrid />
+        <ProjectCategoriesGrid svgUrl={getSvgUrl(svgItems, 0, "/video-gif/builds3.svg")} />
       </Suspense>
 
       <Suspense fallback={<ProjectsGridSkeleton />}>
@@ -41,7 +43,7 @@ export function ProjectPageContent({ page }: Props) {
 
 
       <ViewportSection fallback={F("min-h-[600px] mx-auto max-w-6xl bg-[#f8fafc]")}>
-        <ConsultationForm />
+        <ConsultationForm headerSvgUrl={getSvgUrl(svgItems, 1, "/video-gif/customer-inquires.svg")} emailSvgUrl={getSvgUrl(svgItems, 2, "/video-gif/email.svg")} />
       </ViewportSection>
 
       {page?.faq_group_slug && (
@@ -65,7 +67,7 @@ export function ProjectPageContent({ page }: Props) {
 
 async function ProjectsSection() {
   "use cache";
-  const res = await getProjects().catch(() => ({ results: [] }));
+  const res = await getProjects().catch((err) => { console.error("Failed to fetch projects:", err); return { results: [] }; });
   const projects = res.results ?? [];
 
   if (projects.length === 0) {
@@ -126,7 +128,7 @@ function ProjectsGridSkeleton() {
 
 async function ProjectFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
   "use cache";
-  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch(() => ({ results: [] }));
+  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",
     a: item.answer?.en ?? "",

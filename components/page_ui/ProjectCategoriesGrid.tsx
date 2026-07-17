@@ -2,9 +2,9 @@ import Image from "next/image";
 import { getPublicProjectCategories } from "@/api/services/category.service";
 import { htmlToText } from "@/lib/htmlToText";
 
-export async function ProjectCategoriesGrid() {
+export async function ProjectCategoriesGrid({ svgUrl }: { svgUrl?: string }) {
   "use cache";
-  const categories = await getPublicProjectCategories().catch(() => []);
+  const categories = await getPublicProjectCategories().catch((err) => { console.error("Failed to fetch project categories:", err); return []; });
 
   if (categories.length === 0) {
     return (
@@ -36,7 +36,7 @@ export async function ProjectCategoriesGrid() {
           </div>
 
           <div className="relative shrink-0 w-[200px] h-[150px] hidden md:block select-none" aria-hidden="true">
-            <Image src="/video-gif/builds3.svg" alt=""
+            <Image src={svgUrl || "/video-gif/builds3.svg"} alt=""
               fill unoptimized className="object-contain object-center" />
           </div>
         </div>

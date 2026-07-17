@@ -6,11 +6,12 @@ import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import { getPageBySlug } from "@/api/services/page.service";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
+import { getSvgUrl } from "@/lib/svg-utils";
 import { CostContent } from "./_content";
 
 
 const SLUG = "cost-estimation"
-const getPage = cache(() => getPageBySlug(SLUG).catch(() => null))
+const getPage = cache(() => getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch cost estimation page:", err); return null; }))
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage()
@@ -56,7 +57,7 @@ export default async function CostEstimationPage() {
 
         {/* man-at-work overlay — right, desktop only */}
         <div className="absolute right-0 bottom-0 w-[46%] max-w-[560px] aspect-[5/4] pointer-events-none select-none hidden lg:block" aria-hidden="true">
-          <Image src="/video-gif/man-at-work.svg" alt="" fill priority unoptimized className="object-contain object-bottom" />
+          <Image src={getSvgUrl(page?.svg_items, 0, "/video-gif/man-at-work.svg")} alt="" fill priority unoptimized className="object-contain object-bottom" />
         </div>
 
         {/* Left brand rule */}
@@ -96,7 +97,7 @@ export default async function CostEstimationPage() {
       </section>
 
       <Suspense fallback={<div className="min-h-[600px] bg-white" />}>
-        <CostContent page={page} />
+        <CostContent page={page} svgItems={page?.svg_items} />
       </Suspense>
     </>
   );

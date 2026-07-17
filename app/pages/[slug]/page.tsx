@@ -3,10 +3,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPageBySlug } from "@/api/services/page.service";
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
+import { siteUrl } from "@/lib/constants";
 import { CmsPageInner } from "./_content";
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
-const getPage = cache(async (slug: string) => getPageBySlug(slug).catch(() => null));
+const getPage = cache(async (slug: string) => getPageBySlug(slug).catch((err) => { console.error("Failed to fetch page:", err); return null; }));
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -19,13 +18,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: page.meta_title || page.title,
     description: page.meta_description || "",
-    alternates: { canonical: `${SITE_URL}/pages/${slug}` },
+    alternates: { canonical: `${siteUrl}/pages/${slug}` },
     keywords: page.meta_keywords || undefined,
     openGraph: {
       title: page.meta_title || page.title,
       description: page.meta_description || "",
       type: "website",
-      url: `${SITE_URL}/pages/${slug}`,
+      url: `${siteUrl}/pages/${slug}`,
       images: page.banner_images?.[0]?.url ? [{ url: page.banner_images[0].url }] : [],
     },
   };

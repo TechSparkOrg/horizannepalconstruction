@@ -1,5 +1,13 @@
 import type { MediaItem } from "./media.types"
 
+export interface PageSvgItem {
+  id: string
+  url: string
+  name: string
+  lazy_spinner: boolean
+  sort_order: number
+}
+
 export interface Page {
   id: string
   slug: string
@@ -12,6 +20,7 @@ export interface Page {
   is_published?: boolean
   publish_date?: string | null
   banner_images?: MediaItem[]
+  svg_items?: PageSvgItem[]
   author_name?: string
   author_image?: string
   author_team_id?: string
