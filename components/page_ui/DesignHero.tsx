@@ -8,7 +8,7 @@ const stats = [
   { val: "98%",  label: "Client Satisfaction" },
 ];
 
-export function DesignHero() {
+export function DesignHero({ svgUrl }: { svgUrl?: string }) {
   return (
     <section
       className="relative bg-brand-dark overflow-hidden"
@@ -99,7 +99,7 @@ export function DesignHero() {
               {/* Main container */}
               <div className="relative rounded-2xl overflow-hidden bg-white/[0.04] border border-white/10 p-3 backdrop-blur-sm">
                 <Image
-                  src="/video-gif/Rumble.svg"
+                  src={svgUrl || "/video-gif/Rumble.svg"}
                   alt="Architectural design process — structural rumble animation"
                   width={520}
                   height={420}

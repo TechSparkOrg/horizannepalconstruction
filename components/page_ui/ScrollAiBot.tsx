@@ -8,7 +8,7 @@ const LERP       = 0.07  // chase smoothness
 const BOB_AMP    = 6     // idle bob amplitude
 const BOB_SPEED  = 0.0013
 
-export function ScrollAiBot() {
+export function ScrollAiBot({ src = "/video-gif/ai-bot-vetor.svg" }: { src?: string }) {
   const botRef = useRef<HTMLDivElement>(null)
   const pos    = useRef({ x: -999, y: -999 })
   const target = useRef({ x: -999, y: -999 })
@@ -91,7 +91,7 @@ export function ScrollAiBot() {
         }}
       >
         <Image
-          src="/video-gif/ai-bot-vetor.svg"
+          src={src}
           alt=""
           width={90}
           height={90}

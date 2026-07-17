@@ -6,7 +6,7 @@ import Image from "next/image"
 const FEATHER_ANGLE_OFFSET = -45
 const MAX_TILT = 35
 
-export function ScrollFeather() {
+export function ScrollFeather({ src = "/video-gif/feather.svg" }: { src?: string }) {
   const featherRef  = useRef<HTMLDivElement>(null)
   const current     = useRef({ x: 50, y: 30, angle: 0 })
   const target      = useRef({ x: 50, y: 30, angle: 0 })
@@ -78,7 +78,7 @@ export function ScrollFeather() {
         }}
       >
         <Image
-          src="/video-gif/feather.svg"
+          src={src}
           alt=""
           width={160}
           height={160}

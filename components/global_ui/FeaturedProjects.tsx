@@ -14,9 +14,11 @@ const SVG_CYCLE_MS = 8000;
 export function FeaturedProjects({
   initialProjects,
   limit = 6,
+  svgUrl,
 }: {
   initialProjects?: Project[];
   limit?: number;
+  svgUrl?: string;
 }) {
   const [projects, setProjects]         = useState<Project[]>(initialProjects ?? []);
   const [batch, setBatch]               = useState(0);
@@ -123,7 +125,7 @@ export function FeaturedProjects({
         </div>
         <div className="w-screen relative left-1/2 -translate-x-1/2" style={{ height: "clamp(140px, 22vw, 280px)" }}>
           <Image
-            src="/video-gif/Rumble.svg"
+            src={svgUrl || "/video-gif/Rumble.svg"}
             alt=""
             fill
             sizes="100vw"

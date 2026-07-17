@@ -8,6 +8,7 @@ const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
 
 interface Props {
   page: Page | null;
+  svgItems?: import("@/api/types/page.types").PageSvgItem[];
 }
 
 export function EmiContent({ page }: Props) {

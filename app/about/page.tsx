@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { AboutHero } from "@/components/page_ui/AboutHero";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
 import { getPageBySlug } from "@/api/services/page.service";
+import { getSvgUrl } from "@/lib/svg-utils";
 import { AboutContent } from "./_content";
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
@@ -34,12 +35,12 @@ export default async function AboutPage() {
   return (
     <>
       <h1 className="sr-only">{page?.meta_title || "About | Horizan Nepal"}</h1>
-      <link rel="preload" as="image" href="/video-gif/contruction-about.svg" fetchPriority="high" />
+      <link rel="preload" as="image" href={getSvgUrl(page?.svg_items, 0, "/video-gif/contruction-about.svg")} fetchPriority="high" />
       {gallery.map((b) => b.url ? <link key={b.id} rel="preload" as="image" href={b.url} /> : null)}
-      <AboutHero />
-      <LazyPlane />
+      <AboutHero svgUrl={getSvgUrl(page?.svg_items, 0, "/video-gif/contruction-about.svg")} />
+      <LazyPlane src={getSvgUrl(page?.svg_items, 1, "/video-gif/Loading-Paperplane.svg")} />
       <Suspense fallback={<div className="py-16 sm:py-28 bg-white" />}>
-        <AboutContent page={page} gallery={gallery} />
+        <AboutContent page={page} gallery={gallery} svgItems={page?.svg_items} />
       </Suspense>
     </>
   );

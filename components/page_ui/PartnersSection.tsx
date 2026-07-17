@@ -62,9 +62,11 @@ function Divider({ label }: { label: string }) {
 export function PartnersSection({
   initialVendors,
   initialBanks,
+  svgUrl,
 }: {
   initialVendors?: PublicVendor[];
   initialBanks?: EmiBank[];
+  svgUrl?: string;
 }) {
   const [vendors, setVendors] = useState<PublicVendor[] | null>(initialVendors ?? null)
   const [banks,   setBanks]   = useState<EmiBank[] | null>(initialBanks ?? null)
@@ -88,7 +90,7 @@ export function PartnersSection({
         {/* Header */}
         <div className="flex flex-wrap items-end justify-between gap-6 mb-12">
            <Image
-             src="/video-gif/Business.svg"
+             src={svgUrl || "/video-gif/Business.svg"}
              alt="Partners illustration"
              width={148}
              height={92}

@@ -40,10 +40,10 @@ export default async function EmiCalculatorPage() {
     <div className="min-h-screen bg-[#f4f6fb]">
       <h1 className="sr-only">{page?.title || "EMI Calculator — Horizan Nepal Construction"}</h1>
       <Suspense fallback={null}>
-        <EmiCalculatorClient pageData={page} />
+        <EmiCalculatorClient pageData={page} svgItems={page?.svg_items} />
       </Suspense>
       <Suspense fallback={null}>
-        <EmiContent page={page} />
+        <EmiContent page={page} svgItems={page?.svg_items} />
       </Suspense>
     </div>
   );

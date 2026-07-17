@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { getPageBySlug } from "@/api/services/page.service";
+import { getSvgUrl } from "@/lib/svg-utils";
 import { FloorPlannerContent } from "./_content";
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
@@ -51,7 +52,7 @@ export default async function FloorPlannerPage() {
       {/* ── Hero ── */}
       <section className="relative bg-[#0f2557] overflow-hidden min-h-[72svh] sm:min-h-[78svh]">
         <div className="absolute right-0 bottom-0 h-full w-full lg:w-[52%] pointer-events-none select-none">
-          <Image src="/video-gif/work-team.svg" alt="" aria-hidden
+          <Image src={getSvgUrl(page?.svg_items, 0, "/video-gif/work-team.svg")} alt="" aria-hidden
             fill unoptimized priority
             className="object-cover object-bottom lg:object-right-bottom" />
           <div className="absolute inset-0 bg-[#0f2557]/80 lg:hidden" aria-hidden />
@@ -87,7 +88,7 @@ export default async function FloorPlannerPage() {
       {/* ── Benefits ── */}
       <section className="relative bg-[#f8fafc] py-16 sm:py-24 overflow-hidden">
         <div className="absolute right-0 bottom-0 w-[42%] h-[65%] pointer-events-none select-none">
-          <Image src="/video-gif/maintainace-building.svg" alt="" aria-hidden fill unoptimized
+          <Image src={getSvgUrl(page?.svg_items, 1, "/video-gif/maintainace-building.svg")} alt="" aria-hidden fill unoptimized
             className="object-contain object-right-bottom opacity-[0.07]" />
         </div>
         <div className="relative z-10 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -113,7 +114,7 @@ export default async function FloorPlannerPage() {
       </section>
 
       <Suspense fallback={<div className="py-16 sm:py-24 bg-white" style={{ minHeight: 1000 }} />}>
-        <FloorPlannerContent page={page} />
+        <FloorPlannerContent page={page} svgItems={page?.svg_items} />
       </Suspense>
     </>
   );

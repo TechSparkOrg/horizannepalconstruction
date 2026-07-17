@@ -11,6 +11,7 @@ const BlogContent = dynamic(() => import("@/components/page_ui/BlogContent.clien
 
 interface Props {
   page: Page | null;
+  svgItems?: import("@/api/types/page.types").PageSvgItem[];
 }
 
 export function FloorPlannerContent({ page }: Props) {

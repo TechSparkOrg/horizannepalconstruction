@@ -6,6 +6,8 @@ const config: NextConfig = {
 
   images: {
     formats: ["image/avif", "image/webp"],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "assets.horizonnepalconstruction.com" },
@@ -40,12 +42,6 @@ const config: NextConfig = {
             key: "Link",
             value: "<https://assets.horizonnepalconstruction.com>; rel=preconnect, </sitemap.xml>; rel=\"sitemap\", </.well-known/api-catalog>; rel=\"api-catalog\"",
           },
-        ],
-      },
-      {
-        source: "/:path*.(jpg|jpeg|png|webp|avif|svg|ico|css|js)",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
       },
     ];

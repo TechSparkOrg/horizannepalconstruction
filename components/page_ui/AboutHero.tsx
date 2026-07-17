@@ -9,14 +9,14 @@ const stats = [
   { label: "200+", sub: "Happy clients"       },
 ];
 
-export function AboutHero() {
+export function AboutHero({ svgUrl }: { svgUrl?: string }) {
   return (
     <section
       className="relative w-full overflow-hidden bg-[#0f2557] min-h-[85svh] sm:min-h-[115svh]"
     >
       {/* Full-bleed SVG background */}
       <Image
-        src="/video-gif/contruction-about.svg"
+        src={svgUrl || "/video-gif/contruction-about.svg"}
         alt="Construction site illustration"
         fill
         className="object-contain object-center"

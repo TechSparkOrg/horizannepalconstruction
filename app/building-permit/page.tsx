@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { getBuildingPermitSingle } from "@/api/services/building-permit.service";
 import { getPageBySlug } from "@/api/services/page.service";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
+import { getSvgUrl } from "@/lib/svg-utils";
 import { BuildingPermitContent } from "./_content";
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
@@ -67,7 +68,7 @@ export default async function BuildingPermitPage() {
               </div>
             </div>
             <div className="shrink-0 flex items-center justify-center lg:w-[420px]">
-              <Image src="/video-gif/build-document.svg" alt="Building permit documents and approval process illustration"
+              <Image src={getSvgUrl(page?.svg_items, 0, "/video-gif/build-document.svg")} alt="Building permit documents and approval process illustration"
                 width={380} height={380}
                 sizes="(max-width: 640px) 200px, (max-width: 1024px) 300px, 380px"
                 className="w-[200px] sm:w-[300px] lg:w-[380px] h-auto object-contain" style={{ height: "auto" }}
@@ -76,10 +77,10 @@ export default async function BuildingPermitPage() {
           </div>
         </div>
       </section>
-        <LazyPlane />
+        <LazyPlane src={getSvgUrl(page?.svg_items, 1, "/video-gif/Loading-Paperplane.svg")} />
 
       <Suspense fallback={<div className="py-16 sm:py-24 bg-white" />}>
-        <BuildingPermitContent config={config} page={page} />
+        <BuildingPermitContent config={config} page={page} svgItems={page?.svg_items} />
       </Suspense>
     </>
   );

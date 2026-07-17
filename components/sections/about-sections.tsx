@@ -14,13 +14,13 @@ import { ConsultationForm } from "@/components/global_ui/ConsultationForm";
 import FaqClient from "@/components/global_ui/FaqClient";
 import { TeamSection } from "@/components/global_ui/TeamSection";
 
-export async function AboutServicesAsync() {
+export async function AboutServicesAsync({ svgUrl }: { svgUrl?: string } = {}) {
   "use cache";
   const services = await getServiceCategories().catch(() => []);
-  return <ServicesSection initialServices={services} />;
+  return <ServicesSection initialServices={services} svgUrl={svgUrl} />;
 }
 
-export async function AboutPartnersAsync() {
+export async function AboutPartnersAsync({ svgUrl }: { svgUrl?: string } = {}) {
   "use cache";
   const [vRes, bRes] = await Promise.all([
     getVendors().catch(() => ({ results: [] as PublicVendor[] })),
@@ -30,20 +30,21 @@ export async function AboutPartnersAsync() {
     <PartnersSection
       initialVendors={vRes.results ?? []}
       initialBanks={bRes as EmiBank[]}
+      svgUrl={svgUrl}
     />
   );
 }
 
-export async function AboutReviewsAsync() {
+export async function AboutReviewsAsync({ svgUrl }: { svgUrl?: string } = {}) {
   "use cache";
   const reviews = await ReviewPublic.list().catch(() => ({ results: [] }));
-  return <TestimonialsSection initialReviews={reviews.results} />;
+  return <TestimonialsSection initialReviews={reviews.results} svgUrl={svgUrl} />;
 }
 
-export async function AboutConsultAsync() {
+export async function AboutConsultAsync({ headerSvgUrl, emailSvgUrl }: { headerSvgUrl?: string; emailSvgUrl?: string } = {}) {
   "use cache";
   const cats = await CategoryPublic.list().catch(() => ({ results: [] }));
-  return <ConsultationForm initialCategories={cats.results} />;
+  return <ConsultationForm initialCategories={cats.results} headerSvgUrl={headerSvgUrl} emailSvgUrl={emailSvgUrl} />;
 }
 
 export async function AboutFaqAsync({ faqGroupSlug }: { faqGroupSlug: string }) {
@@ -56,8 +57,8 @@ export async function AboutFaqAsync({ faqGroupSlug }: { faqGroupSlug: string }) 
   return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} />;
 }
 
-export async function AboutTeamAsync() {
+export async function AboutTeamAsync({ svgUrl }: { svgUrl?: string } = {}) {
   "use cache";
   const res = await getTeam().catch(() => ({ results: [] }));
-  return <TeamSection members={res.results} />;
+  return <TeamSection members={res.results} svgUrl={svgUrl} />;
 }

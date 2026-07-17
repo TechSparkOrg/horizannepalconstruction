@@ -70,7 +70,7 @@ function SkeletonCard() {
   );
 }
 
-export function TestimonialsSection({ initialReviews }: { initialReviews?: Review[] }) {
+export function TestimonialsSection({ initialReviews, svgUrl }: { initialReviews?: Review[]; svgUrl?: string }) {
   const [reviews, setReviews] = useState<Review[]>(initialReviews ?? []);
   const [idx, setIdx] = useState(0);
 
@@ -98,7 +98,7 @@ export function TestimonialsSection({ initialReviews }: { initialReviews?: Revie
 
           <div className="flex items-center gap-3 sm:gap-4">
             <Image
-              src="/video-gif/review-animation.svg"
+              src={svgUrl || "/video-gif/review-animation.svg"}
               alt="Client reviews illustration"
               width={140}
               height={88}

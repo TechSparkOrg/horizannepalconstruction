@@ -2,6 +2,7 @@ import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { getPageBySlug } from "@/api/services/page.service";
+import { getSvgUrl } from "@/lib/svg-utils";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
 import { ProjectPageContent } from "./_content";
 
@@ -34,10 +35,10 @@ export default async function ProjectsPage() {
   return (
     <>
       <h1 className="sr-only">{page?.title || "Projects — Horizan Nepal"}</h1>
-      <OurWorkHero />
-      <LazyPlane />
+      <OurWorkHero svgUrl={getSvgUrl(page?.svg_items, 0, "/video-gif/maintainace-building.svg")} />
+      <LazyPlane src={getSvgUrl(page?.svg_items, 1, "/video-gif/Loading-Paperplane.svg")} />
       <Suspense fallback={<div className="py-16 sm:py-24 bg-[#f8fafc]" style={{ minHeight: 2600 }} />}>
-        <ProjectPageContent page={page} />
+        <ProjectPageContent page={page} svgItems={page?.svg_items} />
       </Suspense>
     </>
   );

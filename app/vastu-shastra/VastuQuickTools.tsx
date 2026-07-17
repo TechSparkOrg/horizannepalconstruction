@@ -2,19 +2,21 @@
 
 import Image from "next/image";
 import type { VastuNavItem } from "@/api/types/vastu.types";
+import { getSvgUrl } from "@/lib/svg-utils";
 import { VastuAnalyzer } from "@/components/page_ui/VastuAnalyzer";
 
 interface Props {
   roomOptions: VastuNavItem[];
   directionOptions: VastuNavItem[];
+  svgItems?: import("@/api/types/page.types").PageSvgItem[];
 }
 
-export function VastuQuickTools({ roomOptions, directionOptions }: Props) {
+export function VastuQuickTools({ roomOptions, directionOptions, svgItems }: Props) {
   return (
     <div id="vastu-tools">
       <div className="flex items-center justify-center gap-6 mb-10">
         <Image
-          src="/video-gif/Lord-Ganesha.svg"
+          src={getSvgUrl(svgItems, 0, "/video-gif/Lord-Ganesha.svg")}
           alt="Lord Ganesha — divine protector and remover of obstacles"
           width={90} height={140}
           unoptimized
@@ -33,7 +35,7 @@ export function VastuQuickTools({ roomOptions, directionOptions }: Props) {
           </p>
         </div>
         <Image
-          src="/video-gif/saftey-warning.svg"
+          src={getSvgUrl(svgItems, 1, "/video-gif/saftey-warning.svg")}
           alt="Vastu safety — follow principles for balanced energy"
           width={80} height={120}
           unoptimized

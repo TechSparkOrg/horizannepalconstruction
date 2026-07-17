@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { getSvgUrl } from "@/lib/svg-utils";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import { FaqGroupsSection } from "@/components/sections/faq-sections";
 
@@ -8,7 +9,7 @@ const FAQTimeline = dynamic(() => import("@/components/page_ui/FAQTimeline").the
 const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then((m) => ({ default: m.ConsultationForm })));
 const QuestionForm = dynamic(() => import("@/components/page_ui/QuestionForm").then((m) => ({ default: m.QuestionForm })));
 
-export function FaqContent() {
+export function FaqContent({ svgItems }: { svgItems?: import("@/api/types/page.types").PageSvgItem[] }) {
   const F = (className: string) => <div className={className} />;
 
   return (
@@ -41,7 +42,7 @@ export function FaqContent() {
               </div>
               <div className="shrink-0 flex items-center justify-center">
                 <Image
-                  src="/video-gif/business-questions.svg"
+                  src={getSvgUrl(svgItems, 0, "/video-gif/business-questions.svg")}
                   alt="Ask us anything illustration"
                   width={320}
                   height={320}

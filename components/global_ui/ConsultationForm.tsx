@@ -29,7 +29,7 @@ const trust = [
   { num: "98%",  txt: "Satisfaction" },
 ];
 
-export function ConsultationForm({ initialCategories }: { initialCategories?: Category[] }) {
+export function ConsultationForm({ initialCategories, headerSvgUrl, emailSvgUrl }: { initialCategories?: Category[]; headerSvgUrl?: string; emailSvgUrl?: string }) {
   const contactInfo = useSettings((s) => s.settings?.contact_info);
   const [categories, setCategories] = useState<Category[]>(initialCategories ?? []);
 
@@ -117,7 +117,7 @@ export function ConsultationForm({ initialCategories }: { initialCategories?: Ca
         {/* SVG illustration */}
         <div className="my-5">
           <Image
-            src="/video-gif/customer-inquires.svg"
+            src={headerSvgUrl || "/video-gif/customer-inquires.svg"}
             alt="Consultation illustration"
             width={200}
             height={120}
@@ -168,7 +168,7 @@ export function ConsultationForm({ initialCategories }: { initialCategories?: Ca
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               key={submitCount}
-              src="/video-gif/email.svg"
+              src={emailSvgUrl || "/video-gif/email.svg"}
               alt="Message sent"
               className="w-[110px] h-[110px] object-contain mb-4"
             />

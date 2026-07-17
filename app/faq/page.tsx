@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { getPageBySlug } from "@/api/services/page.service";
 import { LazyFeather } from "@/components/viewport/LazyFeather";
+import { getSvgUrl } from "@/lib/svg-utils";
 import { FaqContent } from "./_content";
 
 import ParsedContent from "@/lib/ParseContent.server";
@@ -36,13 +37,13 @@ export default async function FAQPage() {
 
   return (
     <>
-      <LazyFeather />
+      <LazyFeather src={getSvgUrl(page?.svg_items, 1, "/video-gif/feather.svg")} />
 
       {/* ── Hero ── */}
       <section className="relative w-full bg-[#0f2557] overflow-hidden min-h-[62svh] sm:min-h-[68svh]">
         <div className="absolute right-0 top-0 h-full w-full lg:w-[55%]">
           <Image
-            src="/video-gif/Live-chatbot.svg"
+            src={getSvgUrl(page?.svg_items, 0, "/video-gif/Live-chatbot.svg")}
             alt="FAQ chatbot illustration"
             fill
             sizes="(max-width: 1024px) 100vw, 55vw"
@@ -82,7 +83,7 @@ export default async function FAQPage() {
 
       <div id="faq-questions">
         <Suspense fallback={<div className="py-16 sm:py-28" />}>
-          <FaqContent />
+          <FaqContent svgItems={page?.svg_items} />
         </Suspense>
       </div>
 

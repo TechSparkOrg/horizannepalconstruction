@@ -78,7 +78,7 @@ function SkeletonRow({ isLast }: { isLast?: boolean }) {
   );
 }
 
-export function FAQWrapper({ initialFaqs }: { initialFaqs?: FaqItem[] }) {
+export function FAQWrapper({ initialFaqs, svgUrl }: { initialFaqs?: FaqItem[]; svgUrl?: string }) {
   const [faqs, setFaqs]           = useState<Faq[]>([]);
   const [openIndex, setOpenIndex] = useState(0);
 
@@ -101,7 +101,7 @@ export function FAQWrapper({ initialFaqs }: { initialFaqs?: FaqItem[] }) {
         {/* Live-chatbot SVG — full width above */}
         <div className="relative w-full overflow-hidden rounded-2xl mb-10" style={{ height: "clamp(160px, 22vw, 300px)" }}>
           <Image
-            src="/video-gif/Live-chatbot.svg"
+            src={svgUrl || "/video-gif/Live-chatbot.svg"}
             alt="Live chat support illustration"
             fill
             sizes="100vw"

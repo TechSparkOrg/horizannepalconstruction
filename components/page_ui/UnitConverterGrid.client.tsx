@@ -8,7 +8,7 @@ import type { PublicUnitConversionItem } from "@/api/types/unit-converter.types"
 
 const ITEMS_PER_PAGE = 9;
 
-const UnitConverterGrid = () => {
+const UnitConverterGrid = ({ tapeSvgUrl, buildingSvgUrl }: { tapeSvgUrl?: string; buildingSvgUrl?: string }) => {
   const [items, setItems] = useState<PublicUnitConversionItem[]>([]);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -50,7 +50,7 @@ const UnitConverterGrid = () => {
         {/* Heading with tape.svg flanking */}
         <div className="flex items-center justify-center gap-6 mb-12">
           <Image
-            src="/video-gif/tape.svg"
+            src={tapeSvgUrl || "/video-gif/tape.svg"}
             alt=""
             aria-hidden="true"
             width={90} height={110}
@@ -71,7 +71,7 @@ const UnitConverterGrid = () => {
             </p>
           </div>
           <Image
-            src="/video-gif/tape.svg"
+            src={tapeSvgUrl || "/video-gif/tape.svg"}
             alt=""
             aria-hidden="true"
             width={90} height={110}
@@ -110,7 +110,7 @@ const UnitConverterGrid = () => {
         {!initialLoading && items.length > 0 && (
           <div className="mt-16 pt-10 border-t border-[#e2e8f0] flex flex-col items-center gap-3">
             <Image
-              src="/video-gif/Building.svg"
+              src={buildingSvgUrl || "/video-gif/Building.svg"}
               alt=""
               aria-hidden="true"
               width={320}

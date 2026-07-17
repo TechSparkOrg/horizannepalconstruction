@@ -3,7 +3,7 @@ import { getSocialIcon } from "@/lib/social-icons";
 import type { TeamMember } from "@/api/types/team.types";
 import Image from "next/image";
 
-export function TeamSection({ members }: { members: TeamMember[] }) {
+export function TeamSection({ members, svgUrl }: { members: TeamMember[]; svgUrl?: string }) {
   if (members.length === 0) return null;
 
   return (
@@ -26,7 +26,7 @@ export function TeamSection({ members }: { members: TeamMember[] }) {
 
           {/* Centre: SVG illustration */}
           <Image
-            src="/video-gif/work-team.svg"
+            src={svgUrl || "/video-gif/work-team.svg"}
             alt="Team illustration"
             width={176}
             height={112}

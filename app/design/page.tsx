@@ -101,7 +101,7 @@ export default async function DesignPage() {
           </div>
         </div>
       }>
-        <DesignContent page={pageData} modelCards={modelCards} categories={categories} />
+        <DesignContent page={pageData} modelCards={modelCards} categories={categories} svgItems={pageData?.svg_items} />
       </Suspense>
     </>
   )

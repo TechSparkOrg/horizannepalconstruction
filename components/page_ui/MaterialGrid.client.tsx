@@ -8,7 +8,7 @@ import type { PublicMaterialItem } from "@/api/types/material.types";
 
 const ITEMS_PER_PAGE = 9;
 
-const MaterialGrid = ({ initialItems, initialTotal }: { initialItems?: PublicMaterialItem[]; initialTotal?: number }) => {
+const MaterialGrid = ({ initialItems, initialTotal, svgUrl1, svgUrl2 }: { initialItems?: PublicMaterialItem[]; initialTotal?: number; svgUrl1?: string; svgUrl2?: string }) => {
   const [items, setItems] = useState<PublicMaterialItem[]>(initialItems ?? []);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(initialTotal ?? 0);
@@ -48,7 +48,7 @@ const MaterialGrid = ({ initialItems, initialTotal }: { initialItems?: PublicMat
     <section className="bg-white py-16 sm:py-24">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-center gap-6 mb-12">
-          <Image src="/video-gif/school-book.svg" alt="" aria-hidden
+          <Image src={svgUrl1 || "/video-gif/school-book.svg"} alt="" aria-hidden
             width={90} height={120}
             className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0"
             sizes="(max-width: 1024px) 70px, 90px" unoptimized />
@@ -65,7 +65,7 @@ const MaterialGrid = ({ initialItems, initialTotal }: { initialItems?: PublicMat
               Explore our comprehensive range of construction materials sourced from trusted partners.
             </p>
           </div>
-          <Image src="/video-gif/constuction-worker-building.svg" alt="" aria-hidden
+          <Image src={svgUrl2 || "/video-gif/constuction-worker-building.svg"} alt="" aria-hidden
             width={90} height={120}
             className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0 scale-x-[-1]"
             sizes="(max-width: 1024px) 70px, 90px" unoptimized />

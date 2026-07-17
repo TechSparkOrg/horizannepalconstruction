@@ -15,6 +15,7 @@ interface Props {
   page: Page | null;
   blogs: BlogPost[];
   categories: Category[];
+  svgItems?: import("@/api/types/page.types").PageSvgItem[];
 }
 
 export function BlogPageContent({ page, blogs, categories }: Props) {

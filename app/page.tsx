@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { getSettings } from "@/api/services/settings.service";
+import { getPageBySlug } from "@/api/services/page.service";
+import { getSvgUrl } from "@/lib/svg-utils";
 import { HeroSection } from "@/components/global_ui/HeroSection";
 import { QuoteBannerSecondary } from "@/components/page_ui/QuoteBannerSecondary";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
@@ -52,13 +54,17 @@ function ServicesSkeleton() {
 }
 
 export default async function HomePage() {
-  const settings = await settingsPromise;
+  const [settings, homePage] = await Promise.all([
+    settingsPromise,
+    getPageBySlug("home").catch(() => null),
+  ]);
+  const svgItems = homePage?.svg_items;
 
   return (
     <>
-      <HeroSection />
+      <HeroSection svgUrl={getSvgUrl(svgItems, 0, "/video-gif/construnction-bull-dozer.svg")} />
       <Suspense fallback={<ServicesSkeleton />}>
-        <ServicesAsync />
+        <ServicesAsync svgUrl={getSvgUrl(svgItems, 1, "/video-gif/in-progress.svg")} />
       </Suspense>
       <ViewportSection fallback={<div className="py-16 sm:py-24 bg-off-white min-h-[600px]" />}>
         <Suspense fallback={<div className="py-16 sm:py-24 bg-off-white min-h-[600px]" />}>
@@ -67,7 +73,7 @@ export default async function HomePage() {
       </ViewportSection>
       <ViewportSection fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff] min-h-[600px]" />}>
         <Suspense fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff] min-h-[600px]" />}>
-          <FeaturedAsync />
+          <FeaturedAsync svgUrl={getSvgUrl(svgItems, 2, "/video-gif/Rumble.svg")} />
         </Suspense>
       </ViewportSection>
       <QuoteBannerSecondary />
@@ -78,7 +84,7 @@ export default async function HomePage() {
       </ViewportSection>
       <ViewportSection fallback={<div className="py-20 bg-[#f5f8ff] min-h-[500px]" />}>
         <Suspense fallback={<div className="py-20 bg-[#f5f8ff] min-h-[500px]" />}>
-          <FAQAsync />
+          <FAQAsync svgUrl={getSvgUrl(svgItems, 3, "/video-gif/Live-chatbot.svg")} />
         </Suspense>
       </ViewportSection>
       {settings?.company_info?.description && (

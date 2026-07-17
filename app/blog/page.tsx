@@ -6,6 +6,7 @@ import { getBlogs } from "@/api/services/blog.service";
 import { getCategories } from "@/api/services/category.service";
 import type { BlogPost } from "@/api/types/blog.types";
 import type { Category } from "@/api/types/category.types";
+import { getSvgUrl } from "@/lib/svg-utils";
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import { BlogPageContent } from "./_content";
 
@@ -80,7 +81,7 @@ export default async function BlogPage() {
           </div>
 
           <div className="relative hidden lg:block lg:flex-1 bg-[#0f2557]">
-            <Image src="/video-gif/Poetry.svg" alt="" aria-hidden fill unoptimized priority
+            <Image src={getSvgUrl(page?.svg_items, 0, "/video-gif/Poetry.svg")} alt="" aria-hidden fill unoptimized priority
               className="object-contain object-bottom" />
             <div className="absolute inset-y-0 left-0 w-20 pointer-events-none"
               style={{ background: "linear-gradient(to right, #0f2557, transparent)" }} />
@@ -89,7 +90,7 @@ export default async function BlogPage() {
       </section>
 
       <Suspense fallback={<div className="py-16 bg-off-white" style={{ minHeight: 1100 }} />}>
-        <BlogPageContent page={page} blogs={blogsRes.results ?? []} categories={categoriesRes.results ?? []} />
+        <BlogPageContent page={page} blogs={blogsRes.results ?? []} categories={categoriesRes.results ?? []} svgItems={page?.svg_items} />
       </Suspense>
     </>
   );

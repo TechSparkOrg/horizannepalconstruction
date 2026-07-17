@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { getPageBySlug } from "@/api/services/page.service";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
+import { getSvgUrl } from "@/lib/svg-utils";
 import { UnitConvertContent } from "./_content";
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
@@ -38,13 +39,13 @@ export default async function UnitConvertPage() {
 
   return (
     <>
-      <LazyPlane />
+      <LazyPlane src={getSvgUrl(page?.svg_items, 1, "/video-gif/Loading-Paperplane.svg")} />
       <h1 className="sr-only">{page?.title || "Unit Converter — Horizan Nepal"}</h1>
 
       {/* ── Hero ── */}
       <section className="relative w-full bg-[#0f2557] overflow-hidden min-h-[68svh] sm:min-h-[72svh]">
         <div className="absolute right-0 top-0 h-full w-[75%]">
-          <Image src="/video-gif/Calculator.svg" alt="" aria-hidden
+          <Image src={getSvgUrl(page?.svg_items, 0, "/video-gif/Calculator.svg")} alt="" aria-hidden
             fill sizes="75vw" unoptimized
             className="object-contain object-right-top" priority />
           <div className="absolute inset-y-0 left-0 w-1/2 pointer-events-none" aria-hidden
@@ -79,7 +80,7 @@ export default async function UnitConvertPage() {
       </section>
 
       <Suspense fallback={<div className="py-16 sm:py-24 bg-white" style={{ minHeight: 1000 }} />}>
-        <UnitConvertContent page={page} />
+        <UnitConvertContent page={page} svgItems={page?.svg_items} />
       </Suspense>
     </>
   );

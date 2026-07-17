@@ -9,7 +9,7 @@ const stats = [
   { val: "50+",  label: "Expert Team"         },
 ];
 
-export function HeroSection() {
+export function HeroSection({ svgUrl }: { svgUrl?: string }) {
   return (
     <section
       id="home"
@@ -19,7 +19,7 @@ export function HeroSection() {
     >
       {/* Bulldozer SVG — full bleed background */}
       <Image
-        src="/video-gif/construnction-bull-dozer.svg"
+        src={svgUrl || "/video-gif/construnction-bull-dozer.svg"}
         alt=""
         fill
         sizes="100vw"

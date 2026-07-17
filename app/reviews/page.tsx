@@ -33,7 +33,7 @@ export default async function ReviewsPage() {
       <h1 className="sr-only">{page?.meta_title || "Client Reviews — Horizan Nepal Construction"}</h1>
       {page?.banner_images?.map((b) => b.url ? <link key={b.id} rel="preload" as="image" href={b.url} /> : null)}
       <Suspense fallback={<div className="min-h-[60svh] bg-[#0f2557]" />}>
-        <ReviewsContent page={page} />
+        <ReviewsContent page={page} svgItems={page?.svg_items} />
       </Suspense>
     </>
   );
