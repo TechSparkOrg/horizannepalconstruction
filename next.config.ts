@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const config: NextConfig = {
   reactStrictMode: true,
   cacheComponents: true,
+  output: "standalone",
 
   images: {
     formats: ["image/avif", "image/webp"],
@@ -19,12 +20,6 @@ const config: NextConfig = {
     inlineCss: true,
     staleTimes: { dynamic: 30, static: 180 },
     staticGenerationMaxConcurrency: 8,
-  },
-
-  compiler: {
-    removeConsole: {
-      exclude: ["error", "warn"],
-    },
   },
 
   async headers() {
