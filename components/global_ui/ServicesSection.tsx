@@ -88,11 +88,13 @@ export function ServicesSection({ initialServices, svgUrl }: { initialServices?:
   useEffect(() => {
     if (initialServices) {
       setServices(initialServices)
-      return undefined
+      return
     }
+    let mounted = true;
     getServiceCategories()
-      .then(setServices)
-      .catch(() => setServices([]))
+      .then((res) => { if (mounted) setServices(res); })
+      .catch((err) => { if (mounted) { console.error("Failed to fetch services:", err); setServices([]); } });
+    return () => { mounted = false; };
   }, [initialServices])
 
   return (

@@ -15,11 +15,11 @@ const quickLinks = [
   { label: "Home",        href: "/" },
   { label: "About Us",    href: "/about" },
   { label: "How We Work", href: "/how-we-work" },
-  { label: "Projects",    href: "/our-work" },
+  { label: "Projects",    href: "/project-details" },
   { label: "Blog",        href: "/blog" },
   { label: "Reviews",     href: "/reviews" },
   { label: "FAQ",         href: "/faq" },
-  { label: "Contact",     href: "/contact" },
+  { label: "Contact",     href: "/request" },
 ];
 
 const serviceLinks = [
@@ -146,7 +146,7 @@ export function Footer() {
               <div className="hidden sm:block w-px h-10 bg-white/10" aria-hidden="true" />
 
               <Link prefetch={false}
-                href="/contact"
+                href="/request"
                 className="inline-flex items-center gap-2 h-11 px-7 rounded-full bg-brand-primary hover:bg-blue-700 text-white font-semibold text-[13.5px] transition-colors focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
               >
                 Get a Free Quote

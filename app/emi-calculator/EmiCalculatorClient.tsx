@@ -84,7 +84,9 @@ export default function EmiCalculatorClient({ pageData, svgItems }: { pageData?:
   const [creditScore, setCreditScore] = useState<CreditScore>('good')
 
   useEffect(() => {
-    getBanks().then(setBanks).catch(() => {}).finally(() => setLoading(false))
+    let mounted = true;
+    getBanks().then((res) => { if (mounted) setBanks(res); }).catch((err) => { if (mounted) console.error("Failed to fetch banks:", err); }).finally(() => { if (mounted) setLoading(false); });
+    return () => { mounted = false; };
   }, [])
 
   const selectedBank = useMemo(

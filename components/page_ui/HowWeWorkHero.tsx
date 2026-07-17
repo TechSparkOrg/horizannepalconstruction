@@ -79,6 +79,7 @@ export function HowWeWorkHero({ initialBanners }: { initialBanners?: MediaItem[]
                       src={src}
                       alt=""
                       fill
+                      aria-hidden="true"
                       sizes="300px"
                       className="object-cover"
                     />

@@ -5,15 +5,14 @@ import { ArrowRight } from "lucide-react";
 import { getPageBySlug } from "@/api/services/page.service";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
 import { getSvgUrl } from "@/lib/svg-utils";
+import { siteUrl } from "@/lib/constants";
 import { UnitConvertContent } from "./_content";
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 const SLUG = "unit-convert";
-const unitPageP = getPageBySlug(SLUG).catch(() => null);
+const unitPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch unit convert page:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await unitPageP;
-  const url = `${SITE_URL}/${SLUG}`;
+  const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Unit Converter | Horizan Nepal",
     description: page?.meta_description || "Convert construction measurements and units — length, area, volume, and weight with Horizan Nepal's unit converter.",

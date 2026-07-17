@@ -23,11 +23,13 @@ export default function BlogGrid({ posts, categories }: Props) {
   const [active, setActive] = useState<string | null>(null);
 
   useEffect(() => {
+    let mounted = true;
     const catParam = searchParams.get("category");
     if (catParam) {
       const match = categories.find((c) => c.slug === catParam);
-      setActive(match ? match.id : null);
+      if (mounted) setActive(match ? match.id : null);
     }
+    return () => { mounted = false; };
   }, [searchParams, categories]);
 
   const handleCategoryClick = (id: string | null) => {

@@ -15,11 +15,10 @@ import {
   FAQAsync,
 } from "@/components/sections/homepage-sections";
 
+import { siteUrl } from "@/lib/constants";
 import ParsedContent from "@/lib/ParseContent.server";
 
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
-
-const settingsPromise = getSettings().catch(() => null);
+const settingsPromise = getSettings().catch((err) => { console.error("Failed to fetch settings:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await settingsPromise;
@@ -56,7 +55,7 @@ function ServicesSkeleton() {
 export default async function HomePage() {
   const [settings, homePage] = await Promise.all([
     settingsPromise,
-    getPageBySlug("home").catch(() => null),
+    getPageBySlug("home").catch((err) => { console.error("Failed to fetch home page:", err); return null; }),
   ]);
   const svgItems = homePage?.svg_items;
 

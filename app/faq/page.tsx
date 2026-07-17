@@ -8,15 +8,14 @@ import { LazyFeather } from "@/components/viewport/LazyFeather";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { FaqContent } from "./_content";
 
+import { siteUrl } from "@/lib/constants";
 import ParsedContent from "@/lib/ParseContent.server";
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 const SLUG = "faq";
-const faqPageP = getPageBySlug(SLUG).catch(() => null);
+const faqPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch FAQ page:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await faqPageP;
-  const url = `${SITE_URL}/${SLUG}`;
+  const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "FAQ | Horizan Nepal",
     description: page?.meta_description || "Frequently asked questions about Horizan Nepal's services, design process, construction timeline, costing, and more.",

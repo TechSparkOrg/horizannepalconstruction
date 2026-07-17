@@ -9,11 +9,10 @@ import { getProjectBySlug } from "@/api/services/project.service";
 import { getProjectStatus, formatProjectDate } from "@/lib/project-status";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LdJson } from "@/components/global_ui/JsonLd";
+import { siteUrl } from "@/lib/constants";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
 import { ProjectDetailContent } from "./_content";
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
-const getProject = cache(async (slug: string) => getProjectBySlug(slug).catch(() => null));
+const getProject = cache(async (slug: string) => getProjectBySlug(slug).catch((err) => { console.error("Failed to fetch project:", err); return null; }));
 
 function heroImage(p: Project): string {
   const primary = p.banner_images?.find((b) => b.isPrimary)?.url;
@@ -36,12 +35,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: project.meta_title || `${project.title} | Horizan Nepal`,
       description: desc,
     },
-    alternates: { canonical: `${SITE_URL}/project-details/${slug}` },
+    alternates: { canonical: `${siteUrl}/project-details/${slug}` },
     openGraph: {
       title: project.meta_title || `${project.title} | Horizan Nepal`,
       description: desc,
       type: "website",
-      url: `${SITE_URL}/project-details/${slug}`,
+      url: `${siteUrl}/project-details/${slug}`,
       ...(img && { images: [{ url: img }] }),
     },
   };

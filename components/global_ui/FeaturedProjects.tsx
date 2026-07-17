@@ -27,9 +27,11 @@ export function FeaturedProjects({
 
   useEffect(() => {
     if (initialProjects) return;
+    let mounted = true;
     ProjectPublic.list()
-      .then((res) => setProjects(res.results ?? []))
-      .catch(() => {});
+      .then((res) => { if (mounted) setProjects(res.results ?? []); })
+      .catch((err) => { if (mounted) console.error("Failed to fetch projects:", err); });
+    return () => { mounted = false; };
   }, [initialProjects]);
 
   /* Responsive cards per view */
@@ -46,14 +48,20 @@ export function FeaturedProjects({
 
   /* Cycle cards in sync with SVG's own animation */
   useEffect(() => {
+    let mounted = true;
+    let timeout: ReturnType<typeof setTimeout>;
     const id = setInterval(() => {
       setVisible(false);
-      setTimeout(() => {
+      timeout = setTimeout(() => {
+        if (!mounted) return;
         setBatch((b) => b + 1);
         setVisible(true);
       }, 420);
     }, SVG_CYCLE_MS);
-    return () => clearInterval(id);
+    return () => {
+      clearInterval(id);
+      clearTimeout(timeout);
+    };
   }, []);
 
   const featured      = projects.slice(0, limit);
@@ -93,7 +101,7 @@ export function FeaturedProjects({
             </h2>
           </div>
           <Link prefetch={false}
-            href="/our-work"
+            href="/project-details"
             className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-muted-foreground hover:text-brand-dark transition-colors focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
           >
             View all projects

@@ -6,24 +6,23 @@ import { getSvgUrl } from "@/lib/svg-utils";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
 import { ProjectPageContent } from "./_content";
 
+import { siteUrl } from "@/lib/constants";
 const OurWorkHero = dynamic(() => import("@/components/page_ui/OurWorkHero").then((m) => ({ default: m.OurWorkHero })));
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 const SLUG = "project-details";
-const getPage = cache(async (slug: string) => getPageBySlug(slug).catch(() => null));
+const getPage = cache(async (slug: string) => getPageBySlug(slug).catch((err) => { console.error("Failed to fetch page:", err); return null; }));
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage(SLUG);
   return {
     title: page?.meta_title || "Projects | Horizan Nepal",
     description: page?.meta_description || "Browse Horizan Nepal's portfolio of completed architectural and construction projects across Nepal.",
-    alternates: { canonical: `${SITE_URL}/project-details` },
+    alternates: { canonical: `${siteUrl}/project-details` },
     keywords: page?.meta_keywords || undefined,
     openGraph: {
       title: page?.meta_title || "Projects | Horizan Nepal",
       description: page?.meta_description || "Browse Horizan Nepal's portfolio of completed architectural and construction projects across Nepal.",
       type: "website",
-      url: `${SITE_URL}/project-details`,
+      url: `${siteUrl}/project-details`,
       images: page?.banner_images?.[0]?.url ? [{ url: page.banner_images[0].url }] : [],
     },
   };

@@ -16,13 +16,17 @@ const UnitConverterGrid = ({ tapeSvgUrl, buildingSvgUrl }: { tapeSvgUrl?: string
   const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
     getUnitConversions({ page: 1, page_size: ITEMS_PER_PAGE })
       .then((res) => {
-        setItems(res.results ?? []);
-        setTotalCount(res.count ?? 0);
+        if (mounted) {
+          setItems(res.results ?? []);
+          setTotalCount(res.count ?? 0);
+        }
       })
-      .catch(() => {})
-      .finally(() => setInitialLoading(false));
+      .catch((err) => { if (mounted) console.error("Failed to fetch unit conversions:", err); })
+      .finally(() => { if (mounted) setInitialLoading(false); });
+    return () => { mounted = false; };
   }, []);
 
   const handleLoadMore = async () => {

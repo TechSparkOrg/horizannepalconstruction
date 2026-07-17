@@ -17,11 +17,13 @@ export function VastuGuideClient({ sectionKeys }: Props) {
 
   useEffect(() => {
     if (!activeSection) return;
+    let mounted = true;
     setSectionLoading(true);
     getVastuItem(activeSection)
-      .then(setSectionItem)
-      .catch(() => setSectionItem(null))
-      .finally(() => setSectionLoading(false));
+      .then((res) => { if (mounted) setSectionItem(res); })
+      .catch((err) => { if (mounted) { console.error("Failed to fetch vastu section:", err); setSectionItem(null); } })
+      .finally(() => { if (mounted) setSectionLoading(false); });
+    return () => { mounted = false; };
   }, [activeSection]);
 
   const slugs = sectionKeys.map((s) => s.slug);

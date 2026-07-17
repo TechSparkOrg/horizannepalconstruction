@@ -4,15 +4,14 @@ import { AboutHero } from "@/components/page_ui/AboutHero";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
 import { getPageBySlug } from "@/api/services/page.service";
 import { getSvgUrl } from "@/lib/svg-utils";
+import { siteUrl } from "@/lib/constants";
 import { AboutContent } from "./_content";
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 const SLUG = "about";
-const aboutPageP = getPageBySlug(SLUG).catch(() => null);
+const aboutPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch about page:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await aboutPageP;
-  const url = `${SITE_URL}/${SLUG}`;
+  const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "About | Horizan Nepal",
     description: page?.meta_description || "Learn about Horizan Nepal — our team, mission, and portfolio. A trusted name in architectural design and construction across Nepal since 1999.",

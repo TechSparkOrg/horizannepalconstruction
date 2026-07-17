@@ -112,9 +112,11 @@ export function BlogSection({ initialPosts }: { initialPosts?: BlogPost[] }) {
 
   useEffect(() => {
     if (initialPosts) return;
+    let mounted = true;
     getBlogs()
-      .then((res) => setPosts(res.results ?? []))
-      .catch(() => {});
+      .then((res) => { if (mounted) setPosts(res.results ?? []); })
+      .catch((err) => { if (mounted) console.error("Failed to fetch blogs:", err); });
+    return () => { mounted = false; };
   }, [initialPosts]);
 
   const visible = posts.slice(0, 3);

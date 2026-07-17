@@ -7,7 +7,7 @@ const ReviewList = dynamic(() => import("@/components/page_ui/ReviewList").then(
 export async function ReviewsAsync({ svgUrl1, svgUrl2, svgUrl3, svgUrl4 }: { svgUrl1?: string; svgUrl2?: string; svgUrl3?: string; svgUrl4?: string } = {}) {
   "use cache";
 
-  const res = await getReviews().catch(() => ({ results: [], count: 0 }));
+  const res = await getReviews().catch((err) => { console.error("Failed to fetch reviews:", err); return { results: [], count: 0 }; });
   const reviews = res.results ?? [];
   const total = res.count ?? 0;
 

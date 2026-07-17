@@ -11,16 +11,15 @@ import type { MediaItem } from "@/api/types/media.types";
 import type { PublicMaterialDetail } from "@/api/types/material.types";
 import { MaterialDetailContent } from "./_content";
 
-const getMaterial = cache(async (slug: string) => getMaterialBySlug(slug).catch(() => null));
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+import { siteUrl } from "@/lib/constants";
+const getMaterial = cache(async (slug: string) => getMaterialBySlug(slug).catch((err) => { console.error("Failed to fetch material:", err); return null; }));
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
 function getMeta(item: PublicMaterialDetail, slug: string) {
-  const url = `${SITE_URL}/material/${slug}`;
+  const url = `${siteUrl}/material/${slug}`;
   const description = item.meta_description || stripHtml(item.description || "").slice(0, 160) || item.name;
   const ogImage = item.banner_images?.[0]?.url || item.logo || undefined;
   return { url, description, ogImage };

@@ -7,7 +7,7 @@ import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import type { MediaItem } from "@/api/types/media.types";
 import { BlogPostInner } from "./_content";
 
-const getPost = cache(async (slug: string) => getBlogBySlug(slug).catch(() => null));
+const getPost = cache(async (slug: string) => getBlogBySlug(slug).catch((err) => { console.error("Failed to fetch blog post:", err); return null; }));
 
 interface Props {
   params: Promise<{ slug: string }>;

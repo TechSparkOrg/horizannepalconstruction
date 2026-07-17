@@ -11,9 +11,11 @@ const VendorsSection = ({ initialVendors, svgUrl }: { initialVendors?: PublicVen
 
   useEffect(() => {
     if (initialVendors) return;
+    let mounted = true;
     getVendors()
-      .then((res) => setVendors(res.results ?? []))
-      .catch(() => {});
+      .then((res) => { if (mounted) setVendors(res.results ?? []); })
+      .catch((err) => { if (mounted) console.error("Failed to fetch vendors:", err); });
+    return () => { mounted = false; };
   }, [initialVendors]);
 
   return (

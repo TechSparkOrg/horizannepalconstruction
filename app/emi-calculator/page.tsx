@@ -4,15 +4,14 @@ import dynamic from "next/dynamic";
 import { getPageBySlug } from "@/api/services/page.service";
 import { EmiContent } from "./_content";
 
+import { siteUrl } from "@/lib/constants";
 const EmiCalculatorClient = dynamic(() => import("./EmiCalculatorClient"));
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 const SLUG = "emi-calculator";
-const emiPageP = getPageBySlug(SLUG).catch(() => null);
+const emiPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch EMI page:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await emiPageP;
-  const url = `${SITE_URL}/${SLUG}`;
+  const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "EMI Calculator | Horizan Nepal",
     description: page?.meta_description || "Plan your construction project financing with Horizan Nepal's EMI calculator. Estimate monthly payments and check loan eligibility instantly.",

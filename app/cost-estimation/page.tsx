@@ -11,7 +11,7 @@ import { CostContent } from "./_content";
 
 
 const SLUG = "cost-estimation"
-const getPage = cache(() => getPageBySlug(SLUG).catch(() => null))
+const getPage = cache(() => getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch cost estimation page:", err); return null; }))
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage()

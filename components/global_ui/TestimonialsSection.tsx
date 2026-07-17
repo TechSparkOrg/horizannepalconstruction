@@ -76,7 +76,9 @@ export function TestimonialsSection({ initialReviews, svgUrl }: { initialReviews
 
   useEffect(() => {
     if (initialReviews) return;
-    ReviewPublic.list().then((res) => setReviews(res.results ?? []));
+    let mounted = true;
+    ReviewPublic.list().then((res) => { if (mounted) setReviews(res.results ?? []); }).catch((err) => { if (mounted) console.error("Failed to fetch reviews:", err); });
+    return () => { mounted = false; };
   }, [initialReviews]);
 
   /* Reset carousel index when viewport drops to mobile */

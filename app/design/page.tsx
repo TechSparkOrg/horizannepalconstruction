@@ -10,7 +10,7 @@ import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
 import { DesignContent } from "./_content";
 
 const SLUG = "design"
-const getPage = cache(async (slug: string) => getPageBySlug(slug).catch(() => null))
+const getPage = cache(async (slug: string) => getPageBySlug(slug).catch((err) => { console.error("Failed to fetch page:", err); return null; }))
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage(SLUG)

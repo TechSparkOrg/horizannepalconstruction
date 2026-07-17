@@ -5,17 +5,16 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { getBuildingPermitSingle } from "@/api/services/building-permit.service";
 import { getPageBySlug } from "@/api/services/page.service";
+import { siteUrl } from "@/lib/constants";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { BuildingPermitContent } from "./_content";
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 const SLUG = "building-permit";
-const pageP = getPageBySlug(SLUG).catch(() => null);
+const pageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch building permit page:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await pageP;
-  const url = `${SITE_URL}/${SLUG}`;
+  const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Building Permit Assistant | Horizan Nepal",
     description: page?.meta_description || "Navigate Nepal's building permit process with confidence. Step-by-step workflow guide, document checklist, regulations, and municipality directory for construction permits.",
@@ -36,7 +35,7 @@ export default async function BuildingPermitPage() {
 
   const [page, config] = await Promise.all([
     pageP,
-    getBuildingPermitSingle().catch(() => null),
+    getBuildingPermitSingle().catch((err) => { console.error("Failed to fetch building permit config:", err); return null; }),
   ]);
   if (!config) notFound();
 

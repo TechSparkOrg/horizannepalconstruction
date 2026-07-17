@@ -21,13 +21,15 @@ export default function RelatedArticles({ slug, categorySlug }: Props) {
       setLoading(false);
       return;
     }
+    let mounted = true;
 
     getBlogsByCategory(categorySlug)
       .then((res) => {
-        setPosts(res.results.filter((p) => p.slug !== slug).slice(0, 3));
+        if (mounted) setPosts(res.results.filter((p) => p.slug !== slug).slice(0, 3));
       })
-      .catch(() => setPosts([]))
-      .finally(() => setLoading(false));
+      .catch((err) => { if (mounted) { console.error("Failed to fetch related articles:", err); setPosts([]); } })
+      .finally(() => { if (mounted) setLoading(false); });
+    return () => { mounted = false; };
   }, [slug, categorySlug]);
 
   if (!loading && posts.length === 0) return null;

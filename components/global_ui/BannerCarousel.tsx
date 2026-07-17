@@ -15,7 +15,7 @@ interface Props {
 }
 
 export function BannerCarousel({ children, overlay, carousel = true, className = "", imgClassName = "object-cover", initialBanners ,slug}: Props) {
-  const [banners] = useState<MediaItem[]>(initialBanners ?? []);
+  const banners = initialBanners ?? [];
   const [current, setCurrent] = useState(0);
 
   const slides = banners.filter(b => b.url);

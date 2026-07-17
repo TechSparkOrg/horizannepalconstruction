@@ -1,15 +1,14 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getPageBySlug } from "@/api/services/page.service";
+import { siteUrl } from "@/lib/constants";
 import { ReviewsContent } from "./_content";
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 const SLUG = "reviews";
-const reviewsPageP = getPageBySlug(SLUG).catch(() => null);
+const reviewsPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch reviews page:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await reviewsPageP;
-  const url = `${SITE_URL}/${SLUG}`;
+  const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Reviews | Horizan Nepal",
     description: page?.meta_description || "Read customer reviews and testimonials for Horizan Nepal. Share your experience or browse what our clients say about our architecture and construction services.",

@@ -4,15 +4,14 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { getPageBySlug } from "@/api/services/page.service";
 import { getSvgUrl } from "@/lib/svg-utils";
+import { siteUrl } from "@/lib/constants";
 import { VastuContent } from "./_content";
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 const SLUG = "vastu-shastra";
-const vastuPageP = getPageBySlug(SLUG).catch(() => null);
+const vastuPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch vastu page:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await vastuPageP;
-  const url = `${SITE_URL}/${SLUG}`;
+  const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || page?.title || "Vastu Shastra | Horizan Nepal",
     description: page?.meta_description || "Explore Vastu Shastra principles for your home. Learn about room placement, directional analysis, and ancient architectural wisdom for harmonious living spaces in Nepal.",

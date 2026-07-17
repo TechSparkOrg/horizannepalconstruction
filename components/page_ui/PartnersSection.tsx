@@ -73,10 +73,12 @@ export function PartnersSection({
 
   useEffect(() => {
     if (initialVendors && initialBanks) return
+    let mounted = true;
     Promise.all([
-      getVendors().then((r) => r.results ?? []).catch(() => [] as PublicVendor[]),
-      getBanks().catch(() => [] as EmiBank[]),
-    ]).then(([v, b]) => { setVendors(v); setBanks(b) })
+      getVendors().then((r) => r.results ?? []).catch((err) => { console.error("Failed to fetch vendors:", err); return [] as PublicVendor[]; }),
+      getBanks().catch((err) => { console.error("Failed to fetch banks:", err); return [] as EmiBank[]; }),
+    ]).then(([v, b]) => { if (mounted) { setVendors(v); setBanks(b) } })
+    return () => { mounted = false; };
   }, [initialVendors, initialBanks])
 
   const loading = vendors === null || banks === null

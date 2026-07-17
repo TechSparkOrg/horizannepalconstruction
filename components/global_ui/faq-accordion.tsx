@@ -87,11 +87,13 @@ export function FAQWrapper({ initialFaqs, svgUrl }: { initialFaqs?: FaqItem[]; s
       setFaqs(initialFaqs.map((f) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" })));
       return;
     }
+    let mounted = true;
     getFaqs()
-      .then((res) =>
-        setFaqs((res.results ?? []).map((f: FaqItem) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" })))
-      )
-      .catch(() => {});
+      .then((res) => {
+        if (mounted) setFaqs((res.results ?? []).map((f: FaqItem) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" })));
+      })
+      .catch((err) => { if (mounted) console.error("Failed to fetch FAQs:", err); });
+    return () => { mounted = false; };
   }, [initialFaqs]);
 
   return (
