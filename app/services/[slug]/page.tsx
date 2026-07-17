@@ -4,15 +4,14 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { getServiceCategoryDetail } from "@/api/services/category.service";
 import { stripHtml } from "@/lib/extractTocItems";
+import { siteUrl } from "@/lib/constants";
 import { ServiceDetailInner } from "./_content";
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-const getDetail = cache(async (slug: string) => getServiceCategoryDetail(slug).catch(() => null));
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
+const getDetail = cache(async (slug: string) => getServiceCategoryDetail(slug).catch((err) => { console.error("Failed to fetch service category detail:", err); return null; }));
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -21,12 +20,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: detail.meta_title || `${detail.name} | Horizan Nepal`,
     description: detail.meta_description || stripHtml(detail.description).substring(0, 160),
-    alternates: { canonical: `${SITE_URL}/services/${slug}` },
+    alternates: { canonical: `${siteUrl}/services/${slug}` },
     openGraph: {
       title: detail.meta_title || detail.name,
       description: detail.meta_description || stripHtml(detail.description).substring(0, 160),
       type: "website",
-      url: `${SITE_URL}/services/${slug}`,
+      url: `${siteUrl}/services/${slug}`,
       images: detail.banner_images?.[0]?.url ? [{ url: detail.banner_images[0].url }] : [],
     },
   };

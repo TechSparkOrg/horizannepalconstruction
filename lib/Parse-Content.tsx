@@ -7,7 +7,6 @@ import parse, { domToReact, type HTMLReactParserOptions, type Element, type DOMN
 
 import { cn } from '@/lib/utils';
 import type { TocItem } from '@/lib/extractTocItems';
-import { sanitizeHtml } from './dumpurify';
 
 interface ParsedContentProps {
   description: string;
@@ -61,13 +60,7 @@ export default function ParsedContent({ description, className = '', onTocExtrac
       };
     }
 
-    const cleanHTML = sanitizeHtml(description, {
-      ADD_TAGS: ['iframe', 'span'],
-      ADD_ATTR: [
-        'allow', 'allowfullscreen', 'frameborder', 'src', 'style',
-        'width', 'height', 'loading', 'id', 'class', 'data-list', 'data-indent',
-      ],
-    });
+    const cleanHTML = description;
 
     const collected: TocItem[] = [];
     const idCounter: Record<string, number> = {};

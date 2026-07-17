@@ -401,7 +401,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export function CostEstimator() {
+export function CostEstimator({ svgUrl1, svgUrl2 }: { svgUrl1?: string; svgUrl2?: string }) {
   const [area,     setArea]     = useState<string>("");
   const [floors,   setFloors]   = useState<number>(1);
   const [material, setMaterial] = useState<Material>("normal");
@@ -453,7 +453,7 @@ export function CostEstimator() {
               </p>
             </div>
             <div className="relative shrink-0 w-[220px] h-[170px] hidden md:block select-none" aria-hidden="true">
-              <Image src="/video-gif/plan-making.svg" alt="" fill unoptimized className="object-contain object-center" />
+              <Image src={svgUrl1 || "/video-gif/plan-making.svg"} alt="" fill unoptimized className="object-contain object-center" />
             </div>
           </div>
 
@@ -547,7 +547,7 @@ export function CostEstimator() {
                   Estimated Total Cost
                 </p>
                 <Image
-                  src="/video-gif/coming-soon.svg"
+                  src={svgUrl2 || "/video-gif/coming-soon.svg"}
                   alt="Detailed cost estimate coming soon"
                   width={340}
                   height={220}

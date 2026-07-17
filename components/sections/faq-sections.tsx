@@ -5,7 +5,7 @@ const FAQTimeline = dynamic(() => import("@/components/page_ui/FAQTimeline").the
 
 export async function FaqGroupsAsync() {
   "use cache";
-  const res = await getFaqGroups().catch(() => ({ results: [] }));
+  const res = await getFaqGroups().catch((err) => { console.error("Failed to fetch FAQ groups:", err); return { results: [] }; });
   return { groups: res.results ?? [] };
 }
 

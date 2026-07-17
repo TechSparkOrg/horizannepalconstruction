@@ -8,7 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { ServiceCategoryDetail } from "@/api/types/category.types";
 
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
 const BlogCard = dynamic(() => import("@/components/global_ui/BlogCard").then(m => ({ default: m.BlogCard })));
 
@@ -90,7 +90,7 @@ export function ServiceDetailInner({ detail }: Props) {
 
 async function BlogCatSection({ categorySlug, categoryName }: { categorySlug: string; categoryName: string }) {
   "use cache";
-  const res = await getBlogsByCategory(categorySlug).catch(() => ({ results: [] }));
+  const res = await getBlogsByCategory(categorySlug).catch((err) => { console.error("Failed to fetch blogs by category:", err); return { results: [] }; });
   const posts = (res.results ?? []).slice(0, 4);
   if (posts.length === 0) {
     return (
@@ -123,7 +123,7 @@ async function BlogCatSection({ categorySlug, categoryName }: { categorySlug: st
 
 async function ProjectCatSection({ categorySlug, categoryName }: { categorySlug: string; categoryName: string }) {
   "use cache";
-  const res = await getProjectsByCategory(categorySlug).catch(() => ({ results: [] }));
+  const res = await getProjectsByCategory(categorySlug).catch((err) => { console.error("Failed to fetch projects by category:", err); return { results: [] }; });
   const projects = (res.results ?? []).slice(0, 4);
   if (projects.length === 0) {
     return (
@@ -167,7 +167,7 @@ async function ProjectCatSection({ categorySlug, categoryName }: { categorySlug:
 
 async function ServiceFaqInner({ faqSlug }: { faqSlug: string }) {
   "use cache";
-  const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch(() => ({ results: [] }));
+  const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",
     a: item.answer?.en ?? "",

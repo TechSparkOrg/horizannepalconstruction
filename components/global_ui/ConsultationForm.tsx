@@ -29,14 +29,16 @@ const trust = [
   { num: "98%",  txt: "Satisfaction" },
 ];
 
-export function ConsultationForm({ initialCategories }: { initialCategories?: Category[] }) {
+export function ConsultationForm({ initialCategories, headerSvgUrl, emailSvgUrl }: { initialCategories?: Category[]; headerSvgUrl?: string; emailSvgUrl?: string }) {
   const contactInfo = useSettings((s) => s.settings?.contact_info);
   const [categories, setCategories] = useState<Category[]>(initialCategories ?? []);
 
   useEffect(() => {
     if (initialCategories) return;
     if (!CategoryPublic?.list) return;
-    CategoryPublic.list().then((r) => setCategories(r.results ?? [])).catch(() => {});
+    let mounted = true;
+    CategoryPublic.list().then((r) => { if (mounted) setCategories(r.results ?? []); }).catch((err) => { if (mounted) console.error("Failed to fetch categories:", err); });
+    return () => { mounted = false; };
   }, [initialCategories]);
 
   const [submitted, setSubmitting2] = useState(false);
@@ -117,10 +119,11 @@ export function ConsultationForm({ initialCategories }: { initialCategories?: Ca
         {/* SVG illustration */}
         <div className="my-5">
           <Image
-            src="/video-gif/customer-inquires.svg"
+            src={headerSvgUrl || "/video-gif/customer-inquires.svg"}
             alt="Consultation illustration"
             width={200}
             height={120}
+            unoptimized
             className="w-[140px] h-[84px] sm:w-[200px] sm:h-[120px] object-contain"
             sizes="(max-width: 640px) 140px, 200px"
           />
@@ -167,7 +170,7 @@ export function ConsultationForm({ initialCategories }: { initialCategories?: Ca
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               key={submitCount}
-              src="/video-gif/email.svg"
+              src={emailSvgUrl || "/video-gif/email.svg"}
               alt="Message sent"
               className="w-[110px] h-[110px] object-contain mb-4"
             />

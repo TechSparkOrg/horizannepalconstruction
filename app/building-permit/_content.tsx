@@ -9,24 +9,25 @@ import { RegulationsGrid } from "./RegulationsGrid";
 import { MunicipalityTable } from "./MunicipalityTable";
 
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 
 interface Props {
   config: BuildingPermitConfig;
   page: Page | null;
+  svgItems?: import("@/api/types/page.types").PageSvgItem[];
 }
 
-export function BuildingPermitContent({ config, page }: Props) {
+export function BuildingPermitContent({ config, page, svgItems }: Props) {
   const F = (className: string) => <div className={className} />;
 
   return (
     <>
-      <WorkflowTimeline steps={config.workflow_steps} />
+      <WorkflowTimeline steps={config.workflow_steps} svgItems={svgItems} />
       <ViewportSection fallback={F("py-16 sm:py-24 bg-[#f8fafc]")}>
-        <RegulationsGrid items={config.regulation_items} />
+        <RegulationsGrid items={config.regulation_items} svgItems={svgItems} />
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-24 bg-white")}>
-        <MunicipalityTable items={config.municipality_items} />
+        <MunicipalityTable items={config.municipality_items} svgItems={svgItems} />
       </ViewportSection>
       {page?.faq_group_slug && (
         <Suspense fallback={F("py-12 sm:py-16 bg-white")}>
@@ -46,7 +47,7 @@ export function BuildingPermitContent({ config, page }: Props) {
 
 async function BPFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
   "use cache";
-  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch(() => ({ results: [] }));
+  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",
     a: item.answer?.en ?? "",

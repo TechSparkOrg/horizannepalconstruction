@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { getSvgUrl } from "@/lib/svg-utils";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import { VastuNavAsync } from "@/components/sections/vastu-sections";
 import type { Page } from "@/api/types/page.types";
@@ -9,13 +10,14 @@ import FaqClient from "@/components/global_ui/FaqClient";
 import { VastuGuideClient } from "./VastuGuideClient";
 
 const VastuQuickTools = dynamic(() => import("./VastuQuickTools").then((m) => ({ default: m.VastuQuickTools })));
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 
 interface Props {
   page: Page | null;
+  svgItems?: import("@/api/types/page.types").PageSvgItem[];
 }
 
-export function VastuContent({ page }: Props) {
+export function VastuContent({ page, svgItems }: Props) {
   const F = (className: string) => <div className={className} />;
 
   return (
@@ -33,7 +35,7 @@ export function VastuContent({ page }: Props) {
             <h2 className="font-display font-bold text-[#0f2557] text-2xl sm:text-3xl tracking-tight">Vastu Shastra Guide</h2>
           </div>
           <div className="flex justify-center mb-10" aria-hidden="true">
-            <Image src="/video-gif/Kalash.svg" alt="" width={130} height={130}
+            <Image src={getSvgUrl(svgItems, 0, "/video-gif/Kalash.svg")} alt="" width={130} height={130}
               sizes="(max-width: 640px) 90px, 120px"
               className="w-[90px] sm:w-[120px] h-auto object-contain opacity-50 select-none pointer-events-none" unoptimized />
           </div>
@@ -48,7 +50,7 @@ export function VastuContent({ page }: Props) {
           {/* Tools — deferred, on scroll */}
           <ViewportSection fallback={F("mt-16 border-t border-[#e2e8f0] pt-12")}>
             <Suspense fallback={F("mt-16 border-t border-[#e2e8f0] pt-12")}>
-              <VastuToolsInner />
+              <VastuToolsInner svgItems={svgItems} />
             </Suspense>
           </ViewportSection>
 
@@ -80,14 +82,14 @@ async function VastuGuideInner() {
   return <VastuGuideClient sectionKeys={nav.sections ?? []} />;
 }
 
-async function VastuToolsInner() {
+async function VastuToolsInner({ svgItems: si }: { svgItems?: import("@/api/types/page.types").PageSvgItem[] }) {
   const nav = await VastuNavAsync();
-  return <VastuQuickTools roomOptions={nav.rooms ?? []} directionOptions={nav.directions ?? []} />;
+  return <VastuQuickTools roomOptions={nav.rooms ?? []} directionOptions={nav.directions ?? []} svgItems={si} />;
 }
 
 async function VastuFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
   "use cache";
-  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch(() => ({ results: [] }));
+  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",
     a: item.answer?.en ?? "",

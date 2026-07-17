@@ -9,12 +9,13 @@ import type { Category } from "@/api/types/category.types";
 const BlogGrid = dynamic(() => import("@/components/page_ui/BlogGrid.client"));
 const ImageGrid = dynamic(() => import("@/components/global_ui/image-grid").then((m) => ({ default: m.ImageGrid })));
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 
 interface Props {
   page: Page | null;
   blogs: BlogPost[];
   categories: Category[];
+  svgItems?: import("@/api/types/page.types").PageSvgItem[];
 }
 
 export function BlogPageContent({ page, blogs, categories }: Props) {
@@ -45,7 +46,7 @@ export function BlogPageContent({ page, blogs, categories }: Props) {
 
 async function BlogFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
   "use cache";
-  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch(() => ({ results: [] }));
+  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",
     a: item.answer?.en ?? "",

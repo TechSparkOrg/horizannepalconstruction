@@ -249,7 +249,7 @@ function MapController({
           { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
         );
       })
-      .catch(() => {});
+      .catch((err) => { console.error("Failed to get current position:", err); });
   }, [map, initialPosition, loaded, updatePosition, mapRef]);
 
   return null;

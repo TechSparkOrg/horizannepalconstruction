@@ -71,9 +71,13 @@ function ReviewCard({ r, accent }: { r: Review; accent?: boolean }) {
 interface Props {
   initialReviews: Review[];
   initialTotal: number;
+  svgUrl1?: string;
+  svgUrl2?: string;
+  svgUrl3?: string;
+  svgUrl4?: string;
 }
 
-export function ReviewList({ initialReviews, initialTotal }: Props) {
+export function ReviewList({ initialReviews, initialTotal, svgUrl1, svgUrl2, svgUrl3, svgUrl4 }: Props) {
   const [reviews, setReviews] = useState<Review[]>(initialReviews);
   const [total, setTotal] = useState(initialTotal);
   const [page, setPage] = useState(1);
@@ -138,12 +142,13 @@ export function ReviewList({ initialReviews, initialTotal }: Props) {
       {/* ── Hero ── */}
       <section className="relative w-full overflow-hidden bg-[#0f2557] min-h-[60svh] sm:min-h-[72svh]">
         <Image
-          src="/video-gif/developing-qanda.svg"
+          src={svgUrl1 || "/video-gif/developing-qanda.svg"}
           alt="Client reviews and testimonials illustration"
           fill
           sizes="100vw"
           className="object-contain object-center"
           priority
+          unoptimized
         />
         <div
           className="absolute inset-x-0 top-0 h-40 z-10 pointer-events-none"
@@ -228,12 +233,12 @@ export function ReviewList({ initialReviews, initialTotal }: Props) {
 
               <div className="shrink-0 flex flex-col items-center gap-3">
                 <Image
-                  src="/video-gif/card-scoll-animation.svg"
+                  src={svgUrl2 || "/video-gif/card-scoll-animation.svg"}
                   alt="Social media connection animation"
                   width={500}
                   height={220}
+                  unoptimized
                   className="h-auto object-contain"
-                 
                 />
                 <p className="text-white/50 text-xs text-center max-w-[220px] leading-relaxed">
                   Stay connected — follow us for project updates and design inspiration.
@@ -255,7 +260,7 @@ export function ReviewList({ initialReviews, initialTotal }: Props) {
               {/* Left: Review.svg + heading */}
               <div className=" flex items-center  flex-col">
                 <Image
-                  src="/video-gif/Review.svg"
+                  src={svgUrl3 || "/video-gif/Review.svg"}
                   alt="Share your review illustration"
                   width={320}
                   height={240}
@@ -289,7 +294,7 @@ export function ReviewList({ initialReviews, initialTotal }: Props) {
                     <div className="text-center py-6 flex flex-col items-center gap-3">
                       <img
                         key={submitCount}
-                        src="/video-gif/email.svg"
+                        src={svgUrl4 || "/video-gif/email.svg"}
                         alt="Review submitted"
                         className="w-[110px] h-[110px] object-contain"
                       />

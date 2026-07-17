@@ -4,15 +4,15 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { getPageBySlug } from "@/api/services/page.service";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
+import { getSvgUrl } from "@/lib/svg-utils";
+import { siteUrl } from "@/lib/constants";
 import { MaterialContent } from "./_content";
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 const SLUG = "material";
-const materialPageP = getPageBySlug(SLUG).catch(() => null);
+const materialPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch material page:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await materialPageP;
-  const url = `${SITE_URL}/${SLUG}`;
+  const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Construction Materials | Horizan Nepal",
     description: page?.meta_description || "Explore high-quality construction materials from trusted partners across Nepal. Find pricing, specifications, and supplier details for your project.",
@@ -33,13 +33,13 @@ export default async function MaterialPage() {
 
   return (
     <>
-      <LazyPlane />
+      <LazyPlane src={getSvgUrl(page?.svg_items, 1, "/video-gif/Loading-Paperplane.svg")} />
       <h1 className="sr-only">{page?.title || "Construction Materials — Horizan Nepal"}</h1>
 
       {/* ── Hero ── */}
       <section className="relative w-full bg-[#0f2557] overflow-hidden min-h-[68svh] sm:min-h-[72svh]">
         <div className="absolute right-0 top-0 h-full w-full lg:w-[58%]">
-          <Image src="/video-gif/road-reparing.svg" alt="" aria-hidden
+          <Image src={getSvgUrl(page?.svg_items, 0, "/video-gif/road-reparing.svg")} alt="" aria-hidden
             fill sizes="(max-width: 1024px) 100vw, 58vw"
             className="object-contain object-center lg:object-right" priority unoptimized />
           <div className="absolute inset-0 bg-[#0f2557]/85 lg:hidden" />
@@ -102,7 +102,7 @@ export default async function MaterialPage() {
       </section>
 
       <Suspense fallback={<div className="py-16 sm:py-24 bg-[#f8fafc]" style={{ minHeight: 1320 }} />}>
-        <MaterialContent page={page} />
+        <MaterialContent page={page} svgItems={page?.svg_items} />
       </Suspense>
     </>
   );

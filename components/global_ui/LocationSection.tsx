@@ -9,7 +9,7 @@ const details = [
   { icon: Clock,  label: "Hours",    value: "Sun – Fri, 9am – 6pm" },
 ];
 
-export function LocationSection() {
+export function LocationSection({ svgUrl }: { svgUrl?: string }) {
   return (
     <section className="bg-[#f8fafc] border-t border-[#e2e8f0]">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 pb-10">
@@ -29,10 +29,11 @@ export function LocationSection() {
           </div>
 
           <Image
-            src="/video-gif/location-pin.svg"
+            src={svgUrl || "/video-gif/location-pin.svg"}
             alt="Location pin illustration"
             width={140}
             height={90}
+            unoptimized
             className="w-[90px] h-[58px] sm:w-[140px] sm:h-[90px] shrink-0 object-contain"
             sizes="(max-width: 640px) 90px, 140px"
           />

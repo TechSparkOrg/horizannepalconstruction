@@ -6,16 +6,16 @@ import { getBlogs } from "@/api/services/blog.service";
 import { getCategories } from "@/api/services/category.service";
 import type { BlogPost } from "@/api/types/blog.types";
 import type { Category } from "@/api/types/category.types";
+import { siteUrl } from "@/lib/constants";
+import { getSvgUrl } from "@/lib/svg-utils";
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import { BlogPageContent } from "./_content";
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 const SLUG = "blog";
-const blogPageP = getPageBySlug(SLUG).catch(() => null);
+const blogPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch blog page:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await blogPageP;
-  const url = `${SITE_URL}/${SLUG}`;
+  const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Blog | Horizan Nepal",
     description: page?.meta_description || "Insights, project stories, and practical guides from the Horizan Nepal team.",
@@ -34,8 +34,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function BlogPage() {
   const [page, blogsRes, categoriesRes] = await Promise.all([
     blogPageP,
-    getBlogs().catch(() => ({ results: [] as BlogPost[] })),
-    getCategories().catch(() => ({ results: [] as Category[] })),
+    getBlogs().catch((err) => { console.error("Failed to fetch blogs:", err); return { results: [] as BlogPost[] }; }),
+    getCategories().catch((err) => { console.error("Failed to fetch categories:", err); return { results: [] as Category[] }; }),
   ]);
 
   return (
@@ -80,7 +80,7 @@ export default async function BlogPage() {
           </div>
 
           <div className="relative hidden lg:block lg:flex-1 bg-[#0f2557]">
-            <Image src="/video-gif/Poetry.svg" alt="" aria-hidden fill unoptimized priority
+            <Image src={getSvgUrl(page?.svg_items, 0, "/video-gif/Poetry.svg")} alt="" aria-hidden fill unoptimized priority
               className="object-contain object-bottom" />
             <div className="absolute inset-y-0 left-0 w-20 pointer-events-none"
               style={{ background: "linear-gradient(to right, #0f2557, transparent)" }} />
@@ -89,7 +89,7 @@ export default async function BlogPage() {
       </section>
 
       <Suspense fallback={<div className="py-16 bg-off-white" style={{ minHeight: 1100 }} />}>
-        <BlogPageContent page={page} blogs={blogsRes.results ?? []} categories={categoriesRes.results ?? []} />
+        <BlogPageContent page={page} blogs={blogsRes.results ?? []} categories={categoriesRes.results ?? []} svgItems={page?.svg_items} />
       </Suspense>
     </>
   );

@@ -62,19 +62,23 @@ function Divider({ label }: { label: string }) {
 export function PartnersSection({
   initialVendors,
   initialBanks,
+  svgUrl,
 }: {
   initialVendors?: PublicVendor[];
   initialBanks?: EmiBank[];
+  svgUrl?: string;
 }) {
   const [vendors, setVendors] = useState<PublicVendor[] | null>(initialVendors ?? null)
   const [banks,   setBanks]   = useState<EmiBank[] | null>(initialBanks ?? null)
 
   useEffect(() => {
     if (initialVendors && initialBanks) return
+    let mounted = true;
     Promise.all([
-      getVendors().then((r) => r.results ?? []).catch(() => [] as PublicVendor[]),
-      getBanks().catch(() => [] as EmiBank[]),
-    ]).then(([v, b]) => { setVendors(v); setBanks(b) })
+      getVendors().then((r) => r.results ?? []).catch((err) => { console.error("Failed to fetch vendors:", err); return [] as PublicVendor[]; }),
+      getBanks().catch((err) => { console.error("Failed to fetch banks:", err); return [] as EmiBank[]; }),
+    ]).then(([v, b]) => { if (mounted) { setVendors(v); setBanks(b) } })
+    return () => { mounted = false; };
   }, [initialVendors, initialBanks])
 
   const loading = vendors === null || banks === null
@@ -88,13 +92,14 @@ export function PartnersSection({
         {/* Header */}
         <div className="flex flex-wrap items-end justify-between gap-6 mb-12">
            <Image
-            src="/video-gif/Business.svg"
-            alt="Partners illustration"
-            width={148}
-            height={92}
-            className="w-[100px] h-[62px] sm:w-[148px] sm:h-[92px] shrink-0 object-contain"
-            sizes="(max-width: 640px) 100px, 148px"
-          />
+             src={svgUrl || "/video-gif/Business.svg"}
+             alt="Partners illustration"
+             width={148}
+             height={92}
+             unoptimized
+             className="w-[100px] h-[62px] sm:w-[148px] sm:h-[92px] shrink-0 object-contain"
+             sizes="(max-width: 640px) 100px, 148px"
+           />
           <div>
             <span className="inline-block text-[10px] font-bold tracking-[0.2em] uppercase text-[#1d4ed8] bg-[#eff6ff] border border-[#bfdbfe] px-3 py-1 rounded-full mb-3">
               Our Partners

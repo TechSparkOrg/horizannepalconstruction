@@ -9,6 +9,7 @@ interface Props {
   title: string;
   baseUnit: string;
   conversions: ConversionRule[];
+  svgUrl?: string;
 }
 
 function formatNum(n: number): string {
@@ -17,7 +18,7 @@ function formatNum(n: number): string {
   return n.toLocaleString(undefined, { maximumFractionDigits: 6, useGrouping: false });
 }
 
-export default function UnitConverterWidget({ title, baseUnit, conversions }: Props) {
+export default function UnitConverterWidget({ title, baseUnit, conversions, svgUrl }: Props) {
   const [value, setValue] = useState<string>("1");
   const [swapped, setSwapped] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -72,7 +73,7 @@ export default function UnitConverterWidget({ title, baseUnit, conversions }: Pr
           {/* Precision.svg — decorative left */}
           <div className="hidden sm:flex lg:w-[42%] w-full items-center justify-center shrink-0">
             <Image
-              src="/video-gif/Precision.svg"
+              src={svgUrl || "/video-gif/Precision.svg"}
               alt=""
               aria-hidden="true"
               width={380}

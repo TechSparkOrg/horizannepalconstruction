@@ -2,24 +2,26 @@ import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import { getFaqs } from "@/api/services/faq.service";
-import type { Page } from "@/api/types/page.types";
+import type { Page, PageSvgItem } from "@/api/types/page.types";
+import { getSvgUrl } from "@/lib/svg-utils";
 
 const UnitConverterGrid = dynamic(() => import("@/components/page_ui/UnitConverterGrid.client"));
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
-const ParsedContent = dynamic(() => import("@/lib/Parse-Content"));
+import ParsedContent from "@/lib/ParseContent.server";
 
 interface Props {
   page: Page | null;
+  svgItems?: PageSvgItem[];
 }
 
-export function UnitConvertContent({ page }: Props) {
+export function UnitConvertContent({ page, svgItems }: Props) {
   const F = (className: string) => <div className={className} />;
 
   return (
     <>
       <div id="converter">
         <ViewportSection fallback={F("py-16 sm:py-24 bg-white min-h-[600px]")}>
-          <UnitConverterGrid />
+          <UnitConverterGrid tapeSvgUrl={getSvgUrl(svgItems, 0, "/video-gif/tape.svg")} buildingSvgUrl={getSvgUrl(svgItems, 1, "/video-gif/Building.svg")} />
         </ViewportSection>
       </div>
       {page?.faq_group_slug && (
@@ -42,7 +44,7 @@ export function UnitConvertContent({ page }: Props) {
 
 async function UnitConvertFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
   "use cache";
-  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch(() => ({ results: [] }));
+  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
   const faqs = (res.results ?? []).map((item) => ({
     q: item.question?.en ?? "",
     a: item.answer?.en ?? "",

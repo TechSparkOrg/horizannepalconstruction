@@ -3,15 +3,15 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { getPageBySlug } from "@/api/services/page.service";
+import { getSvgUrl } from "@/lib/svg-utils";
+import { siteUrl } from "@/lib/constants";
 import { VastuContent } from "./_content";
-
-const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://horizonnepalconstruction.com").replace(/\/+$/, "");
 const SLUG = "vastu-shastra";
-const vastuPageP = getPageBySlug(SLUG).catch(() => null);
+const vastuPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch vastu page:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await vastuPageP;
-  const url = `${SITE_URL}/${SLUG}`;
+  const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || page?.title || "Vastu Shastra | Horizan Nepal",
     description: page?.meta_description || "Explore Vastu Shastra principles for your home. Learn about room placement, directional analysis, and ancient architectural wisdom for harmonious living spaces in Nepal.",
@@ -74,7 +74,7 @@ export default async function VastuShastraPage() {
             <div className="shrink-0 flex items-center justify-center relative lg:w-[440px]">
               <div className="absolute w-[340px] h-[340px] rounded-full pointer-events-none" aria-hidden="true"
                 style={{ background: "radial-gradient(circle,rgba(245,158,11,0.18) 0%,transparent 70%)", filter: "blur(40px)" }} />
-              <Image src="/video-gif/ganesh-on.svg"
+              <Image src={getSvgUrl(page?.svg_items, 0, "/video-gif/ganesh-on.svg")}
                 alt="Lord Ganesha — remover of obstacles and patron of new beginnings"
                 width={420} height={420}
                 sizes="(max-width: 640px) 220px, (max-width: 1024px) 340px, 420px"
@@ -86,7 +86,7 @@ export default async function VastuShastraPage() {
       </section>
 
       <Suspense fallback={<div className="py-16 sm:py-28 bg-white" />}>
-        <VastuContent page={page} />
+        <VastuContent page={page} svgItems={page?.svg_items} />
       </Suspense>
     </div>
   );

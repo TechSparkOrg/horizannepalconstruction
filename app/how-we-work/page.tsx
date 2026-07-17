@@ -15,7 +15,7 @@ const QuoteBannerSecondary = dynamic(() => import("@/components/page_ui/QuoteBan
 const SLUG = "how-we-work"
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlug(SLUG).catch(() => null)
+  const page = await getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch how-we-work page:", err); return null; })
   const base = pageMetadataBase(page, SLUG)
   return {
     title: page?.meta_title || "How We Work | Horizan Nepal",
@@ -32,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HowWeWorkPage() {
-  const page = await getPageBySlug(SLUG).catch(() => null)
+  const page = await getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch how-we-work page:", err); return null; })
 
   return (
     <>

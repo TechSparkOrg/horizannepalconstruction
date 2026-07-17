@@ -9,15 +9,15 @@ import { FeaturedProjects } from "@/components/global_ui/FeaturedProjects";
 import { BlogSection } from "@/components/global_ui/BlogSection";
 import { FAQWrapper } from "@/components/global_ui/faq-accordion";
 
-export async function ServicesAsync() {
+export async function ServicesAsync({ svgUrl }: { svgUrl?: string }) {
   "use cache";
-  const services = await getServiceCategories().catch(() => []);
-  return <ServicesSection initialServices={services} />;
+  const services = await getServiceCategories().catch((err) => { console.error("Failed to fetch services:", err); return []; });
+  return <ServicesSection initialServices={services} svgUrl={svgUrl} />;
 }
 
 export async function GalleryAsync() {
   "use cache";
-  const banners = await getBanners("home-page-gallary").catch(() => []);
+  const banners = await getBanners("home-page-gallary").catch((err) => { console.error("Failed to fetch banners:", err); return []; });
   return (
     <ImageGrid
       slug="home-page-gallary"
@@ -29,20 +29,20 @@ export async function GalleryAsync() {
   );
 }
 
-export async function FeaturedAsync() {
+export async function FeaturedAsync({ svgUrl }: { svgUrl?: string }) {
   "use cache";
-  const projects = await getProjects().catch(() => ({ results: [] }));
-  return <FeaturedProjects initialProjects={projects.results} limit={4} />;
+  const projects = await getProjects().catch((err) => { console.error("Failed to fetch projects:", err); return { results: [] }; });
+  return <FeaturedProjects initialProjects={projects.results} limit={4} svgUrl={svgUrl} />;
 }
 
 export async function BlogAsync() {
   "use cache";
-  const posts = await getBlogs().catch(() => ({ results: [] }));
+  const posts = await getBlogs().catch((err) => { console.error("Failed to fetch blogs:", err); return { results: [] }; });
   return <BlogSection initialPosts={posts.results} />;
 }
 
-export async function FAQAsync() {
+export async function FAQAsync({ svgUrl }: { svgUrl?: string }) {
   "use cache";
-  const faqs = await getFaqs({ page_size: 10 }).catch(() => ({ results: [] }));
-  return <FAQWrapper initialFaqs={faqs.results} />;
+  const faqs = await getFaqs({ page_size: 10 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
+  return <FAQWrapper initialFaqs={faqs.results} svgUrl={svgUrl} />;
 }

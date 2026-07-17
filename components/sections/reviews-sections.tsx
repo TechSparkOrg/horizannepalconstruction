@@ -4,10 +4,10 @@ import { getReviews } from "@/api/services/review.service";
 
 const ReviewList = dynamic(() => import("@/components/page_ui/ReviewList").then((m) => ({ default: m.ReviewList })));
 
-export async function ReviewsAsync() {
+export async function ReviewsAsync({ svgUrl1, svgUrl2, svgUrl3, svgUrl4 }: { svgUrl1?: string; svgUrl2?: string; svgUrl3?: string; svgUrl4?: string } = {}) {
   "use cache";
 
-  const res = await getReviews().catch(() => ({ results: [], count: 0 }));
+  const res = await getReviews().catch((err) => { console.error("Failed to fetch reviews:", err); return { results: [], count: 0 }; });
   const reviews = res.results ?? [];
   const total = res.count ?? 0;
 
@@ -31,7 +31,7 @@ export async function ReviewsAsync() {
   return (
     <>
       {aggregateSchema && <LdJson data={aggregateSchema} />}
-      <ReviewList initialReviews={reviews} initialTotal={total} />
+      <ReviewList initialReviews={reviews} initialTotal={total} svgUrl1={svgUrl1} svgUrl2={svgUrl2} svgUrl3={svgUrl3} svgUrl4={svgUrl4} />
     </>
   );
 }
