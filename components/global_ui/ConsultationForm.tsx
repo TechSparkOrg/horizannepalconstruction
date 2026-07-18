@@ -35,9 +35,9 @@ export function ConsultationForm({ initialCategories, headerSvgUrl, emailSvgUrl 
 
   useEffect(() => {
     if (initialCategories) return;
-    if (!CategoryPublic?.list) return;
+    if (!CategoryPublic?.listSafe) return;
     let mounted = true;
-    CategoryPublic.list().then((r) => { if (mounted) setCategories(r.results ?? []); }).catch((err) => { if (mounted) console.error("Failed to fetch categories:", err); });
+    CategoryPublic.listSafe().then((r) => { if (mounted) setCategories(r.results ?? []); });
     return () => { mounted = false; };
   }, [initialCategories]);
 

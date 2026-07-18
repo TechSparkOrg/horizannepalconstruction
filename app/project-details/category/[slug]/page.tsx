@@ -1,10 +1,10 @@
-import { Suspense, cache } from "react";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { getProjectCategoryDetail } from "@/api/services/category.service";
+import { getProjectCategoryDetailSafe } from "@/api/services/category.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
 import { ProjectCategoryDetailInner } from "./_content";
@@ -14,11 +14,10 @@ interface Props {
 }
 
 import { siteUrl } from "@/lib/constants";
-const getDetail = cache(async (slug: string) => getProjectCategoryDetail(slug).catch((err) => { console.error("Failed to fetch project category detail:", err); return null; }));
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const detail = await getDetail(slug);
+  const detail = await getProjectCategoryDetailSafe(slug);
   if (!detail) return {};
   const url = `${siteUrl}/project-details/category/${slug}`;
   const desc = detail.meta_description || stripHtml(detail.description).substring(0, 160);
@@ -39,10 +38,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProjectCategoryDetailPage({ params }: Props) {
-  "use cache";
 
   const { slug } = await params;
-  const detail = await getDetail(slug);
+  const detail = await getProjectCategoryDetailSafe(slug);
   if (!detail) notFound();
 
   const heroImg = detail.banner_images?.[0]?.url || detail.image;

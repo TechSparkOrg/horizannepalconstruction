@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { BlogCard } from "@/components/global_ui/BlogCard";
-import { getBlogsByCategory } from "@/api/services/blog.service";
+import { getBlogsByCategorySafe } from "@/api/services/blog.service";
 import type { BlogPost } from "@/api/types/blog.types";
 
 interface Props {
@@ -23,11 +23,11 @@ export default function RelatedArticles({ slug, categorySlug }: Props) {
     }
     let mounted = true;
 
-    getBlogsByCategory(categorySlug)
-      .then((res) => {
-        if (mounted) setPosts(res.results.filter((p) => p.slug !== slug).slice(0, 3));
+    getBlogsByCategorySafe(categorySlug)
+      .then((items) => {
+        if (mounted) setPosts(items.filter((p) => p.slug !== slug).slice(0, 3));
       })
-      .catch((err) => { if (mounted) { console.error("Failed to fetch related articles:", err); setPosts([]); } })
+
       .finally(() => { if (mounted) setLoading(false); });
     return () => { mounted = false; };
   }, [slug, categorySlug]);

@@ -3,17 +3,16 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { getBuildingPermitSingle } from "@/api/services/building-permit.service";
-import { getPageBySlug } from "@/api/services/page.service";
+import { getBuildingPermitSingleSafe } from "@/api/services/building-permit.service";
+import { getPageBySlugSafe } from "@/api/services/page.service";
 import { siteUrl } from "@/lib/constants";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { BuildingPermitContent } from "./_content";
 const SLUG = "building-permit";
-const pageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch building permit page:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await pageP;
+  const page = await getPageBySlugSafe(SLUG);
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Building Permit Assistant | Horizan Nepal",
@@ -31,11 +30,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BuildingPermitPage() {
-  "use cache";
 
   const [page, config] = await Promise.all([
-    pageP,
-    getBuildingPermitSingle().catch((err) => { console.error("Failed to fetch building permit config:", err); return null; }),
+    getPageBySlugSafe(SLUG),
+    getBuildingPermitSingleSafe(),
   ]);
   if (!config) notFound();
 

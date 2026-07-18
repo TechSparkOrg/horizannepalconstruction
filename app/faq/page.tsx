@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { getPageBySlug } from "@/api/services/page.service";
+import { getPageBySlugSafe } from "@/api/services/page.service";
 import { LazyFeather } from "@/components/viewport/LazyFeather";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { FaqContent } from "./_content";
@@ -11,10 +11,9 @@ import { FaqContent } from "./_content";
 import { siteUrl } from "@/lib/constants";
 import ParsedContent from "@/lib/ParseContent.server";
 const SLUG = "faq";
-const faqPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch FAQ page:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await faqPageP;
+  const page = await getPageBySlugSafe(SLUG);
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "FAQ | Horizan Nepal",
@@ -32,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FAQPage() {
-  const page = await faqPageP;
+  const page = await getPageBySlugSafe(SLUG);
 
   return (
     <>

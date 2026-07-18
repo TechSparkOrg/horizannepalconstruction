@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { UnitConverterCard } from "@/components/global_ui/UnitConverterCard";
-import { getUnitConversions } from "@/api/services/unit-converter-public.service";
+import { getUnitConversionsSafe } from "@/api/services/unit-converter-public.service";
 import type { PublicUnitConversionItem } from "@/api/types/unit-converter.types";
 
 const ITEMS_PER_PAGE = 9;
@@ -17,14 +17,13 @@ const UnitConverterGrid = ({ tapeSvgUrl, buildingSvgUrl }: { tapeSvgUrl?: string
 
   useEffect(() => {
     let mounted = true;
-    getUnitConversions({ page: 1, page_size: ITEMS_PER_PAGE })
+    getUnitConversionsSafe({ page: 1, page_size: ITEMS_PER_PAGE })
       .then((res) => {
         if (mounted) {
           setItems(res.results ?? []);
           setTotalCount(res.count ?? 0);
         }
       })
-      .catch((err) => { if (mounted) console.error("Failed to fetch unit conversions:", err); })
       .finally(() => { if (mounted) setInitialLoading(false); });
     return () => { mounted = false; };
   }, []);
@@ -34,7 +33,7 @@ const UnitConverterGrid = ({ tapeSvgUrl, buildingSvgUrl }: { tapeSvgUrl?: string
     const nextPage = page + 1;
     setLoading(true);
     try {
-      const res = await getUnitConversions({ page: nextPage, page_size: ITEMS_PER_PAGE });
+      const res = await getUnitConversionsSafe({ page: nextPage, page_size: ITEMS_PER_PAGE });
       setItems((prev) => [...prev, ...(res.results ?? [])]);
       setTotalCount(res.count ?? 0);
       setPage(nextPage);

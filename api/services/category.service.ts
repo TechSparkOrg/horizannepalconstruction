@@ -1,28 +1,52 @@
 import { apiGet, type PaginatedResponse } from "@/api/ServiceHelper"
 import type { Category, ServiceCategory, ServiceCategoryDetail, ProjectCategoryDetail } from "@/api/types/category.types"
 
-export function getCategories(): Promise<PaginatedResponse<Category>> {
-  return apiGet<PaginatedResponse<Category>>("/blog/categories/")
+export async function getCategoriesSafe(): Promise<PaginatedResponse<Category>> {
+  try {
+    return await apiGet<PaginatedResponse<Category>>("/blog/categories/")
+  } catch (err) {
+    console.error("Failed to fetch categories:", err)
+    return { results: [], count: 0, next: null, previous: null }
+  }
 }
 
-export function getServiceCategories(): Promise<ServiceCategory[]> {
-  return apiGet<ServiceCategory[]>("/categories/services")
+export async function getServiceCategoriesSafe(): Promise<ServiceCategory[]> {
+  try {
+    return await apiGet<ServiceCategory[]>("/categories/services")
+  } catch (err) {
+    console.error("Failed to fetch service categories:", err)
+    return []
+  }
 }
 
-export function getServiceCategoryDetail(slug: string): Promise<ServiceCategoryDetail> {
-  return apiGet<ServiceCategoryDetail>(`/categories/services/${slug}`)
+export async function getServiceCategoryDetailSafe(slug: string): Promise<ServiceCategoryDetail | null> {
+  try {
+    return await apiGet<ServiceCategoryDetail>(`/categories/services/${slug}`)
+  } catch (err) {
+    console.error("Failed to fetch service category detail:", err)
+    return null
+  }
 }
 
-export function getPublicBlogCategories(): Promise<Category[]> {
-  return apiGet<Category[]>("/categories/blog")
+export async function getPublicProjectCategoriesSafe(): Promise<Category[]> {
+  try {
+    return await apiGet<Category[]>("/categories/project")
+  } catch (err) {
+    console.error("Failed to fetch public project categories:", err)
+    return []
+  }
 }
 
-export function getPublicProjectCategories(): Promise<Category[]> {
-  return apiGet<Category[]>("/categories/project")
+export async function getProjectCategoryDetailSafe(slug: string): Promise<ProjectCategoryDetail | null> {
+  try {
+    return await apiGet<ProjectCategoryDetail>(`/categories/project/${slug}`)
+  } catch (err) {
+    console.error("Failed to fetch project category detail:", err)
+    return null
+  }
 }
 
-export function getProjectCategoryDetail(slug: string): Promise<ProjectCategoryDetail> {
-  return apiGet<ProjectCategoryDetail>(`/categories/project/${slug}`)
+export const CategoryPublic = {
+  list: getCategoriesSafe,
+  listSafe: getCategoriesSafe,
 }
-
-export const CategoryPublic = { list: getCategories }

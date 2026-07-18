@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
-import { getBlogs } from "@/api/services/blog.service";
-import { getProjects } from "@/api/services/project.service";
-import { getModels } from "@/api/services/model3d.service";
+import { getBlogsSafe } from "@/api/services/blog.service";
+import { getProjectsListSafe } from "@/api/services/project.service";
+import { getModelsSafe } from "@/api/services/model3d.service";
 
 
 const SITE_URL = (
@@ -25,31 +25,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/vastu-shastra`, changeFrequency: "monthly", priority: 0.6 },
   ];
 
-  const [blogsRes, projectsRes, modelsRes] = await Promise.allSettled([
-    getBlogs(),
-    getProjects(),
-    getModels(),
-
+  const [blogsRes, projectsRes, modelsRes] = await Promise.all([
+    getBlogsSafe(),
+    getProjectsListSafe(),
+    getModelsSafe(),
   ]);
 
-  const blogEntries: MetadataRoute.Sitemap = blogsRes.status === "fulfilled"
-    ? blogsRes.value.results.map((p) => ({
+  const blogEntries: MetadataRoute.Sitemap = blogsRes.length > 0
+    ? blogsRes.map((p) => ({
         url: `${SITE_URL}/blog/${p.slug}`,
         lastModified: new Date(p.updated_at || p.date || Date.now()),
         changeFrequency: "monthly" as const,
         priority: 0.7,
       })) : [];
 
-  const projectEntries: MetadataRoute.Sitemap = projectsRes.status === "fulfilled"
-    ? projectsRes.value.results.map((p) => ({
+  const projectEntries: MetadataRoute.Sitemap = projectsRes.length > 0
+    ? projectsRes.map((p) => ({
         url: `${SITE_URL}/project-details/${p.slug}`,
         lastModified: new Date(p.updated_at || Date.now()),
         changeFrequency: "monthly" as const,
         priority: 0.8,
       })) : [];
 
-  const modelEntries: MetadataRoute.Sitemap = modelsRes.status === "fulfilled"
-    ? modelsRes.value.results.map((m) => ({
+  const modelEntries: MetadataRoute.Sitemap = modelsRes.results.length > 0
+    ? modelsRes.results.map((m) => ({
         url: `${SITE_URL}/models/${m.slug}`,
         lastModified: new Date(m.updated_at || Date.now()),
         changeFrequency: "monthly" as const,

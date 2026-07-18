@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Suspense, cache } from "react";
+import { Suspense } from "react";
 import Image from "next/image";
 import { Calculator, Layers, Box } from "lucide-react";
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
-import { getPageBySlug } from "@/api/services/page.service";
+import { getPageBySlugSafe } from "@/api/services/page.service";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
 import { getSvgUrl } from "@/lib/svg-utils";
@@ -11,10 +11,9 @@ import { CostContent } from "./_content";
 
 
 const SLUG = "cost-estimation"
-const getPage = cache(() => getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch cost estimation page:", err); return null; }))
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPage()
+  const page = await getPageBySlugSafe(SLUG)
   const base = pageMetadataBase(page, SLUG)
   return {
     title: page?.meta_title || "Cost Estimation | Horizan Nepal",
@@ -37,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CostEstimationPage() {
-  const page = await getPage()
+  const page = await getPageBySlugSafe(SLUG)
 
   return (
     <>

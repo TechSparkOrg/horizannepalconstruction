@@ -6,7 +6,7 @@ import {
   ArrowRight, PauseCircle,
   MapPin, Wallet, Calendar, CalendarCheck, CalendarClock, Box,
 } from "lucide-react";
-import { getFaqs } from "@/api/services/faq.service";
+import { getFaqsSafe } from "@/api/services/faq.service";
 import { getProjectStatus, formatProjectDate } from "@/lib/project-status";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import type { Project, ProjectMilestone } from "@/api/types/project.types";
@@ -298,12 +298,7 @@ function MilestoneItem({ m, index, last }: { m: ProjectMilestone; index: number;
 }
 
 async function ProjectFaq({ faqSlug }: { faqSlug: string }) {
-  "use cache";
-  const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
-  const faqs = (res.results ?? []).map((item) => ({
-    q: item.question?.en ?? "",
-    a: item.answer?.en ?? "",
-  }));
+  const faqs = await getFaqsSafe({ group__slug: faqSlug, page_size: 20 });
   if (faqs.length === 0) return null;
   return <FaqClient categorySlug={faqSlug} initialFaqs={faqs} />;
 }

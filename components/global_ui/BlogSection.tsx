@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Calendar } from "lucide-react";
-import { getBlogs } from "@/api/services/blog.service";
+import { getBlogsSafe } from "@/api/services/blog.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import type { BlogPost } from "@/api/types/blog.types";
 
@@ -113,9 +113,8 @@ export function BlogSection({ initialPosts }: { initialPosts?: BlogPost[] }) {
   useEffect(() => {
     if (initialPosts) return;
     let mounted = true;
-    getBlogs()
-      .then((res) => { if (mounted) setPosts(res.results ?? []); })
-      .catch((err) => { if (mounted) console.error("Failed to fetch blogs:", err); });
+    getBlogsSafe()
+      .then((items) => { if (mounted) setPosts(items); });
     return () => { mounted = false; };
   }, [initialPosts]);
 

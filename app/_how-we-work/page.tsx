@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import BlogContent from "@/components/page_ui/BlogContent.client";
 import { LdJson } from "@/components/global_ui/JsonLd";
-import { getPageBySlug } from "@/api/services/page.service";
+import { getPageBySlugSafe } from "@/api/services/page.service";
 import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
 
 const HowWeWorkHero = dynamic(() => import("@/components/page_ui/HowWeWorkHero").then((m) => ({ default: m.HowWeWorkHero })));
@@ -15,7 +15,7 @@ const QuoteBannerSecondary = dynamic(() => import("@/components/page_ui/QuoteBan
 const SLUG = "how-we-work"
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch how-we-work page:", err); return null; })
+  const page = await getPageBySlugSafe(SLUG)
   const base = pageMetadataBase(page, SLUG)
   return {
     title: page?.meta_title || "How We Work | Horizan Nepal",
@@ -32,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HowWeWorkPage() {
-  const page = await getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch how-we-work page:", err); return null; })
+  const page = await getPageBySlugSafe(SLUG)
 
   return (
     <>

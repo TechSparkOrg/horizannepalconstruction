@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { VendorCard } from "@/components/global_ui/VendorCard";
-import { getVendors } from "@/api/services/vendor-public.service";
+import { getVendorsSafe } from "@/api/services/vendor-public.service";
 import type { PublicVendor } from "@/api/types/material.types";
 
 const VendorsSection = ({ initialVendors, svgUrl }: { initialVendors?: PublicVendor[]; svgUrl?: string }) => {
@@ -12,9 +12,8 @@ const VendorsSection = ({ initialVendors, svgUrl }: { initialVendors?: PublicVen
   useEffect(() => {
     if (initialVendors) return;
     let mounted = true;
-    getVendors()
-      .then((res) => { if (mounted) setVendors(res.results ?? []); })
-      .catch((err) => { if (mounted) console.error("Failed to fetch vendors:", err); });
+    getVendorsSafe()
+      .then((res) => { if (mounted) setVendors(res.results ?? []); });
     return () => { mounted = false; };
   }, [initialVendors]);
 

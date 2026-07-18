@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getCategories } from "@/api/services/category.service";
+import { getCategoriesSafe } from "@/api/services/category.service";
 import { ConsultationForm } from "@/components/global_ui/ConsultationForm";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { breadcrumbList } from "@/lib/seo-utils";
@@ -31,8 +31,8 @@ const steps = [
 ];
 
 export default async function RequestPage() {
-  const categoriesRes = await getCategories().catch((err) => { console.error("Failed to fetch categories:", err); return { results: [] as never[] }; });
-  const categories = categoriesRes?.results ?? [];
+  const categoriesRes = await getCategoriesSafe();
+  const categories = categoriesRes.results ?? [];
 
   return (
     <>

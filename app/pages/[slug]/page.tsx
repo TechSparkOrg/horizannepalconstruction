@@ -1,11 +1,10 @@
-import { Suspense, cache } from "react";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getPageBySlug } from "@/api/services/page.service";
+import { getPageBySlugSafe } from "@/api/services/page.service";
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import { siteUrl } from "@/lib/constants";
 import { CmsPageInner } from "./_content";
-const getPage = cache(async (slug: string) => getPageBySlug(slug).catch((err) => { console.error("Failed to fetch page:", err); return null; }));
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -13,7 +12,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const page = await getPage(slug);
+  const page = await getPageBySlugSafe(slug);
   if (!page) return { title: "Page Not Found" };
   return {
     title: page.meta_title || page.title,
@@ -31,10 +30,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PageView({ params }: Props) {
-  "use cache";
 
   const { slug } = await params;
-  const page = await getPage(slug);
+  const page = await getPageBySlugSafe(slug);
   if (!page) notFound();
 
   const banners = page.banner_images ?? [];

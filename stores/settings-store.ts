@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import type { SiteSettings } from "@/api/types/settings.types"
-import { getSettings } from "@/api/services/settings.service"
+import { getSettingsSafe } from "@/api/services/settings.service"
 
 let pendingFetch: Promise<void> | null = null
 
@@ -15,14 +15,9 @@ export const useSettings = create<SettingsState>((set) => ({
   loaded: false,
   fetchSettings: async () => {
     if (pendingFetch) return pendingFetch
-    pendingFetch = getSettings()
+    pendingFetch = getSettingsSafe()
       .then((data) => {
         set({ settings: data, loaded: true })
-        pendingFetch = null
-      })
-      .catch((err) => {
-        console.error("Failed to fetch settings:", err)
-        set({ loaded: true })
         pendingFetch = null
       })
     return pendingFetch

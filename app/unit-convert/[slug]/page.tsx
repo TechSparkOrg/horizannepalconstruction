@@ -1,7 +1,7 @@
-import { Suspense, cache } from "react";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getUnitConversionBySlug } from "@/api/services/unit-converter-public.service";
+import { getUnitConversionBySlugSafe } from "@/api/services/unit-converter-public.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
@@ -9,8 +9,6 @@ import type { MediaItem } from "@/api/types/media.types";
 import type { PublicUnitConversionDetail } from "@/api/types/unit-converter.types";
 import { siteUrl } from "@/lib/constants";
 import { UnitConvertDetailContent } from "./_content";
-
-const getConversion = cache(async (slug: string) => getUnitConversionBySlug(slug).catch((err) => { console.error("Failed to fetch conversion:", err); return null; }));
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -25,7 +23,7 @@ function getMeta(item: PublicUnitConversionDetail, slug: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const item = await getConversion(slug);
+  const item = await getUnitConversionBySlugSafe(slug);
   if (!item) return { title: "Not Found", robots: { index: false } };
 
   const { url, description, ogImage } = getMeta(item, slug);
@@ -51,10 +49,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function UnitConvertDetailPage({ params }: Props) {
-  "use cache";
 
   const { slug } = await params;
-  const item = await getConversion(slug);
+  const item = await getUnitConversionBySlugSafe(slug);
   if (!item) notFound();
 
   const { url } = getMeta(item, slug);

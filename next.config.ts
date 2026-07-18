@@ -2,7 +2,6 @@ import type { NextConfig } from "next";
 
 const config: NextConfig = {
   reactStrictMode: true,
-  cacheComponents: true,
   output: "standalone",
 
   images: {
@@ -14,6 +13,10 @@ const config: NextConfig = {
       { protocol: "https", hostname: "assets.horizonnepalconstruction.com" },
       { protocol: "https", hostname: "www.instagram.com" },
     ],
+  },
+
+  compiler: {
+    removeConsole: true,
   },
 
   experimental: {

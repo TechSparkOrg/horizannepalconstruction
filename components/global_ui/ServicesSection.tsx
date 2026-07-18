@@ -7,7 +7,7 @@ import {
   PencilRuler, LayoutGrid, Compass,
   FileBadge, Boxes, Wrench, ArrowRight, type LucideIcon,
 } from "lucide-react"
-import { getServiceCategories } from "@/api/services/category.service"
+import { getServiceCategoriesSafe } from "@/api/services/category.service"
 import { stripHtml } from "@/lib/extractTocItems"
 import type { ServiceCategory } from "@/api/types/category.types"
 
@@ -91,9 +91,8 @@ export function ServicesSection({ initialServices, svgUrl }: { initialServices?:
       return
     }
     let mounted = true;
-    getServiceCategories()
-      .then((res) => { if (mounted) setServices(res); })
-      .catch((err) => { if (mounted) { console.error("Failed to fetch services:", err); setServices([]); } });
+    getServiceCategoriesSafe()
+      .then((res) => { if (mounted) setServices(res); });
     return () => { mounted = false; };
   }, [initialServices])
 

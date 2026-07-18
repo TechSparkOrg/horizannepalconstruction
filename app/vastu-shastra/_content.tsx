@@ -3,10 +3,15 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { VastuNavAsync } from "@/components/sections/vastu-sections";
+import { getVastuNavSafe } from "@/api/services/vastu.service";
 import type { Page } from "@/api/types/page.types";
-import { getFaqs } from "@/api/services/faq.service";
+import { getFaqsSafe } from "@/api/services/faq.service";
 import FaqClient from "@/components/global_ui/FaqClient";
+
+async function VastuNavAsync() {
+  const nav = await getVastuNavSafe();
+  return nav;
+}
 import { VastuGuideClient } from "./VastuGuideClient";
 
 const VastuQuickTools = dynamic(() => import("./VastuQuickTools").then((m) => ({ default: m.VastuQuickTools })));
@@ -88,11 +93,6 @@ async function VastuToolsInner({ svgItems: si }: { svgItems?: import("@/api/type
 }
 
 async function VastuFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
-  "use cache";
-  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
-  const faqs = (res.results ?? []).map((item) => ({
-    q: item.question?.en ?? "",
-    a: item.answer?.en ?? "",
-  }));
+  const faqs = await getFaqsSafe({ group__slug: faqGroupSlug, page_size: 20 });
   return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} />;
 }

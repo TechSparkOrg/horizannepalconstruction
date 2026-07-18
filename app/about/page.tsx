@@ -2,15 +2,14 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { AboutHero } from "@/components/page_ui/AboutHero";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
-import { getPageBySlug } from "@/api/services/page.service";
+import { getPageBySlugSafe } from "@/api/services/page.service";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { siteUrl } from "@/lib/constants";
 import { AboutContent } from "./_content";
 const SLUG = "about";
-const aboutPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch about page:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await aboutPageP;
+  const page = await getPageBySlugSafe(SLUG);
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "About | Horizan Nepal",
@@ -28,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const page = await aboutPageP;
+  const page = await getPageBySlugSafe(SLUG);
   const gallery = page?.banner_images ?? [];
 
   return (

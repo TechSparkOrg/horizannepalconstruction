@@ -3,7 +3,12 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { FaqGroupsSection } from "@/components/sections/faq-sections";
+import { getFaqGroupsSafe } from "@/api/services/faq.service";
+
+async function FaqGroupsSection() {
+  const groups = await getFaqGroupsSafe();
+  return <FAQTimeline initialGroups={groups} />;
+}
 
 const FAQTimeline = dynamic(() => import("@/components/page_ui/FAQTimeline").then((m) => ({ default: m.FAQTimeline })));
 const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then((m) => ({ default: m.ConsultationForm })));

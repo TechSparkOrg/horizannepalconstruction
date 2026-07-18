@@ -6,8 +6,10 @@ import type { ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { Toaster } from "sonner";
 import { SettingsLoader } from "@/components/global_ui/SettingsLoader";
+import { SettingsHydrator } from "@/components/global_ui/SettingsHydrator";
 import { TrackingScripts } from "@/components/global_ui/TrackingScripts";
 import { ScriptInjector } from "@/components/global_ui/ScriptInjector";
+import { getCachedSettings } from "@/lib/cached-settings";
 
 const Header = dynamic(() => import("@/components/global_ui/Header").then((m) => ({ default: m.Header })));
 const WhatsAppButton = dynamic(() => import("@/components/global_ui/WhatsAppButton").then((m) => ({ default: m.WhatsAppButton })));
@@ -50,7 +52,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const settings = await getCachedSettings();
+
   return (
     <html
       lang="en"
@@ -59,6 +63,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
+        <SettingsHydrator settings={settings} />
         <Header />
         <main id="main-content" className="flex-1">{children}</main>
         <WhatsAppButton />

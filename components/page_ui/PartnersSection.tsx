@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import { BankMark } from "@/components/global_ui/BankMark"
-import { getVendors } from "@/api/services/vendor-public.service"
-import { getBanks } from "@/api/services/emi.service"
+import { getVendorsSafe } from "@/api/services/vendor-public.service"
+import { getBanksSafe } from "@/api/services/emi.service"
 import type { PublicVendor } from "@/api/types/material.types"
 import type { EmiBank } from "@/api/types/emi.types"
 
@@ -75,8 +75,8 @@ export function PartnersSection({
     if (initialVendors && initialBanks) return
     let mounted = true;
     Promise.all([
-      getVendors().then((r) => r.results ?? []).catch((err) => { console.error("Failed to fetch vendors:", err); return [] as PublicVendor[]; }),
-      getBanks().catch((err) => { console.error("Failed to fetch banks:", err); return [] as EmiBank[]; }),
+      getVendorsSafe().then((r) => r.results ?? []),
+      getBanksSafe(),
     ]).then(([v, b]) => { if (mounted) { setVendors(v); setBanks(b) } })
     return () => { mounted = false; };
   }, [initialVendors, initialBanks])

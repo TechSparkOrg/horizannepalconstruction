@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getFaqs } from "@/api/services/faq.service";
-import { getBlogsByCategory } from "@/api/services/blog.service";
-import { getProjectsByCategory } from "@/api/services/project.service";
+import { getFaqsSafe } from "@/api/services/faq.service";
+import { getBlogsByCategorySafe } from "@/api/services/blog.service";
+import { getProjectsByCategorySafe } from "@/api/services/project.service";
 import Link from "next/link";
 import Image from "next/image";
 import type { ServiceCategoryDetail } from "@/api/types/category.types";
@@ -89,9 +89,7 @@ export function ServiceDetailInner({ detail }: Props) {
 }
 
 async function BlogCatSection({ categorySlug, categoryName }: { categorySlug: string; categoryName: string }) {
-  "use cache";
-  const res = await getBlogsByCategory(categorySlug).catch((err) => { console.error("Failed to fetch blogs by category:", err); return { results: [] }; });
-  const posts = (res.results ?? []).slice(0, 4);
+  const posts = (await getBlogsByCategorySafe(categorySlug)).slice(0, 4);
   if (posts.length === 0) {
     return (
       <section className="bg-white py-12 sm:py-16">
@@ -122,9 +120,7 @@ async function BlogCatSection({ categorySlug, categoryName }: { categorySlug: st
 }
 
 async function ProjectCatSection({ categorySlug, categoryName }: { categorySlug: string; categoryName: string }) {
-  "use cache";
-  const res = await getProjectsByCategory(categorySlug).catch((err) => { console.error("Failed to fetch projects by category:", err); return { results: [] }; });
-  const projects = (res.results ?? []).slice(0, 4);
+  const projects = (await getProjectsByCategorySafe(categorySlug)).slice(0, 4);
   if (projects.length === 0) {
     return (
       <section className="bg-[#f8fafc] py-12 sm:py-16">
@@ -166,11 +162,6 @@ async function ProjectCatSection({ categorySlug, categoryName }: { categorySlug:
 }
 
 async function ServiceFaqInner({ faqSlug }: { faqSlug: string }) {
-  "use cache";
-  const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
-  const faqs = (res.results ?? []).map((item) => ({
-    q: item.question?.en ?? "",
-    a: item.answer?.en ?? "",
-  }));
+  const faqs = await getFaqsSafe({ group__slug: faqSlug, page_size: 20 });
   return <FaqClient categorySlug={faqSlug} initialFaqs={faqs} />;
 }

@@ -97,7 +97,7 @@ export function ReviewList({ initialReviews, initialTotal, svgUrl1, svgUrl2, svg
     setLoading(true);
     try {
       const nextPage = page + 1;
-      const res = await ReviewPublic.list(nextPage);
+      const res = await ReviewPublic.listSafe(nextPage);
       setReviews((prev) => [...prev, ...(res.results ?? [])]);
       setPage(nextPage);
       setTotal(res.count);

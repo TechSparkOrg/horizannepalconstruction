@@ -2,16 +2,15 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { getPageBySlug } from "@/api/services/page.service";
+import { getPageBySlugSafe } from "@/api/services/page.service";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { siteUrl } from "@/lib/constants";
 import { UnitConvertContent } from "./_content";
 const SLUG = "unit-convert";
-const unitPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch unit convert page:", err); return null; });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await unitPageP;
+  const page = await getPageBySlugSafe(SLUG);
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Unit Converter | Horizan Nepal",
@@ -34,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function UnitConvertPage() {
-  const page = await unitPageP;
+  const page = await getPageBySlugSafe(SLUG);
 
   return (
     <>

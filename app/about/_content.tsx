@@ -4,19 +4,57 @@ import { ViewportSection } from "@/components/viewport/ViewportSection";
 import type { Page, PageSvgItem } from "@/api/types/page.types";
 import type { MediaItem } from "@/api/types/media.types";
 import { getSvgUrl } from "@/lib/svg-utils";
-import {
-  AboutServicesAsync,
-  AboutPartnersAsync,
-  AboutReviewsAsync,
-  AboutConsultAsync,
-  AboutFaqAsync,
-  AboutTeamAsync,
-} from "@/components/sections/about-sections";
+import { ServicesAsync } from "@/components/sections/homepage-sections";
+import { getVendorsSafe } from "@/api/services/vendor-public.service";
+import { getBanksSafe } from "@/api/services/emi.service";
+import { ReviewPublic } from "@/api/services/review.service";
+import { CategoryPublic } from "@/api/services/category.service";
+import { getFaqsSafe } from "@/api/services/faq.service";
+import { getTeamSafe } from "@/api/services/team.service";
+import { PartnersSection } from "@/components/page_ui/PartnersSection";
+import { TestimonialsSection } from "@/components/global_ui/TestimonialsSection";
+import { ConsultationForm } from "@/components/global_ui/ConsultationForm";
+import FaqClient from "@/components/global_ui/FaqClient";
+import { TeamSection } from "@/components/global_ui/TeamSection";
 
 const AboutTabs = dynamic(() => import("@/components/page_ui/AboutTabs").then((m) => ({ default: m.AboutTabs })));
 const AboutGallery = dynamic(() => import("@/components/global_ui/image-grid").then((m) => ({ default: m.ImageGrid })));
 const LocationSection = dynamic(() => import("@/components/global_ui/LocationSection").then((m) => ({ default: m.LocationSection })));
 import ParsedContent from "@/lib/ParseContent.server";
+
+async function AboutPartnersAsync({ svgUrl }: { svgUrl?: string } = {}) {
+  const [vRes, bRes] = await Promise.all([
+    getVendorsSafe(),
+    getBanksSafe(),
+  ]);
+  return (
+    <PartnersSection
+      initialVendors={vRes.results ?? []}
+      initialBanks={bRes}
+      svgUrl={svgUrl}
+    />
+  );
+}
+
+async function AboutReviewsAsync({ svgUrl }: { svgUrl?: string } = {}) {
+  const reviews = await ReviewPublic.listSafe();
+  return <TestimonialsSection initialReviews={reviews.results} svgUrl={svgUrl} />;
+}
+
+async function AboutConsultAsync({ headerSvgUrl, emailSvgUrl }: { headerSvgUrl?: string; emailSvgUrl?: string } = {}) {
+  const cats = await CategoryPublic.listSafe();
+  return <ConsultationForm initialCategories={cats.results} headerSvgUrl={headerSvgUrl} emailSvgUrl={emailSvgUrl} />;
+}
+
+async function AboutFaqAsync({ faqGroupSlug }: { faqGroupSlug: string }) {
+  const faqs = await getFaqsSafe({ group__slug: faqGroupSlug, page_size: 10 });
+  return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} />;
+}
+
+async function AboutTeamAsync({ svgUrl }: { svgUrl?: string } = {}) {
+  const res = await getTeamSafe();
+  return <TeamSection members={res.results} svgUrl={svgUrl} />;
+}
 
 interface Props {
   page: Page | null;
@@ -34,7 +72,7 @@ export function AboutContent({ page, gallery, svgItems }: Props) {
       </ViewportSection>
       <ViewportSection fallback={F("py-20 bg-white")}>
         <Suspense fallback={F("py-20 bg-white")}>
-          <AboutServicesAsync svgUrl={getSvgUrl(svgItems, 0, "/video-gif/in-progress.svg")} />
+          <ServicesAsync svgUrl={getSvgUrl(svgItems, 0, "/video-gif/in-progress.svg")} />
         </Suspense>
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-28 bg-[#f8fafc]")}>
