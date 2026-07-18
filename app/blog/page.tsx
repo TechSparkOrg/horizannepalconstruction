@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getPageBySlugSafe } from "@/api/services/page.service";
-import { getBlogs } from "@/api/services/blog.service";
+import { getBlogsSafe } from "@/api/services/blog.service";
 import { getCategories } from "@/api/services/category.service";
 import type { BlogPost } from "@/api/types/blog.types";
 import type { Category } from "@/api/types/category.types";
@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function BlogPage() {
   const [page, blogsRes, categoriesRes] = await Promise.all([
     getPageBySlugSafe(SLUG),
-    getBlogs().catch((err) => { console.error("Failed to fetch blogs:", err); return { results: [] as BlogPost[] }; }),
+    getBlogsSafe(),
     getCategories().catch((err) => { console.error("Failed to fetch categories:", err); return { results: [] as Category[] }; }),
   ]);
 
@@ -88,7 +88,7 @@ export default async function BlogPage() {
       </section>
 
       <Suspense fallback={<div className="py-16 bg-off-white" style={{ minHeight: 1100 }} />}>
-        <BlogPageContent page={page} blogs={blogsRes.results ?? []} categories={categoriesRes.results ?? []} svgItems={page?.svg_items} />
+        <BlogPageContent page={page} blogs={blogsRes} categories={categoriesRes.results ?? []} svgItems={page?.svg_items} />
       </Suspense>
     </>
   );

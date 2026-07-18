@@ -1,6 +1,4 @@
 // ponytail: Django error parser for raw fetch responses
-import { toast } from "sonner";
-
 const STATUS_MESSAGES: Record<number, string> = {
   400: "Invalid request. Please check your input.",
   401: "Session expired. Please log in again.",
@@ -67,6 +65,4 @@ export async function parseApiError(res: Response): Promise<AppError> {
   }
 }
 
-export function showErrorToast(message: string): void {
-  toast.error(message);
-}
+

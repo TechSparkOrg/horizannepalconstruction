@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { ProjectPublic } from "@/api/services/project.service";
+import { getProjectsListSafe } from "@/api/services/project.service";
 import type { Project } from "@/api/types/project.types";
 import { ProjectCard, SkeletonCard } from "@/components/global_ui/ProjectCard";
 
@@ -28,8 +28,8 @@ export function FeaturedProjects({
   useEffect(() => {
     if (initialProjects) return;
     let mounted = true;
-    ProjectPublic.list()
-      .then((res) => { if (mounted) setProjects(res.results ?? []); })
+    getProjectsListSafe()
+      .then((items) => { if (mounted) setProjects(items); })
       .catch((err) => { if (mounted) console.error("Failed to fetch projects:", err); });
     return () => { mounted = false; };
   }, [initialProjects]);

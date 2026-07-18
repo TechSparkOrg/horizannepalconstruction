@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ChevronDown, MessageCircle } from "lucide-react";
-import { getFaqs } from "@/api/services/faq.service";
+import { getFaqsSafeRaw } from "@/api/services/faq.service";
 import type { FaqItem } from "@/api/types/faq.types";
 
 interface Faq { q: string; a: string }
@@ -88,9 +88,9 @@ export function FAQWrapper({ initialFaqs, svgUrl }: { initialFaqs?: FaqItem[]; s
       return;
     }
     let mounted = true;
-    getFaqs()
-      .then((res) => {
-        if (mounted) setFaqs((res.results ?? []).map((f: FaqItem) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" })));
+    getFaqsSafeRaw()
+      .then((items) => {
+        if (mounted) setFaqs(items.map((f: FaqItem) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" })));
       })
       .catch((err) => { if (mounted) console.error("Failed to fetch FAQs:", err); });
     return () => { mounted = false; };
