@@ -15,6 +15,10 @@ const config: NextConfig = {
     ],
   },
 
+  compiler: {
+    removeConsole: true,
+  },
+
   experimental: {
     inlineCss: true,
     staleTimes: { dynamic: 30, static: 180 },
