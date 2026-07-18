@@ -51,28 +51,25 @@ export function Design3DShowcase({ initialItems }: { initialItems?: ModelCard[] 
 
   useEffect(() => {
     if (initialItems) return;
-    Promise.allSettled([
+    Promise.all([
       ProjectPublic.list(),
       Model3dPublic.list(),
-    ]).then(([projectsRes, modelsRes]) => {
+    ]).then(([projects, modelsRes]) => {
       const cards: ModelCard[] = [];
 
-      if (projectsRes.status === "fulfilled") {
-        for (const p of projectsRes.value.results ?? []) {
-          if (!p.file) continue;
-          cards.push({
-            key: `project-${p.slug}`,
-            src: modelSrc(p.file),
-            title: p.title,
-            subtitle: p.location,
-            href: `/project-details/${p.slug}`,
-          });
-        }
+      for (const p of projects) {
+        if (!p.file) continue;
+        cards.push({
+          key: `project-${p.slug}`,
+          src: modelSrc(p.file),
+          title: p.title,
+          subtitle: p.location,
+          href: `/project-details/${p.slug}`,
+        });
       }
 
-      if (modelsRes.status === "fulfilled") {
-        const knownSlugs = new Set(cards.map((c) => c.key));
-        for (const m of modelsRes.value.results ?? []) {
+      const knownSlugs = new Set(cards.map((c) => c.key));
+      for (const m of modelsRes.results ?? []) {
           if (!m.url) continue;
           const key = `model-${m.slug || m.id}`;
           if (knownSlugs.has(key)) continue;
@@ -84,7 +81,6 @@ export function Design3DShowcase({ initialItems }: { initialItems?: ModelCard[] 
             href: m.slug ? `/models/${m.slug}` : undefined,
           });
         }
-      }
 
       setItems(cards);
     }).finally(() => setLoading(false));

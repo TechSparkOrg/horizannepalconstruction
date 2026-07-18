@@ -7,7 +7,7 @@ import { getSvgUrl } from "@/lib/svg-utils";
 import { HeroSection } from "@/components/global_ui/HeroSection";
 import { QuoteBannerSecondary } from "@/components/page_ui/QuoteBannerSecondary";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getServiceCategories } from "@/api/services/category.service";
+import { getServiceCategoriesSafe } from "@/api/services/category.service";
 import { getProjectsListSafe } from "@/api/services/project.service";
 import { getBlogsSafe } from "@/api/services/blog.service";
 import { getFaqsSafeRaw } from "@/api/services/faq.service";
@@ -21,7 +21,7 @@ import { siteUrl } from "@/lib/constants";
 import ParsedContent from "@/lib/ParseContent.server";
 
 async function ServicesAsync({ svgUrl }: { svgUrl?: string }) {
-  const services = await getServiceCategories().catch((err) => { console.error("Failed to fetch services:", err); return []; });
+  const services = await getServiceCategoriesSafe();
   return <ServicesSection initialServices={services} svgUrl={svgUrl} />;
 }
 

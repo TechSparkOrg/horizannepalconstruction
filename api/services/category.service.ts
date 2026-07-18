@@ -1,12 +1,22 @@
 import { apiGet, type PaginatedResponse } from "@/api/ServiceHelper"
 import type { Category, ServiceCategory, ServiceCategoryDetail, ProjectCategoryDetail } from "@/api/types/category.types"
 
-export function getCategories(): Promise<PaginatedResponse<Category>> {
-  return apiGet<PaginatedResponse<Category>>("/blog/categories/")
+export async function getCategoriesSafe(): Promise<PaginatedResponse<Category>> {
+  try {
+    return await apiGet<PaginatedResponse<Category>>("/blog/categories/")
+  } catch (err) {
+    console.error("Failed to fetch categories:", err)
+    return { results: [], count: 0, next: null, previous: null }
+  }
 }
 
-export function getServiceCategories(): Promise<ServiceCategory[]> {
-  return apiGet<ServiceCategory[]>("/categories/services")
+export async function getServiceCategoriesSafe(): Promise<ServiceCategory[]> {
+  try {
+    return await apiGet<ServiceCategory[]>("/categories/services")
+  } catch (err) {
+    console.error("Failed to fetch service categories:", err)
+    return []
+  }
 }
 
 export async function getServiceCategoryDetailSafe(slug: string): Promise<ServiceCategoryDetail | null> {
@@ -18,8 +28,13 @@ export async function getServiceCategoryDetailSafe(slug: string): Promise<Servic
   }
 }
 
-export function getPublicProjectCategories(): Promise<Category[]> {
-  return apiGet<Category[]>("/categories/project")
+export async function getPublicProjectCategoriesSafe(): Promise<Category[]> {
+  try {
+    return await apiGet<Category[]>("/categories/project")
+  } catch (err) {
+    console.error("Failed to fetch public project categories:", err)
+    return []
+  }
 }
 
 export async function getProjectCategoryDetailSafe(slug: string): Promise<ProjectCategoryDetail | null> {
@@ -31,4 +46,7 @@ export async function getProjectCategoryDetailSafe(slug: string): Promise<Projec
   }
 }
 
-export const CategoryPublic = { list: getCategories }
+export const CategoryPublic = {
+  list: getCategoriesSafe,
+  listSafe: getCategoriesSafe,
+}

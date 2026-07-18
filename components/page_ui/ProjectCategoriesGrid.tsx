@@ -1,9 +1,9 @@
 import Image from "next/image";
-import { getPublicProjectCategories } from "@/api/services/category.service";
+import { getPublicProjectCategoriesSafe } from "@/api/services/category.service";
 import { htmlToText } from "@/lib/htmlToText";
 
 export async function ProjectCategoriesGrid({ svgUrl }: { svgUrl?: string }) {
-  const categories = await getPublicProjectCategories().catch((err) => { console.error("Failed to fetch project categories:", err); return []; });
+  const categories = await getPublicProjectCategoriesSafe();
 
   if (categories.length === 0) {
     return (

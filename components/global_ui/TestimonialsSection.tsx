@@ -77,7 +77,7 @@ export function TestimonialsSection({ initialReviews, svgUrl }: { initialReviews
   useEffect(() => {
     if (initialReviews) return;
     let mounted = true;
-    ReviewPublic.list().then((res) => { if (mounted) setReviews(res.results ?? []); }).catch((err) => { if (mounted) console.error("Failed to fetch reviews:", err); });
+    ReviewPublic.listSafe().then((res) => { if (mounted) setReviews(res.results ?? []); });
     return () => { mounted = false; };
   }, [initialReviews]);
 

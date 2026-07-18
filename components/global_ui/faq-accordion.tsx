@@ -91,8 +91,7 @@ export function FAQWrapper({ initialFaqs, svgUrl }: { initialFaqs?: FaqItem[]; s
     getFaqsSafeRaw()
       .then((items) => {
         if (mounted) setFaqs(items.map((f: FaqItem) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" })));
-      })
-      .catch((err) => { if (mounted) console.error("Failed to fetch FAQs:", err); });
+      });
     return () => { mounted = false; };
   }, [initialFaqs]);
 

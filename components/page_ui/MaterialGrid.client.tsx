@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { MaterialCard } from "@/components/global_ui/MaterialCard";
-import { getMaterials } from "@/api/services/material-public.service";
+import { getMaterialsSafe } from "@/api/services/material-public.service";
 import type { PublicMaterialItem } from "@/api/types/material.types";
 
 const ITEMS_PER_PAGE = 9;
@@ -18,14 +18,13 @@ const MaterialGrid = ({ initialItems, initialTotal, svgUrl1, svgUrl2 }: { initia
   useEffect(() => {
     if (initialItems) return;
     let mounted = true;
-    getMaterials({ page: 1, page_size: ITEMS_PER_PAGE })
+    getMaterialsSafe({ page: 1, page_size: ITEMS_PER_PAGE })
       .then((res) => {
         if (mounted) {
           setItems(res.results ?? []);
           setTotalCount(res.count ?? 0);
         }
       })
-      .catch((err) => { if (mounted) console.error("Failed to fetch materials:", err); })
       .finally(() => { if (mounted) setInitialLoading(false); });
     return () => { mounted = false; };
   }, [initialItems]);
@@ -35,7 +34,7 @@ const MaterialGrid = ({ initialItems, initialTotal, svgUrl1, svgUrl2 }: { initia
     const nextPage = page + 1;
     setLoading(true);
     try {
-      const res = await getMaterials({ page: nextPage, page_size: ITEMS_PER_PAGE });
+      const res = await getMaterialsSafe({ page: nextPage, page_size: ITEMS_PER_PAGE });
       setItems((prev) => [...prev, ...(res.results ?? [])]);
       setTotalCount(res.count ?? 0);
       setPage(nextPage);

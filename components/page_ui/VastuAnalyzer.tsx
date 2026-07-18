@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, ArrowRight, Loader2, Check, X } from "lucide-react";
-import { getVastuItem } from "@/api/services/vastu.service";
+import { getVastuItemSafe } from "@/api/services/vastu.service";
 import type { VastuItemDetail } from "@/api/types/vastu.types";
 
 interface Props {
@@ -21,9 +21,8 @@ export function VastuAnalyzer({ options, type, icon, title, subtitle, selectLabe
 
   const handleAnalyze = async () => {
     setLoading(true);
-    try { setResult(await getVastuItem(selected)); }
-    catch { setResult(null); }
-    finally { setLoading(false); }
+    setResult(await getVastuItemSafe(selected));
+    setLoading(false);
   };
 
   return (

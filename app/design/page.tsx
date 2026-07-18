@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { DesignHero } from "@/components/page_ui/DesignHero";
 import { ProjectCategoriesGrid } from "@/components/page_ui/ProjectCategoriesGrid";
-import { getDesignModels } from "@/api/services/model3d.service";
-import { getCategories } from "@/api/services/category.service";
+import { getDesignModelsSafe } from "@/api/services/model3d.service";
+import { getCategoriesSafe } from "@/api/services/category.service";
 import { getPageBySlugSafe } from "@/api/services/page.service";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
@@ -35,25 +35,20 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function DesignPage() {
-  const [page, modelsRes, categoriesRes] = await Promise.allSettled([
+  const [pageData, modelsRes, categoriesRes] = await Promise.all([
     getPageBySlugSafe(SLUG),
-    getDesignModels(),
-    getCategories(),
+    getDesignModelsSafe(),
+    getCategoriesSafe(),
   ])
-  const pageData = page.status === "fulfilled" ? page.value : null
-  const categories = categoriesRes.status === "fulfilled" ? categoriesRes.value.results ?? [] : []
+  const categories = categoriesRes.results ?? []
 
-  let modelCards: { key: string; src: string; title: string; subtitle?: string; href?: string }[]
-  if (modelsRes.status === "fulfilled") {
-    modelCards = (modelsRes.value.results ?? []).map((m) => ({
-      key: m.id,
-      src: m.url,
-      title: m.title,
-      subtitle: m.category?.name || m.project?.name || m.blog?.name || "",
-      href: m.project?.slug ? `/project-details/${m.project.slug}` : m.blog?.slug ? `/blog/${m.blog.slug}` : undefined,
-    }))
-  }
-  modelCards ??= []
+  const modelCards = (modelsRes.results ?? []).map((m) => ({
+    key: m.id,
+    src: m.url,
+    title: m.title,
+    subtitle: m.category?.name || m.project?.name || m.blog?.name || "",
+    href: m.project?.slug ? `/project-details/${m.project.slug}` : m.blog?.slug ? `/blog/${m.blog.slug}` : undefined,
+  }))
 
   return (
     <>

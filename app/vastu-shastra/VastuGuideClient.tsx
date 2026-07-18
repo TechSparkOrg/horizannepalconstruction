@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getVastuItem } from "@/api/services/vastu.service";
+import { getVastuItemSafe } from "@/api/services/vastu.service";
 import type { VastuItemDetail, VastuNavItem } from "@/api/types/vastu.types";
 import { VastuSectionNav } from "./VastuSectionNav";
 import { VastuSectionContent } from "./VastuSectionContent";
@@ -19,9 +19,8 @@ export function VastuGuideClient({ sectionKeys }: Props) {
     if (!activeSection) return;
     let mounted = true;
     setSectionLoading(true);
-    getVastuItem(activeSection)
+    getVastuItemSafe(activeSection)
       .then((res) => { if (mounted) setSectionItem(res); })
-      .catch((err) => { if (mounted) { console.error("Failed to fetch vastu section:", err); setSectionItem(null); } })
       .finally(() => { if (mounted) setSectionLoading(false); });
     return () => { mounted = false; };
   }, [activeSection]);

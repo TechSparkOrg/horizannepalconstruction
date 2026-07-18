@@ -1,13 +1,19 @@
 import { apiGet, apiPost, type PaginatedResponse } from "@/api/ServiceHelper"
 import type { Review } from "@/api/types/review.types"
 
-export function getReviews(page?: number): Promise<PaginatedResponse<Review>> {
-  const path = page && page > 1 ? `/reviews/?page=${page}` : "/reviews/"
-  return apiGet<PaginatedResponse<Review>>(path)
+export async function getReviewsSafe(page?: number): Promise<PaginatedResponse<Review>> {
+  try {
+    const path = page && page > 1 ? `/reviews/?page=${page}` : "/reviews/"
+    return await apiGet<PaginatedResponse<Review>>(path)
+  } catch (err) {
+    console.error("Failed to fetch reviews:", err)
+    return { results: [], count: 0, next: null, previous: null }
+  }
 }
 
 export const ReviewPublic = {
-  list: getReviews,
+  list: getReviewsSafe,
+  listSafe: getReviewsSafe,
   submit: (data: { name: string; rating: number; description: string }): Promise<Review> =>
     apiPost<Review>("/reviews/", data),
 }

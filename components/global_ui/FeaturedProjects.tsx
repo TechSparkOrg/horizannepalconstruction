@@ -29,8 +29,7 @@ export function FeaturedProjects({
     if (initialProjects) return;
     let mounted = true;
     getProjectsListSafe()
-      .then((items) => { if (mounted) setProjects(items); })
-      .catch((err) => { if (mounted) console.error("Failed to fetch projects:", err); });
+      .then((items) => { if (mounted) setProjects(items); });
     return () => { mounted = false; };
   }, [initialProjects]);
 

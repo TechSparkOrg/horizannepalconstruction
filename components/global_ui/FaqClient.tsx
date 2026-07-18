@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getFaqsByCategory } from "@/api/services/faq.service";
+import { getFaqsByCategorySafe } from "@/api/services/faq.service";
 import type { FaqItem } from "@/api/types/faq.types";
 
 interface FaqDisplay {
@@ -25,18 +25,15 @@ export default function FaqClient({ categorySlug, type, title, subtitle, initial
     if (initialFaqs) return;
     let cancelled = false;
     setLoading(true);
-    getFaqsByCategory(categorySlug, type)
-      .then((res) => {
+    getFaqsByCategorySafe(categorySlug, type)
+      .then((items) => {
         if (cancelled) return;
         setFaqs(
-          (res.results ?? []).map((item: FaqItem) => ({
+          items.map((item: FaqItem) => ({
             q: item.question?.en ?? "",
             a: item.answer?.en ?? "",
           })),
         );
-      })
-      .catch((err) => {
-        if (!cancelled) { console.error("Failed to fetch FAQs:", err); setFaqs([]); }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);

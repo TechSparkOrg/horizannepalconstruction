@@ -3,8 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getPageBySlugSafe } from "@/api/services/page.service";
 import { getBlogsSafe } from "@/api/services/blog.service";
-import { getCategories } from "@/api/services/category.service";
-import type { BlogPost } from "@/api/types/blog.types";
+import { getCategoriesSafe } from "@/api/services/category.service";
 import type { Category } from "@/api/types/category.types";
 import { siteUrl } from "@/lib/constants";
 import { getSvgUrl } from "@/lib/svg-utils";
@@ -34,7 +33,7 @@ export default async function BlogPage() {
   const [page, blogsRes, categoriesRes] = await Promise.all([
     getPageBySlugSafe(SLUG),
     getBlogsSafe(),
-    getCategories().catch((err) => { console.error("Failed to fetch categories:", err); return { results: [] as Category[] }; }),
+    getCategoriesSafe(),
   ]);
 
   return (

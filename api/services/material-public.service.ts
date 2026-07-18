@@ -1,9 +1,14 @@
 import { apiGet, type PaginatedResponse } from "@/api/ServiceHelper"
 import type { PublicMaterialItem, PublicMaterialDetail } from "@/api/types/material.types"
 
-export function getMaterials(params?: { page?: number; page_size?: number }): Promise<PaginatedResponse<PublicMaterialItem>> {
-  const qs = params ? `?${new URLSearchParams(params as Record<string, string>).toString()}` : "";
-  return apiGet<PaginatedResponse<PublicMaterialItem>>(`/materials/${qs}`);
+export async function getMaterialsSafe(params?: { page?: number; page_size?: number }): Promise<PaginatedResponse<PublicMaterialItem>> {
+  try {
+    const qs = params ? `?${new URLSearchParams(params as Record<string, string>).toString()}` : "";
+    return await apiGet<PaginatedResponse<PublicMaterialItem>>(`/materials/${qs}`);
+  } catch (err) {
+    console.error("Failed to fetch materials:", err)
+    return { results: [], count: 0, next: null, previous: null }
+  }
 }
 
 export async function getMaterialBySlugSafe(slug: string): Promise<PublicMaterialDetail | null> {

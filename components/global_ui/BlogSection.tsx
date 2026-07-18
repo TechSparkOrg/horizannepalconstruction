@@ -114,8 +114,7 @@ export function BlogSection({ initialPosts }: { initialPosts?: BlogPost[] }) {
     if (initialPosts) return;
     let mounted = true;
     getBlogsSafe()
-      .then((items) => { if (mounted) setPosts(items); })
-      .catch((err) => { if (mounted) console.error("Failed to fetch blogs:", err); });
+      .then((items) => { if (mounted) setPosts(items); });
     return () => { mounted = false; };
   }, [initialPosts]);
 

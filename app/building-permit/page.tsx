@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { getBuildingPermitSingle } from "@/api/services/building-permit.service";
+import { getBuildingPermitSingleSafe } from "@/api/services/building-permit.service";
 import { getPageBySlugSafe } from "@/api/services/page.service";
 import { siteUrl } from "@/lib/constants";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
@@ -33,7 +33,7 @@ export default async function BuildingPermitPage() {
 
   const [page, config] = await Promise.all([
     getPageBySlugSafe(SLUG),
-    getBuildingPermitSingle().catch((err) => { console.error("Failed to fetch building permit config:", err); return null; }),
+    getBuildingPermitSingleSafe(),
   ]);
   if (!config) notFound();
 

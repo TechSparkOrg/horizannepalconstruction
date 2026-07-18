@@ -6,10 +6,16 @@ export function getFaqs(params?: Record<string, string | number>): Promise<Pagin
   return apiGet<PaginatedResponse<FaqItem>>(`/faq/${qs}`);
 }
 
-export function getFaqsByCategory(categorySlug: string, type?: string): Promise<PaginatedResponse<FaqItem>> {
-  const params = new URLSearchParams({ group__category_slug: categorySlug });
-  if (type) params.set("group__slug", type);
-  return apiGet<PaginatedResponse<FaqItem>>(`/faq/?${params}`);
+export async function getFaqsByCategorySafe(categorySlug: string, type?: string): Promise<FaqItem[]> {
+  try {
+    const params = new URLSearchParams({ group__category_slug: categorySlug });
+    if (type) params.set("group__slug", type);
+    const res = await apiGet<PaginatedResponse<FaqItem>>(`/faq/?${params}`);
+    return res.results ?? []
+  } catch (err) {
+    console.error("Failed to fetch FAQs by category:", err)
+    return []
+  }
 }
 
 export async function getFaqGroupsSafe(): Promise<FaqGroupResponse[]> {

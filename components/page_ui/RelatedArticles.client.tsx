@@ -27,7 +27,7 @@ export default function RelatedArticles({ slug, categorySlug }: Props) {
       .then((items) => {
         if (mounted) setPosts(items.filter((p) => p.slug !== slug).slice(0, 3));
       })
-      .catch((err) => { if (mounted) { console.error("Failed to fetch related articles:", err); setPosts([]); } })
+
       .finally(() => { if (mounted) setLoading(false); });
     return () => { mounted = false; };
   }, [slug, categorySlug]);

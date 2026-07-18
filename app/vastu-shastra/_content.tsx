@@ -3,13 +3,13 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getVastuNav } from "@/api/services/vastu.service";
+import { getVastuNavSafe } from "@/api/services/vastu.service";
 import type { Page } from "@/api/types/page.types";
 import { getFaqsSafe } from "@/api/services/faq.service";
 import FaqClient from "@/components/global_ui/FaqClient";
 
 async function VastuNavAsync() {
-  const nav = await getVastuNav().catch((err) => { console.error("Failed to fetch vastu nav:", err); return { sections: [], rooms: [], directions: [] }; });
+  const nav = await getVastuNavSafe();
   return nav;
 }
 import { VastuGuideClient } from "./VastuGuideClient";

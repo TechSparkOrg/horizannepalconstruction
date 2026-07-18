@@ -5,15 +5,13 @@ import type { Page, PageSvgItem } from "@/api/types/page.types";
 import type { MediaItem } from "@/api/types/media.types";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { ServicesAsync } from "@/components/sections/homepage-sections";
-import { getVendors } from "@/api/services/vendor-public.service";
-import { getBanks } from "@/api/services/emi.service";
+import { getVendorsSafe } from "@/api/services/vendor-public.service";
+import { getBanksSafe } from "@/api/services/emi.service";
 import { ReviewPublic } from "@/api/services/review.service";
 import { CategoryPublic } from "@/api/services/category.service";
 import { getFaqsSafe } from "@/api/services/faq.service";
-import { getTeam } from "@/api/services/team.service";
+import { getTeamSafe } from "@/api/services/team.service";
 import { PartnersSection } from "@/components/page_ui/PartnersSection";
-import type { PublicVendor } from "@/api/types/material.types";
-import type { EmiBank } from "@/api/types/emi.types";
 import { TestimonialsSection } from "@/components/global_ui/TestimonialsSection";
 import { ConsultationForm } from "@/components/global_ui/ConsultationForm";
 import FaqClient from "@/components/global_ui/FaqClient";
@@ -26,25 +24,25 @@ import ParsedContent from "@/lib/ParseContent.server";
 
 async function AboutPartnersAsync({ svgUrl }: { svgUrl?: string } = {}) {
   const [vRes, bRes] = await Promise.all([
-    getVendors().catch((err) => { console.error("Failed to fetch vendors:", err); return { results: [] as PublicVendor[] }; }),
-    getBanks().catch((err) => { console.error("Failed to fetch banks:", err); return [] as EmiBank[]; }),
+    getVendorsSafe(),
+    getBanksSafe(),
   ]);
   return (
     <PartnersSection
       initialVendors={vRes.results ?? []}
-      initialBanks={bRes as EmiBank[]}
+      initialBanks={bRes}
       svgUrl={svgUrl}
     />
   );
 }
 
 async function AboutReviewsAsync({ svgUrl }: { svgUrl?: string } = {}) {
-  const reviews = await ReviewPublic.list().catch((err) => { console.error("Failed to fetch reviews:", err); return { results: [] }; });
+  const reviews = await ReviewPublic.listSafe();
   return <TestimonialsSection initialReviews={reviews.results} svgUrl={svgUrl} />;
 }
 
 async function AboutConsultAsync({ headerSvgUrl, emailSvgUrl }: { headerSvgUrl?: string; emailSvgUrl?: string } = {}) {
-  const cats = await CategoryPublic.list().catch((err) => { console.error("Failed to fetch categories:", err); return { results: [] }; });
+  const cats = await CategoryPublic.listSafe();
   return <ConsultationForm initialCategories={cats.results} headerSvgUrl={headerSvgUrl} emailSvgUrl={emailSvgUrl} />;
 }
 
@@ -54,7 +52,7 @@ async function AboutFaqAsync({ faqGroupSlug }: { faqGroupSlug: string }) {
 }
 
 async function AboutTeamAsync({ svgUrl }: { svgUrl?: string } = {}) {
-  const res = await getTeam().catch((err) => { console.error("Failed to fetch team:", err); return { results: [] }; });
+  const res = await getTeamSafe();
   return <TeamSection members={res.results} svgUrl={svgUrl} />;
 }
 

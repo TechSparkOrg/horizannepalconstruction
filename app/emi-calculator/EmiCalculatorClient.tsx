@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { ArrowRight, RefreshCcw, Info, Check, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { calculateEMI, formatRs } from '@/lib/emi-utils'
-import { getBanks } from '@/api/services/emi.service'
+import { getBanksSafe } from '@/api/services/emi.service'
 import type { EmiBank } from '@/api/types/emi.types'
 import type { Page } from '@/api/types/page.types'
 import { Slider } from '@/components/ui/slider'
@@ -85,7 +85,7 @@ export default function EmiCalculatorClient({ pageData, svgItems }: { pageData?:
 
   useEffect(() => {
     let mounted = true;
-    getBanks().then((res) => { if (mounted) setBanks(res); }).catch((err) => { if (mounted) console.error("Failed to fetch banks:", err); }).finally(() => { if (mounted) setLoading(false); });
+    getBanksSafe().then((res) => { if (mounted) setBanks(res); }).finally(() => { if (mounted) setLoading(false); });
     return () => { mounted = false; };
   }, [])
 
