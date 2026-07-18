@@ -6,6 +6,11 @@ export function getMaterials(params?: { page?: number; page_size?: number }): Pr
   return apiGet<PaginatedResponse<PublicMaterialItem>>(`/materials/${qs}`);
 }
 
-export function getMaterialBySlug(slug: string): Promise<PublicMaterialDetail> {
-  return apiGet<PublicMaterialDetail>(`/materials/${slug}/`)
+export async function getMaterialBySlugSafe(slug: string): Promise<PublicMaterialDetail | null> {
+  try {
+    return await apiGet<PublicMaterialDetail>(`/materials/${slug}/`)
+  } catch (err) {
+    console.error("Failed to fetch material:", err)
+    return null
+  }
 }

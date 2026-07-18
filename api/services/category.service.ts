@@ -9,20 +9,26 @@ export function getServiceCategories(): Promise<ServiceCategory[]> {
   return apiGet<ServiceCategory[]>("/categories/services")
 }
 
-export function getServiceCategoryDetail(slug: string): Promise<ServiceCategoryDetail> {
-  return apiGet<ServiceCategoryDetail>(`/categories/services/${slug}`)
-}
-
-export function getPublicBlogCategories(): Promise<Category[]> {
-  return apiGet<Category[]>("/categories/blog")
+export async function getServiceCategoryDetailSafe(slug: string): Promise<ServiceCategoryDetail | null> {
+  try {
+    return await apiGet<ServiceCategoryDetail>(`/categories/services/${slug}`)
+  } catch (err) {
+    console.error("Failed to fetch service category detail:", err)
+    return null
+  }
 }
 
 export function getPublicProjectCategories(): Promise<Category[]> {
   return apiGet<Category[]>("/categories/project")
 }
 
-export function getProjectCategoryDetail(slug: string): Promise<ProjectCategoryDetail> {
-  return apiGet<ProjectCategoryDetail>(`/categories/project/${slug}`)
+export async function getProjectCategoryDetailSafe(slug: string): Promise<ProjectCategoryDetail | null> {
+  try {
+    return await apiGet<ProjectCategoryDetail>(`/categories/project/${slug}`)
+  } catch (err) {
+    console.error("Failed to fetch project category detail:", err)
+    return null
+  }
 }
 
 export const CategoryPublic = { list: getCategories }

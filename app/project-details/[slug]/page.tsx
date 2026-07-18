@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Suspense, cache } from "react";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Clock3, PauseCircle, Tag, Calendar } from "lucide-react";
 import type { Project } from "@/api/types/project.types";
-import { getProjectBySlug } from "@/api/services/project.service";
+import { getProjectBySlugSafe } from "@/api/services/project.service";
 import { getProjectStatus, formatProjectDate } from "@/lib/project-status";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { siteUrl } from "@/lib/constants";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
 import { ProjectDetailContent } from "./_content";
-const getProject = cache(async (slug: string) => getProjectBySlug(slug).catch((err) => { console.error("Failed to fetch project:", err); return null; }));
 
 function heroImage(p: Project): string {
   const primary = p.banner_images?.find((b) => b.isPrimary)?.url;
@@ -21,7 +20,7 @@ function heroImage(p: Project): string {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getProject(slug);
+  const project = await getProjectBySlugSafe(slug);
   if (!project) return { title: "Project Not Found" };
   const desc = project.meta_description || stripHtml(project.description).slice(0, 160);
   const img = heroImage(project);
@@ -54,7 +53,7 @@ const STATUS_HERO: Record<string, string> = {
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const project = await getProject(slug);
+  const project = await getProjectBySlugSafe(slug);
   if (!project) notFound();
 
   const status = getProjectStatus(project.status, project.completion);

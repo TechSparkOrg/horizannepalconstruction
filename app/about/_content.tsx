@@ -4,19 +4,59 @@ import { ViewportSection } from "@/components/viewport/ViewportSection";
 import type { Page, PageSvgItem } from "@/api/types/page.types";
 import type { MediaItem } from "@/api/types/media.types";
 import { getSvgUrl } from "@/lib/svg-utils";
-import {
-  AboutServicesAsync,
-  AboutPartnersAsync,
-  AboutReviewsAsync,
-  AboutConsultAsync,
-  AboutFaqAsync,
-  AboutTeamAsync,
-} from "@/components/sections/about-sections";
+import { ServicesAsync } from "@/components/sections/homepage-sections";
+import { getVendors } from "@/api/services/vendor-public.service";
+import { getBanks } from "@/api/services/emi.service";
+import { ReviewPublic } from "@/api/services/review.service";
+import { CategoryPublic } from "@/api/services/category.service";
+import { getFaqsSafe } from "@/api/services/faq.service";
+import { getTeam } from "@/api/services/team.service";
+import { PartnersSection } from "@/components/page_ui/PartnersSection";
+import type { PublicVendor } from "@/api/types/material.types";
+import type { EmiBank } from "@/api/types/emi.types";
+import { TestimonialsSection } from "@/components/global_ui/TestimonialsSection";
+import { ConsultationForm } from "@/components/global_ui/ConsultationForm";
+import FaqClient from "@/components/global_ui/FaqClient";
+import { TeamSection } from "@/components/global_ui/TeamSection";
 
 const AboutTabs = dynamic(() => import("@/components/page_ui/AboutTabs").then((m) => ({ default: m.AboutTabs })));
 const AboutGallery = dynamic(() => import("@/components/global_ui/image-grid").then((m) => ({ default: m.ImageGrid })));
 const LocationSection = dynamic(() => import("@/components/global_ui/LocationSection").then((m) => ({ default: m.LocationSection })));
 import ParsedContent from "@/lib/ParseContent.server";
+
+async function AboutPartnersAsync({ svgUrl }: { svgUrl?: string } = {}) {
+  const [vRes, bRes] = await Promise.all([
+    getVendors().catch((err) => { console.error("Failed to fetch vendors:", err); return { results: [] as PublicVendor[] }; }),
+    getBanks().catch((err) => { console.error("Failed to fetch banks:", err); return [] as EmiBank[]; }),
+  ]);
+  return (
+    <PartnersSection
+      initialVendors={vRes.results ?? []}
+      initialBanks={bRes as EmiBank[]}
+      svgUrl={svgUrl}
+    />
+  );
+}
+
+async function AboutReviewsAsync({ svgUrl }: { svgUrl?: string } = {}) {
+  const reviews = await ReviewPublic.list().catch((err) => { console.error("Failed to fetch reviews:", err); return { results: [] }; });
+  return <TestimonialsSection initialReviews={reviews.results} svgUrl={svgUrl} />;
+}
+
+async function AboutConsultAsync({ headerSvgUrl, emailSvgUrl }: { headerSvgUrl?: string; emailSvgUrl?: string } = {}) {
+  const cats = await CategoryPublic.list().catch((err) => { console.error("Failed to fetch categories:", err); return { results: [] }; });
+  return <ConsultationForm initialCategories={cats.results} headerSvgUrl={headerSvgUrl} emailSvgUrl={emailSvgUrl} />;
+}
+
+async function AboutFaqAsync({ faqGroupSlug }: { faqGroupSlug: string }) {
+  const faqs = await getFaqsSafe({ group__slug: faqGroupSlug, page_size: 10 });
+  return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} />;
+}
+
+async function AboutTeamAsync({ svgUrl }: { svgUrl?: string } = {}) {
+  const res = await getTeam().catch((err) => { console.error("Failed to fetch team:", err); return { results: [] }; });
+  return <TeamSection members={res.results} svgUrl={svgUrl} />;
+}
 
 interface Props {
   page: Page | null;
@@ -34,7 +74,7 @@ export function AboutContent({ page, gallery, svgItems }: Props) {
       </ViewportSection>
       <ViewportSection fallback={F("py-20 bg-white")}>
         <Suspense fallback={F("py-20 bg-white")}>
-          <AboutServicesAsync svgUrl={getSvgUrl(svgItems, 0, "/video-gif/in-progress.svg")} />
+          <ServicesAsync svgUrl={getSvgUrl(svgItems, 0, "/video-gif/in-progress.svg")} />
         </Suspense>
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-28 bg-[#f8fafc]")}>

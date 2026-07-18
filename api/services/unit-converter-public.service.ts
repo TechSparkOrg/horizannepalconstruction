@@ -6,6 +6,11 @@ export function getUnitConversions(params?: { page?: number; page_size?: number 
   return apiGet<PaginatedResponse<PublicUnitConversionItem>>(`/unit-converter/${qs}`);
 }
 
-export function getUnitConversionBySlug(slug: string): Promise<PublicUnitConversionDetail> {
-  return apiGet<PublicUnitConversionDetail>(`/unit-converter/${slug}/`);
+export async function getUnitConversionBySlugSafe(slug: string): Promise<PublicUnitConversionDetail | null> {
+  try {
+    return await apiGet<PublicUnitConversionDetail>(`/unit-converter/${slug}/`);
+  } catch (err) {
+    console.error("Failed to fetch conversion:", err)
+    return null
+  }
 }

@@ -1,13 +1,11 @@
-import { Suspense, cache } from "react";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getBlogBySlug } from "@/api/services/blog.service";
+import { getBlogBySlugSafe } from "@/api/services/blog.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import type { MediaItem } from "@/api/types/media.types";
 import { BlogPostInner } from "./_content";
-
-const getPost = cache(async (slug: string) => getBlogBySlug(slug).catch((err) => { console.error("Failed to fetch blog post:", err); return null; }));
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -15,7 +13,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPost(slug);
+  const post = await getBlogBySlugSafe(slug);
   if (!post) return { title: "Blog Not Found" };
   const description = post.meta_description || stripHtml(post.content || "").slice(0, 160) || post.title;
   return {
@@ -33,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BlogPostPage({ params }: Props) {
 
   const { slug } = await params;
-  const post = await getPost(slug);
+  const post = await getBlogBySlugSafe(slug);
   if (!post) notFound();
 
   const bannerImages: MediaItem[] = (post.banner_images ?? []).map((b) => ({

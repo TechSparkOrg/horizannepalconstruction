@@ -2,7 +2,6 @@ import type { NextConfig } from "next";
 
 const config: NextConfig = {
   reactStrictMode: true,
-  cacheComponents: true,
   output: "standalone",
 
   images: {

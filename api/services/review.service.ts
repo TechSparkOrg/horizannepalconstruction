@@ -6,8 +6,8 @@ export function getReviews(page?: number): Promise<PaginatedResponse<Review>> {
   return apiGet<PaginatedResponse<Review>>(path)
 }
 
-export function submitReview(data: { name: string; rating: number; description: string }): Promise<Review> {
-  return apiPost<Review>("/reviews/", data)
+export const ReviewPublic = {
+  list: getReviews,
+  submit: (data: { name: string; rating: number; description: string }): Promise<Review> =>
+    apiPost<Review>("/reviews/", data),
 }
-
-export const ReviewPublic = { list: getReviews, submit: submitReview }

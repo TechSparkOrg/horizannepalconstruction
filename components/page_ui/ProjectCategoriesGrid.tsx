@@ -3,7 +3,6 @@ import { getPublicProjectCategories } from "@/api/services/category.service";
 import { htmlToText } from "@/lib/htmlToText";
 
 export async function ProjectCategoriesGrid({ svgUrl }: { svgUrl?: string }) {
-  "use cache";
   const categories = await getPublicProjectCategories().catch((err) => { console.error("Failed to fetch project categories:", err); return []; });
 
   if (categories.length === 0) {

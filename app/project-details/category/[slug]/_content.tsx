@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import { getProjectsByCategory } from "@/api/services/project.service";
-import { getFaqs } from "@/api/services/faq.service";
+import { getProjectsByCategorySafe } from "@/api/services/project.service";
+import { getFaqsSafe } from "@/api/services/faq.service";
 import { ProjectCard } from "@/components/global_ui/ProjectCard";
 import type { ProjectCategoryDetail } from "@/api/types/category.types";
 
@@ -34,12 +34,7 @@ export function ProjectCategoryDetailInner({ detail }: Props) {
 }
 
 async function CategoryFaq({ faqSlug }: { faqSlug: string }) {
-  "use cache";
-  const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
-  const faqs = (res.results ?? []).map((item) => ({
-    q: item.question?.en ?? "",
-    a: item.answer?.en ?? "",
-  }));
+  const faqs = await getFaqsSafe({ group__slug: faqSlug, page_size: 20 });
   if (faqs.length === 0) {
     return (
       <section className="py-12 sm:py-16 bg-white">
@@ -53,9 +48,7 @@ async function CategoryFaq({ faqSlug }: { faqSlug: string }) {
 }
 
 async function CategoryProjects({ slug, name }: { slug: string; name: string }) {
-  "use cache";
-  const res = await getProjectsByCategory(slug).catch((err) => { console.error("Failed to fetch projects by category:", err); return { results: [] }; });
-  const projects = res.results ?? [];
+  const projects = await getProjectsByCategorySafe(slug);
 
   return (
     <section className="bg-[#f8fafc] py-16 sm:py-24">

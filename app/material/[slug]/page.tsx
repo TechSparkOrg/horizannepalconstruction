@@ -1,8 +1,8 @@
-import { Suspense, cache } from "react";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { getMaterialBySlug } from "@/api/services/material-public.service";
+import { getMaterialBySlugSafe } from "@/api/services/material-public.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
@@ -12,11 +12,11 @@ import type { PublicMaterialDetail } from "@/api/types/material.types";
 import { MaterialDetailContent } from "./_content";
 
 import { siteUrl } from "@/lib/constants";
-const getMaterial = cache(async (slug: string) => getMaterialBySlug(slug).catch((err) => { console.error("Failed to fetch material:", err); return null; }));
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
+
 
 function getMeta(item: PublicMaterialDetail, slug: string) {
   const url = `${siteUrl}/material/${slug}`;
@@ -27,7 +27,7 @@ function getMeta(item: PublicMaterialDetail, slug: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const item = await getMaterial(slug);
+  const item = await getMaterialBySlugSafe(slug);
   if (!item) return { title: "Material Not Found" };
 
   const { url, description, ogImage } = getMeta(item, slug);
@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function MaterialDetailPage({ params }: Props) {
 
   const { slug } = await params;
-  const item = await getMaterial(slug);
+  const item = await getMaterialBySlugSafe(slug);
   if (!item) notFound();
 
   const { url, description, ogImage } = getMeta(item, slug);

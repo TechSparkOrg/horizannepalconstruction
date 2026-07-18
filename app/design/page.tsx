@@ -1,19 +1,18 @@
-import { Suspense, cache } from "react";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { DesignHero } from "@/components/page_ui/DesignHero";
 import { ProjectCategoriesGrid } from "@/components/page_ui/ProjectCategoriesGrid";
 import { getDesignModels } from "@/api/services/model3d.service";
 import { getCategories } from "@/api/services/category.service";
-import { getPageBySlug } from "@/api/services/page.service";
+import { getPageBySlugSafe } from "@/api/services/page.service";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
 import { DesignContent } from "./_content";
 
 const SLUG = "design"
-const getPage = cache(async (slug: string) => getPageBySlug(slug).catch((err) => { console.error("Failed to fetch page:", err); return null; }))
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPage(SLUG)
+  const page = await getPageBySlugSafe(SLUG)
   const base = pageMetadataBase(page, SLUG)
   return {
     title: page?.meta_title || "Design | Horizan Nepal",
@@ -37,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function DesignPage() {
   const [page, modelsRes, categoriesRes] = await Promise.allSettled([
-    getPage(SLUG),
+    getPageBySlugSafe(SLUG),
     getDesignModels(),
     getCategories(),
   ])

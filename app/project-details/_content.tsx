@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getProjects } from "@/api/services/project.service";
-import { getFaqs } from "@/api/services/faq.service";
+import { getProjectsListSafe } from "@/api/services/project.service";
+import { getFaqsSafe } from "@/api/services/faq.service";
 import { ProjectCategoriesGrid } from "@/components/page_ui/ProjectCategoriesGrid";
 import { ProjectsGrid } from "@/components/page_ui/ProjectsGrid.client";
 import type { Page, PageSvgItem } from "@/api/types/page.types";
@@ -66,9 +66,7 @@ export function ProjectPageContent({ page, svgItems }: Props) {
 }
 
 async function ProjectsSection() {
-  "use cache";
-  const res = await getProjects().catch((err) => { console.error("Failed to fetch projects:", err); return { results: [] }; });
-  const projects = res.results ?? [];
+  const projects = await getProjectsListSafe();
 
   if (projects.length === 0) {
     return (
@@ -127,11 +125,6 @@ function ProjectsGridSkeleton() {
 }
 
 async function ProjectFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
-  "use cache";
-  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
-  const faqs = (res.results ?? []).map((item) => ({
-    q: item.question?.en ?? "",
-    a: item.answer?.en ?? "",
-  }));
+  const faqs = await getFaqsSafe({ group__slug: faqGroupSlug, page_size: 20 });
   return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} />;
 }

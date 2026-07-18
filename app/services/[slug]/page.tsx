@@ -1,8 +1,8 @@
-import { Suspense, cache } from "react";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { getServiceCategoryDetail } from "@/api/services/category.service";
+import { getServiceCategoryDetailSafe } from "@/api/services/category.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { siteUrl } from "@/lib/constants";
 import { ServiceDetailInner } from "./_content";
@@ -11,11 +11,9 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-const getDetail = cache(async (slug: string) => getServiceCategoryDetail(slug).catch((err) => { console.error("Failed to fetch service category detail:", err); return null; }));
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const detail = await getDetail(slug);
+  const detail = await getServiceCategoryDetailSafe(slug);
   if (!detail) return {};
   return {
     title: detail.meta_title || `${detail.name} | Horizan Nepal`,
@@ -34,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ServiceDetailPage({ params }: Props) {
 
   const { slug } = await params;
-  const detail = await getDetail(slug);
+  const detail = await getServiceCategoryDetailSafe(slug);
   if (!detail) notFound();
 
   return (

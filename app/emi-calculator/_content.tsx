@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getFaqs } from "@/api/services/faq.service";
+import { getFaqsSafe } from "@/api/services/faq.service";
 import type { Page } from "@/api/types/page.types";
 
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
@@ -28,11 +28,6 @@ export function EmiContent({ page }: Props) {
 }
 
 async function EmiFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
-  "use cache";
-  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
-  const faqs = (res.results ?? []).map((item) => ({
-    q: item.question?.en ?? "",
-    a: item.answer?.en ?? "",
-  }));
+  const faqs = await getFaqsSafe({ group__slug: faqGroupSlug, page_size: 20 });
   return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} />;
 }

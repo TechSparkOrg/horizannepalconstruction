@@ -9,13 +9,21 @@ export interface PaginatedResponse<T> {
   results: T[]
 }
 
-export async function apiGet<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`)
-  if (!res.ok) {
-    const err = await parseApiError(res)
-    throw new ApiError(err.message, err.status, err.raw)
+export async function apiGet<T>(path: string, timeoutMs = 5000): Promise<T> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const res = await fetch(`${API_BASE}${path}`, { signal: controller.signal, cache: "no-store" })
+    clearTimeout(timeout)
+    if (!res.ok) {
+      const err = await parseApiError(res)
+      throw new ApiError(err.message, err.status, err.raw)
+    }
+    return res.json()
+  } catch (err) {
+    clearTimeout(timeout)
+    throw err
   }
-  return res.json()
 }
 
 export async function apiPost<T>(path: string, body: unknown): Promise<T> {

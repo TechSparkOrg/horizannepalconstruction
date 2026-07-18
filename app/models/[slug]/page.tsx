@@ -3,30 +3,21 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import ModelViewerBlock from "@/components/global_ui/model-viewer";
-import { getModelBySlug } from "@/api/services/model3d.service";
+import { getModelBySlugSafe } from "@/api/services/model3d.service";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  try {
-    const model = await getModelBySlug(slug);
-    if (!model) return { title: "Model Not Found" };
-    return {
-      title: `${model.title} | 3D Model`,
-      description: model.description || "",
-    };
-  } catch {
-    return { title: "Model Not Found" };
-  }
+  const model = await getModelBySlugSafe(slug);
+  if (!model) return { title: "Model Not Found" };
+  return {
+    title: `${model.title} | 3D Model`,
+    description: model.description || "",
+  };
 }
 
 export default async function ModelViewerPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  let model;
-  try {
-    model = await getModelBySlug(slug);
-  } catch {
-    notFound();
-  }
+  const model = await getModelBySlugSafe(slug);
   if (!model) notFound();
 
   return (

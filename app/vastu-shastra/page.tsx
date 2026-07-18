@@ -1,16 +1,15 @@
-import { Suspense, cache } from "react";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { getPageBySlug } from "@/api/services/page.service";
+import { getPageBySlugSafe } from "@/api/services/page.service";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { siteUrl } from "@/lib/constants";
 import { VastuContent } from "./_content";
 const SLUG = "vastu-shastra";
-const getPage = cache(() => getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch vastu page:", err); return null; }));
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPage();
+  const page = await getPageBySlugSafe(SLUG);
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || page?.title || "Vastu Shastra | Horizan Nepal",
@@ -28,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function VastuShastraPage() {
-  const page = await getPage();
+  const page = await getPageBySlugSafe(SLUG);
 
   return (
     <div className="min-h-screen">

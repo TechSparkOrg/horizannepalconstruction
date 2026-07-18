@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import { DesignShowcaseSection } from "@/components/page_ui/DesignShowcaseSection";
-import { getFaqs } from "@/api/services/faq.service";
+import { getFaqsSafe } from "@/api/services/faq.service";
 import type { Page, PageSvgItem } from "@/api/types/page.types";
 import { getSvgUrl } from "@/lib/svg-utils";
 
@@ -65,11 +65,6 @@ export function DesignContent({ page, modelCards, categories, svgItems }: Props)
 }
 
 async function DesignFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
-  "use cache"
-  const res = await getFaqs({ group__slug: faqGroupSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; })
-  const faqs = (res.results ?? []).map((item) => ({
-    q: item.question?.en ?? "",
-    a: item.answer?.en ?? "",
-  }))
+  const faqs = await getFaqsSafe({ group__slug: faqGroupSlug, page_size: 20 });
   return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} />
 }

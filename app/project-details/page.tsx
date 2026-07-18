@@ -1,7 +1,7 @@
-import { Suspense, cache } from "react";
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import { getPageBySlug } from "@/api/services/page.service";
+import { getPageBySlugSafe } from "@/api/services/page.service";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
 import { ProjectPageContent } from "./_content";
@@ -9,10 +9,9 @@ import { ProjectPageContent } from "./_content";
 import { siteUrl } from "@/lib/constants";
 const OurWorkHero = dynamic(() => import("@/components/page_ui/OurWorkHero").then((m) => ({ default: m.OurWorkHero })));
 const SLUG = "project-details";
-const getPage = cache(async (slug: string) => getPageBySlug(slug).catch((err) => { console.error("Failed to fetch page:", err); return null; }));
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPage(SLUG);
+  const page = await getPageBySlugSafe(SLUG);
   return {
     title: page?.meta_title || "Projects | Horizan Nepal",
     description: page?.meta_description || "Browse Horizan Nepal's portfolio of completed architectural and construction projects across Nepal.",
@@ -29,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProjectsPage() {
-  const page = await getPage(SLUG);
+  const page = await getPageBySlugSafe(SLUG);
 
   return (
     <>

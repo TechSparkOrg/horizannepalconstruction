@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getFaqs } from "@/api/services/faq.service";
+import { getFaqsSafe } from "@/api/services/faq.service";
 import BlogMetaBar from "@/components/page_ui/BlogMetaBar.client";
 import BlogProjectReference from "@/components/page_ui/BlogProjectReference";
 import type { BlogPost } from "@/api/types/blog.types";
@@ -98,11 +98,6 @@ export function BlogPostInner({ post, slug }: Props) {
 }
 
 async function BlogPostFaqInner({ faqSlug }: { faqSlug: string }) {
-  "use cache";
-  const res = await getFaqs({ group__slug: faqSlug, page_size: 20 }).catch((err) => { console.error("Failed to fetch FAQs:", err); return { results: [] }; });
-  const faqs = (res.results ?? []).map((item) => ({
-    q: item.question?.en ?? "",
-    a: item.answer?.en ?? "",
-  }));
+  const faqs = await getFaqsSafe({ group__slug: faqSlug, page_size: 20 });
   return <FaqClient categorySlug={faqSlug} initialFaqs={faqs} />;
 }

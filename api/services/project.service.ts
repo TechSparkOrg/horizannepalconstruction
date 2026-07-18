@@ -5,12 +5,33 @@ export function getProjects(): Promise<PaginatedResponse<Project>> {
   return apiGet<PaginatedResponse<Project>>("/projects/")
 }
 
-export function getProjectBySlug(slug: string): Promise<Project> {
-  return apiGet<Project>(`/projects/${slug}/`)
-}
-
-export function getProjectsByCategory(categorySlug: string): Promise<PaginatedResponse<Project>> {
-  return apiGet<PaginatedResponse<Project>>(`/projects/?category=${categorySlug}`)
+export async function getProjectBySlugSafe(slug: string): Promise<Project | null> {
+  try {
+    return await apiGet<Project>(`/projects/${slug}/`)
+  } catch (err) {
+    console.error("Failed to fetch project:", err)
+    return null
+  }
 }
 
 export const ProjectPublic = { list: getProjects }
+
+export async function getProjectsListSafe(): Promise<Project[]> {
+  try {
+    const res = await getProjects();
+    return res.results ?? [];
+  } catch (err) {
+    console.error("Failed to fetch projects:", err);
+    return [];
+  }
+}
+
+export async function getProjectsByCategorySafe(categorySlug: string): Promise<Project[]> {
+  try {
+    const res = await apiGet<PaginatedResponse<Project>>(`/projects/?category=${categorySlug}`);
+    return res.results ?? [];
+  } catch (err) {
+    console.error("Failed to fetch projects by category:", err);
+    return [];
+  }
+}

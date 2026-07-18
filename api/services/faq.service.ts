@@ -12,6 +12,35 @@ export function getFaqsByCategory(categorySlug: string, type?: string): Promise<
   return apiGet<PaginatedResponse<FaqItem>>(`/faq/?${params}`);
 }
 
-export function getFaqGroups(): Promise<PaginatedResponse<FaqGroupResponse>> {
-  return apiGet<PaginatedResponse<FaqGroupResponse>>("/faq/groups/");
+export async function getFaqGroupsSafe(): Promise<FaqGroupResponse[]> {
+  try {
+    const res = await apiGet<PaginatedResponse<FaqGroupResponse>>("/faq/groups/");
+    return res.results ?? [];
+  } catch (err) {
+    console.error("Failed to fetch FAQ groups:", err);
+    return [];
+  }
+}
+
+export async function getFaqsSafeRaw(params?: Record<string, string | number>): Promise<FaqItem[]> {
+  try {
+    const res = await getFaqs(params);
+    return res.results ?? [];
+  } catch (err) {
+    console.error("Failed to fetch FAQs:", err);
+    return [];
+  }
+}
+
+export async function getFaqsSafe(params?: Record<string, string | number>): Promise<{ q: string; a: string }[]> {
+  try {
+    const res = await getFaqs(params);
+    return (res.results ?? []).map((item) => ({
+      q: item.question?.en ?? "",
+      a: item.answer?.en ?? "",
+    }));
+  } catch (err) {
+    console.error("Failed to fetch FAQs:", err);
+    return [];
+  }
 }
