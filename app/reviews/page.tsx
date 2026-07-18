@@ -1,13 +1,13 @@
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import { getPageBySlug } from "@/api/services/page.service";
 import { siteUrl } from "@/lib/constants";
 import { ReviewsContent } from "./_content";
 const SLUG = "reviews";
-const reviewsPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch reviews page:", err); return null; });
+const getPage = cache(() => getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch reviews page:", err); return null; }));
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await reviewsPageP;
+  const page = await getPage();
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Reviews | Horizan Nepal",
@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ReviewsPage() {
-  const page = await reviewsPageP;
+  const page = await getPage();
 
   return (
     <>

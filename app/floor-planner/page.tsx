@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
@@ -7,7 +7,7 @@ import { getSvgUrl } from "@/lib/svg-utils";
 import { siteUrl } from "@/lib/constants";
 import { FloorPlannerContent } from "./_content";
 const SLUG = "floor-planner";
-const floorPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch floor planner page:", err); return null; });
+const getPage = cache(() => getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch floor planner page:", err); return null; }));
 
 const benefits = [
   { title: "Accurate Measurements", desc: "Scale-accurate layouts prevent costly errors during construction." },
@@ -19,7 +19,7 @@ const benefits = [
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await floorPageP;
+  const page = await getPage();
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Floor Planner | Horizan Nepal",
@@ -42,7 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FloorPlannerPage() {
-  const page = await floorPageP;
+  const page = await getPage();
 
   return (
     <>

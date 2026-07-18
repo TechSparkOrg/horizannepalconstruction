@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
@@ -8,10 +8,10 @@ import { getSvgUrl } from "@/lib/svg-utils";
 import { siteUrl } from "@/lib/constants";
 import { MaterialContent } from "./_content";
 const SLUG = "material";
-const materialPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch material page:", err); return null; });
+const getPage = cache(() => getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch material page:", err); return null; }));
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await materialPageP;
+  const page = await getPage();
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Construction Materials | Horizan Nepal",
@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MaterialPage() {
-  const page = await materialPageP;
+  const page = await getPage();
 
   return (
     <>

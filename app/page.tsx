@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { getSettings } from "@/api/services/settings.service";
@@ -18,10 +18,10 @@ import {
 import { siteUrl } from "@/lib/constants";
 import ParsedContent from "@/lib/ParseContent.server";
 
-const settingsPromise = getSettings().catch((err) => { console.error("Failed to fetch settings:", err); return null; });
+const getHomeSettings = cache(() => getSettings().catch((err) => { console.error("Failed to fetch settings:", err); return null; }));
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await settingsPromise;
+  const settings = await getHomeSettings();
   const title = settings?.seo?.title || "Horizan Nepal — Architecture, Engineering & Construction";
   const description = settings?.seo?.description || "Horizan Nepal — trusted architecture, engineering, and construction firm delivering innovative and sustainable designs across Nepal.";
   return {
@@ -53,8 +53,9 @@ function ServicesSkeleton() {
 }
 
 export default async function HomePage() {
+
   const [settings, homePage] = await Promise.all([
-    settingsPromise,
+    getHomeSettings(),
     getPageBySlug("home").catch((err) => { console.error("Failed to fetch home page:", err); return null; }),
   ]);
   const svgItems = homePage?.svg_items;

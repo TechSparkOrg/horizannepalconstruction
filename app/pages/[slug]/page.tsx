@@ -31,7 +31,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PageView({ params }: Props) {
-  "use cache";
 
   const { slug } = await params;
   const page = await getPage(slug);

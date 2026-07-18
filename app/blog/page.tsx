@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getPageBySlug } from "@/api/services/page.service";
@@ -11,10 +11,10 @@ import { getSvgUrl } from "@/lib/svg-utils";
 import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import { BlogPageContent } from "./_content";
 const SLUG = "blog";
-const blogPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch blog page:", err); return null; });
+const getPage = cache(() => getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch blog page:", err); return null; }));
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await blogPageP;
+  const page = await getPage();
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Blog | Horizan Nepal",
@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function BlogPage() {
   const [page, blogsRes, categoriesRes] = await Promise.all([
-    blogPageP,
+    getPage(),
     getBlogs().catch((err) => { console.error("Failed to fetch blogs:", err); return { results: [] as BlogPost[] }; }),
     getCategories().catch((err) => { console.error("Failed to fetch categories:", err); return { results: [] as Category[] }; }),
   ]);

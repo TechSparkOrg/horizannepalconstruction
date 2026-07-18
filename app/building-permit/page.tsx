@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -10,10 +10,10 @@ import { LazyPlane } from "@/components/viewport/LazyPlane";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { BuildingPermitContent } from "./_content";
 const SLUG = "building-permit";
-const pageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch building permit page:", err); return null; });
+const getPage = cache(() => getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch building permit page:", err); return null; }));
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await pageP;
+  const page = await getPage();
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Building Permit Assistant | Horizan Nepal",
@@ -31,10 +31,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BuildingPermitPage() {
-  "use cache";
 
   const [page, config] = await Promise.all([
-    pageP,
+    getPage(),
     getBuildingPermitSingle().catch((err) => { console.error("Failed to fetch building permit config:", err); return null; }),
   ]);
   if (!config) notFound();

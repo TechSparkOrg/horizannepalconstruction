@@ -39,7 +39,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProjectCategoryDetailPage({ params }: Props) {
-  "use cache";
 
   const { slug } = await params;
   const detail = await getDetail(slug);

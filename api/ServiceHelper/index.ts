@@ -10,7 +10,7 @@ export interface PaginatedResponse<T> {
 }
 
 export async function apiGet<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, { cache: "no-store" })
+  const res = await fetch(`${API_BASE}${path}`)
   if (!res.ok) {
     const err = await parseApiError(res)
     throw new ApiError(err.message, err.status, err.raw)

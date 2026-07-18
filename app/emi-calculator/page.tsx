@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import dynamic from "next/dynamic";
 import { getPageBySlug } from "@/api/services/page.service";
 import { EmiContent } from "./_content";
@@ -7,10 +7,10 @@ import { EmiContent } from "./_content";
 import { siteUrl } from "@/lib/constants";
 const EmiCalculatorClient = dynamic(() => import("./EmiCalculatorClient"));
 const SLUG = "emi-calculator";
-const emiPageP = getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch EMI page:", err); return null; });
+const getPage = cache(() => getPageBySlug(SLUG).catch((err) => { console.error("Failed to fetch EMI page:", err); return null; }));
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await emiPageP;
+  const page = await getPage();
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "EMI Calculator | Horizan Nepal",
@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function EmiCalculatorPage() {
-  const page = await emiPageP;
+  const page = await getPage();
 
   return (
     <div className="min-h-screen bg-[#f4f6fb]">

@@ -51,7 +51,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function UnitConvertDetailPage({ params }: Props) {
-  "use cache";
 
   const { slug } = await params;
   const item = await getConversion(slug);
