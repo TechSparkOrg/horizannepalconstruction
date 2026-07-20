@@ -13,11 +13,11 @@ interface CategoryItem {
 }
 
 interface Props {
-  posts: BlogPost[];
-  categories: CategoryItem[];
+  posts?: BlogPost[];
+  categories?: CategoryItem[];
 }
 
-export default function BlogGrid({ posts, categories }: Props) {
+export default function BlogGrid({ posts = [], categories = [] }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [active, setActive] = useState<string | null>(null);

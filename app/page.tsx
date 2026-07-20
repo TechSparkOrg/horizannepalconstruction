@@ -1,16 +1,11 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import { getSettingsSafe } from "@/api/services/settings.service";
-import { getPageBySlugSafe } from "@/api/services/page.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { HeroSection } from "@/components/global_ui/HeroSection";
 import { QuoteBannerSecondary } from "@/components/page_ui/QuoteBannerSecondary";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getServiceCategoriesSafe } from "@/api/services/category.service";
-import { getProjectsListSafe } from "@/api/services/project.service";
-import { getBlogsSafe } from "@/api/services/blog.service";
-import { getFaqsSafeRaw } from "@/api/services/faq.service";
 import { ServicesSection } from "@/components/global_ui/ServicesSection";
 import { ImageGrid } from "@/components/global_ui/image-grid";
 import { FeaturedProjects } from "@/components/global_ui/FeaturedProjects";
@@ -21,40 +16,18 @@ import { siteUrl } from "@/lib/constants";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import ParsedContent from "@/lib/ParseContent.server";
 
-async function ServicesAsync({ svgUrl }: { svgUrl?: string }) {
-  const services = await getServiceCategoriesSafe();
-  return <ServicesSection initialServices={services} svgUrl={svgUrl} />;
-}
-
-async function GalleryAsync({ items }: { items: { id: string; url: string; alt?: string }[] }) {
-  return (
-    <ImageGrid
-      slug="home-page-gallary"
-      initialItems={items}
-      label="Our Gallery"
-      heading="Photo Gallery"
-      description="Explore our portfolio of completed projects and ongoing works across Nepal."
-    />
-  );
-}
-
-async function FeaturedAsync({ svgUrl }: { svgUrl?: string }) {
-  const projects = await getProjectsListSafe();
-  return <FeaturedProjects initialProjects={projects} limit={4} svgUrl={svgUrl} />;
-}
-
-async function BlogAsync() {
-  const posts = await getBlogsSafe();
-  return <BlogSection initialPosts={posts} />;
-}
-
-async function FAQAsync({ svgUrl }: { svgUrl?: string }) {
-  const faqs = await getFaqsSafeRaw({ page_size: 10 });
-  return <FAQWrapper initialFaqs={faqs} svgUrl={svgUrl} />;
+interface HomeBundle {
+  settings: import("@/api/types/settings.types").SiteSettings | null
+  page: import("@/api/types/page.types").Page | null
+  services: import("@/api/types/category.types").ServiceCategory[]
+  projects: import("@/api/types/project.types").Project[]
+  blogs: import("@/api/types/blog.types").BlogPost[]
+  faqs: import("@/api/types/faq.types").FaqItem[]
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSettingsSafe();
+  const bundle = await getPageBundle<HomeBundle>("home", "home", { faq_page_size: 10 });
+  const settings = bundle.settings;
   const title = settings?.seo?.title || "Horizan Nepal — Architecture, Engineering & Construction";
   const description = settings?.seo?.description || "Horizan Nepal — trusted architecture, engineering, and construction firm delivering innovative and sustainable designs across Nepal.";
   return {
@@ -86,11 +59,8 @@ function ServicesSkeleton() {
 }
 
 export default async function HomePage() {
-
-  const [settings, homePage] = await Promise.all([
-    getSettingsSafe(),
-    getPageBySlugSafe("home"),
-  ]);
+  const bundle = await getPageBundle<HomeBundle>("home", "home", { faq_page_size: 10 });
+  const { settings = null, page: homePage = null, services = [], projects = [], blogs = [], faqs = [] } = bundle;
   const svgItems = homePage?.svg_items;
 
   return (
@@ -115,27 +85,33 @@ export default async function HomePage() {
       <link rel="preload" as="image" href={getSvgUrl(svgItems, 0, "/video-gif/construnction-bull-dozer.svg")} fetchPriority="high" />
       <HeroSection svgUrl={getSvgUrl(svgItems, 0, "/video-gif/construnction-bull-dozer.svg")} />
       <Suspense fallback={<ServicesSkeleton />}>
-        <ServicesAsync svgUrl={getSvgUrl(svgItems, 1, "/video-gif/in-progress.svg")} />
+        <ServicesSection initialServices={services} svgUrl={getSvgUrl(svgItems, 1, "/video-gif/in-progress.svg")} />
       </Suspense>
       <ViewportSection fallback={<div className="py-16 sm:py-24 bg-off-white min-h-[600px]" />}>
         <Suspense fallback={<div className="py-16 sm:py-24 bg-off-white min-h-[600px]" />}>
-          <GalleryAsync items={homePage?.banner_images ?? []} />
+          <ImageGrid
+            slug="home-page-gallary"
+            initialItems={homePage?.banner_images ?? []}
+            label="Our Gallery"
+            heading="Photo Gallery"
+            description="Explore our portfolio of completed projects and ongoing works across Nepal."
+          />
         </Suspense>
       </ViewportSection>
       <ViewportSection fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff] min-h-[600px]" />}>
         <Suspense fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff] min-h-[600px]" />}>
-          <FeaturedAsync svgUrl={getSvgUrl(svgItems, 2, "/video-gif/Rumble.svg")} />
+          <FeaturedProjects initialProjects={projects} limit={4} svgUrl={getSvgUrl(svgItems, 2, "/video-gif/Rumble.svg")} />
         </Suspense>
       </ViewportSection>
       <QuoteBannerSecondary />
       <ViewportSection fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff] min-h-[400px]" />}>
         <Suspense fallback={<div className="py-16 sm:py-24 bg-[#f5f8ff] min-h-[400px]" />}>
-          <BlogAsync />
+          <BlogSection initialPosts={blogs} />
         </Suspense>
       </ViewportSection>
       <ViewportSection fallback={<div className="py-20 bg-[#f5f8ff] min-h-[500px]" />}>
         <Suspense fallback={<div className="py-20 bg-[#f5f8ff] min-h-[500px]" />}>
-          <FAQAsync svgUrl={getSvgUrl(svgItems, 3, "/video-gif/Live-chatbot.svg")} />
+          <FAQWrapper initialFaqs={faqs} svgUrl={getSvgUrl(svgItems, 3, "/video-gif/Live-chatbot.svg")} />
         </Suspense>
       </ViewportSection>
       {settings?.company_info?.description && (

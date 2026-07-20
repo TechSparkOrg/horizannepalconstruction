@@ -5,13 +5,19 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Clock3, PauseCircle, Tag, Calendar } from "lucide-react";
 import type { Project } from "@/api/types/project.types";
-import { getProjectBySlugSafe } from "@/api/services/project.service";
+import type { FaqItem } from "@/api/types/faq.types";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import { getProjectStatus, formatProjectDate } from "@/lib/project-status";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { siteUrl } from "@/lib/constants";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
 import { ProjectDetailContent } from "./_content";
+
+interface ProjectDetailBundle {
+  project_detail: Project | null;
+  faqs: FaqItem[];
+}
 
 function heroImage(p: Project): string {
   const primary = p.banner_images?.find((b) => b.isPrimary)?.url;
@@ -20,7 +26,8 @@ function heroImage(p: Project): string {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getProjectBySlugSafe(slug);
+  const bundle = await getPageBundle<ProjectDetailBundle>(slug, "project-details/[slug]");
+  const project = bundle.project_detail;
   if (!project) return { title: "Project Not Found" };
   const desc = project.meta_description || stripHtml(project.description).slice(0, 160);
   const img = heroImage(project);
@@ -53,7 +60,8 @@ const STATUS_HERO: Record<string, string> = {
 
 export default async function ProjectDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const project = await getProjectBySlugSafe(slug);
+  const bundle = await getPageBundle<ProjectDetailBundle>(slug, "project-details/[slug]");
+  const project = bundle.project_detail;
   if (!project) notFound();
 
   const status = getProjectStatus(project.status, project.completion);
@@ -182,7 +190,7 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
           </section>
         </div>
       }>
-        <ProjectDetailContent project={project} />
+        <ProjectDetailContent project={project} faqs={bundle.faqs} />
       </Suspense>
     </>
   );

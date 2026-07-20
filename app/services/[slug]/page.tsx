@@ -2,10 +2,21 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { getServiceCategoryDetailSafe } from "@/api/services/category.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { siteUrl } from "@/lib/constants";
 import { ServiceDetailInner } from "./_content";
+import type { ServiceCategoryDetail } from "@/api/types/category.types";
+import type { BlogPost } from "@/api/types/blog.types";
+import type { Project } from "@/api/types/project.types";
+import type { FaqItem } from "@/api/types/faq.types";
+
+interface ServiceDetailBundle {
+  service_detail: ServiceCategoryDetail;
+  blog_categories: Record<string, BlogPost[]>;
+  projects_by_category: Record<string, Project[]>;
+  faqs: FaqItem[];
+}
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -13,7 +24,8 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const detail = await getServiceCategoryDetailSafe(slug);
+  const bundle = await getPageBundle<ServiceDetailBundle>(slug, "services/[slug]");
+  const detail = bundle.service_detail;
   if (!detail) return {};
   return {
     title: detail.meta_title || `${detail.name} | Horizan Nepal`,
@@ -32,7 +44,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ServiceDetailPage({ params }: Props) {
 
   const { slug } = await params;
-  const detail = await getServiceCategoryDetailSafe(slug);
+  const bundle = await getPageBundle<ServiceDetailBundle>(slug, "services/[slug]");
+  const detail = bundle.service_detail;
   if (!detail) notFound();
 
   return (
@@ -60,7 +73,7 @@ export default async function ServiceDetailPage({ params }: Props) {
       </section>
 
       <Suspense fallback={<div className="py-16 bg-white" style={{ minHeight: 1000 }} />}>
-        <ServiceDetailInner detail={detail} />
+        <ServiceDetailInner detail={detail} bundle={bundle} />
       </Suspense>
     </>
   );

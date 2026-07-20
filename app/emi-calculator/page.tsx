@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import { getPageBySlugSafe } from "@/api/services/page.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import { HeroSkeleton, CardSkeleton } from "@/components/global_ui/loading-skeleton";
 import { EmiContent } from "./_content";
+import type { Page } from "@/api/types/page.types";
+import type { EmiBank } from "@/api/types/emi.types";
 
 import { siteUrl } from "@/lib/constants";
+
+interface EmiBundle {
+  page: Page | null;
+  banks: EmiBank[];
+}
+
 const EmiCalculatorClient = dynamic(() => import("./EmiCalculatorClient"));
 const SLUG = "emi-calculator";
 
@@ -51,7 +59,8 @@ function EmiContentSkeleton() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlugSafe(SLUG);
+  const bundle = await getPageBundle<EmiBundle>(SLUG, "emi-calculator");
+  const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "EMI Calculator | Horizan Nepal",
@@ -74,7 +83,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function EmiCalculatorPage() {
-  const page = await getPageBySlugSafe(SLUG);
+  const bundle = await getPageBundle<EmiBundle>(SLUG, "emi-calculator");
+  const page = bundle.page;
 
   return (
     <div className="min-h-screen bg-[#f4f6fb]">

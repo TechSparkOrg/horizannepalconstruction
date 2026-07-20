@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getCategoriesSafe } from "@/api/services/category.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import dynamic from "next/dynamic";
 const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then((m) => ({ default: m.ConsultationForm })));
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { breadcrumbList } from "@/lib/seo-utils";
+import type { Category } from "@/api/types/category.types";
+
+interface RequestBundle {
+  categories: { results: Category[] };
+}
 
 export const metadata: Metadata = {
   title: "Request a Project | Horizan Nepal Construction",
@@ -32,8 +37,8 @@ const steps = [
 ];
 
 export default async function RequestPage() {
-  const categoriesRes = await getCategoriesSafe();
-  const categories = categoriesRes.results ?? [];
+  const bundle = await getPageBundle<RequestBundle>("request", "request");
+  const categories = bundle.categories?.results ?? [];
 
   return (
     <>

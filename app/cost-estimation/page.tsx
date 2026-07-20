@@ -2,17 +2,22 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Image from "next/image";
 import { Calculator, Layers, Box } from "lucide-react";
-import { getPageBySlugSafe } from "@/api/services/page.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { CostContent } from "./_content";
+import type { Page } from "@/api/types/page.types";
 
+interface CostEstimationBundle {
+  page: Page | null;
+}
 
 const SLUG = "cost-estimation"
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlugSafe(SLUG)
+  const bundle = await getPageBundle<CostEstimationBundle>(SLUG, "cost-estimation")
+  const page = bundle.page
   const base = pageMetadataBase(page, SLUG)
   return {
     title: page?.meta_title || "Cost Estimation | Horizan Nepal",
@@ -35,7 +40,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CostEstimationPage() {
-  const page = await getPageBySlugSafe(SLUG)
+  const bundle = await getPageBundle<CostEstimationBundle>(SLUG, "cost-estimation")
+  const page = bundle.page
 
   return (
     <>

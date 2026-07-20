@@ -18,11 +18,11 @@ interface GroupInfo {
 }
 
 interface Props {
-  initialGroups: FaqGroupResponse[];
+  initialGroups?: FaqGroupResponse[];
   svgUrl?: string;
 }
 
-export function FAQTimeline({ initialGroups, svgUrl }: Props) {
+export function FAQTimeline({ initialGroups = [], svgUrl }: Props) {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [openItems, setOpenItems] = useState<Record<string, number | null>>({});
   const [groupItems, setGroupItems] = useState<Record<string, FaqDisplay[]>>({});

@@ -3,17 +3,26 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { getPageBySlugSafe } from "@/api/services/page.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import { LazyFeather } from "@/components/viewport/LazyFeather";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { FaqContent } from "./_content";
+import type { Page } from "@/api/types/page.types";
+import type { FaqGroupResponse } from "@/api/types/faq.types";
 
 import { siteUrl } from "@/lib/constants";
 import ParsedContent from "@/lib/ParseContent.server";
+
+interface FaqBundle {
+  page: Page | null;
+  faq_groups: FaqGroupResponse[];
+}
+
 const SLUG = "faq";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlugSafe(SLUG);
+  const bundle = await getPageBundle<FaqBundle>(SLUG, "faq");
+  const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "FAQ | Horizan Nepal",
@@ -31,7 +40,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FAQPage() {
-  const page = await getPageBySlugSafe(SLUG);
+  const bundle = await getPageBundle<FaqBundle>(SLUG, "faq");
+  const { page = null, faq_groups = [] } = bundle;
 
   return (
     <>
@@ -81,7 +91,7 @@ export default async function FAQPage() {
 
       <div id="faq-questions">
         <Suspense fallback={<div className="py-16 sm:py-28" />}>
-          <FaqContent svgItems={page?.svg_items} />
+          <FaqContent svgItems={page?.svg_items} bundle={bundle} />
         </Suspense>
       </div>
 

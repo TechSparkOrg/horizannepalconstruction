@@ -4,10 +4,19 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { getProjectCategoryDetailSafe } from "@/api/services/category.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
 import { ProjectCategoryDetailInner } from "./_content";
+import type { ProjectCategoryDetail } from "@/api/types/category.types";
+import type { Project } from "@/api/types/project.types";
+import type { FaqItem } from "@/api/types/faq.types";
+
+interface ProjectCategoryBundle {
+  project_category: ProjectCategoryDetail | null;
+  projects: Project[];
+  faqs: FaqItem[];
+}
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -17,7 +26,8 @@ import { siteUrl } from "@/lib/constants";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const detail = await getProjectCategoryDetailSafe(slug);
+  const bundle = await getPageBundle<ProjectCategoryBundle>(slug, "project-details/category/[slug]");
+  const detail = bundle.project_category;
   if (!detail) return {};
   const url = `${siteUrl}/project-details/category/${slug}`;
   const desc = detail.meta_description || stripHtml(detail.description).substring(0, 160);
@@ -40,7 +50,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProjectCategoryDetailPage({ params }: Props) {
 
   const { slug } = await params;
-  const detail = await getProjectCategoryDetailSafe(slug);
+  const bundle = await getPageBundle<ProjectCategoryBundle>(slug, "project-details/category/[slug]");
+  const detail = bundle.project_category;
   if (!detail) notFound();
 
   const heroImg = detail.banner_images?.[0]?.url || detail.image;
@@ -76,10 +87,8 @@ export default async function ProjectCategoryDetailPage({ params }: Props) {
       </section>
    <LazyAiBot />
       <Suspense fallback={<div className="py-16 bg-white" style={{ minHeight: 1100 }} />}>
-        <ProjectCategoryDetailInner detail={detail} />
+        <ProjectCategoryDetailInner detail={detail} bundle={bundle} />
       </Suspense>
-
-   
     </>
   );
 }

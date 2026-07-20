@@ -2,14 +2,25 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { getPageBySlugSafe } from "@/api/services/page.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { siteUrl } from "@/lib/constants";
 import { VastuContent } from "./_content";
+import type { Page } from "@/api/types/page.types";
+import type { VastuNavResponse } from "@/api/types/vastu.types";
+import type { FaqItem } from "@/api/types/faq.types";
+
+interface VastuBundle {
+  page: Page | null;
+  vastu_nav: VastuNavResponse;
+  faqs: FaqItem[];
+}
+
 const SLUG = "vastu-shastra";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlugSafe(SLUG);
+  const bundle = await getPageBundle<VastuBundle>(SLUG, "vastu-shastra");
+  const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || page?.title || "Vastu Shastra | Horizan Nepal",
@@ -27,7 +38,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function VastuShastraPage() {
-  const page = await getPageBySlugSafe(SLUG);
+  const bundle = await getPageBundle<VastuBundle>(SLUG, "vastu-shastra");
+  const { page = null, vastu_nav = { sections: [], rooms: [], directions: [] }, faqs = [] } = bundle;
 
   return (
     <div className="min-h-screen">
@@ -85,7 +97,7 @@ export default async function VastuShastraPage() {
       </section>
 
       <Suspense fallback={<div className="py-16 sm:py-28 bg-white" />}>
-        <VastuContent page={page} svgItems={page?.svg_items} />
+        <VastuContent page={page} svgItems={page?.svg_items} bundle={bundle} />
       </Suspense>
     </div>
   );

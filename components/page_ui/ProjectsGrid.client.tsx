@@ -6,10 +6,10 @@ import { ProjectCard } from "@/components/global_ui/ProjectCard";
 import type { Project } from "@/api/types/project.types";
 
 interface Props {
-  projects: Project[];
+  projects?: Project[];
 }
 
-export function ProjectsGrid({ projects }: Props) {
+export function ProjectsGrid({ projects = [] }: Props) {
   const searchParams = useSearchParams();
   const initialCat = searchParams.get("category") || "All";
   const categoryMap = new Map<string, string>();

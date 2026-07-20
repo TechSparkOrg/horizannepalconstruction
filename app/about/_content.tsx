@@ -3,14 +3,15 @@ import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import type { Page, PageSvgItem } from "@/api/types/page.types";
 import type { MediaItem } from "@/api/types/media.types";
+import type { ServiceCategory } from "@/api/types/category.types";
+import type { TeamMember } from "@/api/types/team.types";
+import type { PublicVendor } from "@/api/types/material.types";
+import type { EmiBank } from "@/api/types/emi.types";
+import type { Review } from "@/api/types/review.types";
+import type { Category } from "@/api/types/category.types";
+import type { FaqItem } from "@/api/types/faq.types";
 import { getSvgUrl } from "@/lib/svg-utils";
-import { ServicesAsync } from "@/components/sections/homepage-sections";
-import { getVendorsSafe } from "@/api/services/vendor-public.service";
-import { getBanksSafe } from "@/api/services/emi.service";
-import { ReviewPublic } from "@/api/services/review.service";
-import { CategoryPublic } from "@/api/services/category.service";
-import { getFaqsSafe } from "@/api/services/faq.service";
-import { getTeamSafe } from "@/api/services/team.service";
+import { ServicesSection } from "@/components/global_ui/ServicesSection";
 import { PartnersSection } from "@/components/page_ui/PartnersSection";
 import { TestimonialsSection } from "@/components/global_ui/TestimonialsSection";
 import { ConsultationForm } from "@/components/global_ui/ConsultationForm";
@@ -22,47 +23,23 @@ const AboutGallery = dynamic(() => import("@/components/global_ui/image-grid").t
 const LocationSection = dynamic(() => import("@/components/global_ui/LocationSection").then((m) => ({ default: m.LocationSection })));
 import ParsedContent from "@/lib/ParseContent.server";
 
-async function AboutPartnersAsync({ svgUrl }: { svgUrl?: string } = {}) {
-  const [vRes, bRes] = await Promise.all([
-    getVendorsSafe(),
-    getBanksSafe(),
-  ]);
-  return (
-    <PartnersSection
-      initialVendors={vRes.results ?? []}
-      initialBanks={bRes}
-      svgUrl={svgUrl}
-    />
-  );
-}
-
-async function AboutReviewsAsync({ svgUrl }: { svgUrl?: string } = {}) {
-  const reviews = await ReviewPublic.listSafe();
-  return <TestimonialsSection initialReviews={reviews.results} svgUrl={svgUrl} />;
-}
-
-async function AboutConsultAsync({ headerSvgUrl, emailSvgUrl }: { headerSvgUrl?: string; emailSvgUrl?: string } = {}) {
-  const cats = await CategoryPublic.listSafe();
-  return <ConsultationForm initialCategories={cats.results} headerSvgUrl={headerSvgUrl} emailSvgUrl={emailSvgUrl} />;
-}
-
-async function AboutFaqAsync({ faqGroupSlug }: { faqGroupSlug: string }) {
-  const faqs = await getFaqsSafe({ group__slug: faqGroupSlug, page_size: 10 });
-  return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} />;
-}
-
-async function AboutTeamAsync({ svgUrl }: { svgUrl?: string } = {}) {
-  const res = await getTeamSafe();
-  return <TeamSection members={res.results} svgUrl={svgUrl} />;
-}
-
 interface Props {
   page: Page | null;
   gallery: MediaItem[];
   svgItems?: PageSvgItem[];
+  services: ServiceCategory[];
+  team: TeamMember[];
+  vendors: { results: PublicVendor[] };
+  banks: EmiBank[];
+  reviews: { results: Review[] };
+  categories: { results: Category[] };
+  faqs: FaqItem[];
 }
 
-export function AboutContent({ page, gallery, svgItems }: Props) {
+const formatFaq = (items?: FaqItem[]) =>
+  (items ?? []).map((f) => ({ q: f.question?.en ?? "", a: f.answer?.en ?? "" }));
+
+export function AboutContent({ page, gallery, svgItems, services, team, vendors, banks, reviews, categories, faqs }: Props) {
   const F = (className: string) => <div className={className} />;
 
   return (
@@ -71,19 +48,13 @@ export function AboutContent({ page, gallery, svgItems }: Props) {
         <AboutTabs />
       </ViewportSection>
       <ViewportSection fallback={F("py-20 bg-white")}>
-        <Suspense fallback={F("py-20 bg-white")}>
-          <ServicesAsync svgUrl={getSvgUrl(svgItems, 0, "/video-gif/in-progress.svg")} />
-        </Suspense>
+        <ServicesSection initialServices={services} svgUrl={getSvgUrl(svgItems, 0, "/video-gif/in-progress.svg")} />
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-28 bg-[#f8fafc]")}>
-        <Suspense fallback={F("py-16 sm:py-28 bg-[#f8fafc]")}>
-          <AboutTeamAsync svgUrl={getSvgUrl(svgItems, 1, "/video-gif/work-team.svg")} />
-        </Suspense>
+        <TeamSection members={team} svgUrl={getSvgUrl(svgItems, 1, "/video-gif/work-team.svg")} />
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-24 bg-white")}>
-        <Suspense fallback={F("py-16 sm:py-24 bg-white")}>
-          <AboutPartnersAsync svgUrl={getSvgUrl(svgItems, 2, "/video-gif/Business.svg")} />
-        </Suspense>
+        <PartnersSection initialVendors={vendors.results ?? []} initialBanks={banks} svgUrl={getSvgUrl(svgItems, 2, "/video-gif/Business.svg")} />
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-24 bg-off-white")}>
         <AboutGallery
@@ -97,26 +68,17 @@ export function AboutContent({ page, gallery, svgItems }: Props) {
         />
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-24 bg-white")}>
-        <Suspense fallback={F("py-16 sm:py-24 bg-white")}>
-          <AboutReviewsAsync svgUrl={getSvgUrl(svgItems, 3, "/video-gif/review-animation.svg")} />
-        </Suspense>
+        <TestimonialsSection initialReviews={reviews.results} svgUrl={getSvgUrl(svgItems, 3, "/video-gif/review-animation.svg")} />
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-24 bg-white")}>
-        <Suspense fallback={F("py-16 sm:py-24 bg-white")}>
-          <AboutConsultAsync
-            headerSvgUrl={getSvgUrl(svgItems, 4, "/video-gif/customer-inquires.svg")}
-            emailSvgUrl={getSvgUrl(svgItems, 5, "/video-gif/email.svg")}
-          />
-        </Suspense>
+        <ConsultationForm initialCategories={categories.results} headerSvgUrl={getSvgUrl(svgItems, 4, "/video-gif/customer-inquires.svg")} emailSvgUrl={getSvgUrl(svgItems, 5, "/video-gif/email.svg")} />
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-24 bg-white")}>
         <LocationSection />
       </ViewportSection>
-      {page?.faq_group_slug && (
+      {faqs.length > 0 && (
         <ViewportSection fallback={F("py-12 sm:py-16 bg-white")}>
-          <Suspense fallback={F("py-12 sm:py-16 bg-white")}>
-            <AboutFaqAsync faqGroupSlug={page.faq_group_slug} />
-          </Suspense>
+          <FaqClient categorySlug={page?.faq_group_slug ?? "about"} initialFaqs={formatFaq(faqs)} />
         </ViewportSection>
       )}
       {page?.content && (

@@ -1,21 +1,25 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getFaqsSafe } from "@/api/services/faq.service";
 import type { Page } from "@/api/types/page.types";
+import type { FaqItem } from "@/api/types/faq.types";
 
 const FloorPlanner = dynamic(() => import("@/components/page_ui/FloorPlanner"));
 const ImageGrid = dynamic(() => import("@/components/global_ui/image-grid").then((m) => ({ default: m.ImageGrid })));
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
 const BlogContent = dynamic(() => import("@/components/page_ui/BlogContent.client"));
 
+const formatFaq = (items?: FaqItem[]) => (items ?? []).map(f => ({ q: f.question?.en ?? '', a: f.answer?.en ?? '' }));
+
 interface Props {
   page: Page | null;
   svgItems?: import("@/api/types/page.types").PageSvgItem[];
+  bundle: { faqs: FaqItem[] };
 }
 
-export function FloorPlannerContent({ page }: Props) {
+export function FloorPlannerContent({ page, bundle }: Props) {
   const F = (className: string) => <div className={className} />;
+  const formattedFaqs = formatFaq(bundle.faqs);
 
   return (
     <>
@@ -45,7 +49,7 @@ export function FloorPlannerContent({ page }: Props) {
       {page?.faq_group_slug && (
         <ViewportSection fallback={F("py-12 sm:py-16 bg-white min-h-[200px]")}>
           <Suspense fallback={F("py-12 sm:py-16 bg-white min-h-[200px]")}>
-            <FloorPlannerFaqInner faqGroupSlug={page.faq_group_slug} />
+            <FaqClient categorySlug={page.faq_group_slug} initialFaqs={formattedFaqs} />
           </Suspense>
         </ViewportSection>
       )}
@@ -59,9 +63,4 @@ export function FloorPlannerContent({ page }: Props) {
       )}
     </>
   );
-}
-
-async function FloorPlannerFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
-  const faqs = await getFaqsSafe({ group__slug: faqGroupSlug, page_size: 20 });
-  return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} />;
 }

@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getFaqsSafe } from "@/api/services/faq.service";
 import type { BuildingPermitConfig } from "@/api/types/building-permit.types";
 import type { Page } from "@/api/types/page.types";
+import type { FaqItem } from "@/api/types/faq.types";
 import { WorkflowTimeline } from "./WorkflowTimeline";
 import { RegulationsGrid } from "./RegulationsGrid";
 import { MunicipalityTable } from "./MunicipalityTable";
@@ -11,14 +11,18 @@ import { MunicipalityTable } from "./MunicipalityTable";
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
 import ParsedContent from "@/lib/ParseContent.server";
 
+const formatFaq = (items?: FaqItem[]) => (items ?? []).map(f => ({ q: f.question?.en ?? '', a: f.answer?.en ?? '' }));
+
 interface Props {
   config: BuildingPermitConfig;
   page: Page | null;
   svgItems?: import("@/api/types/page.types").PageSvgItem[];
+  bundle: { faqs: FaqItem[] };
 }
 
-export function BuildingPermitContent({ config, page, svgItems }: Props) {
+export function BuildingPermitContent({ config, page, svgItems, bundle }: Props) {
   const F = (className: string) => <div className={className} />;
+  const formattedFaqs = formatFaq(bundle.faqs);
 
   return (
     <>
@@ -31,7 +35,7 @@ export function BuildingPermitContent({ config, page, svgItems }: Props) {
       </ViewportSection>
       {page?.faq_group_slug && (
         <Suspense fallback={F("py-12 sm:py-16 bg-white")}>
-          <BPFaqInner faqGroupSlug={page.faq_group_slug} />
+          <FaqClient categorySlug={page.faq_group_slug} initialFaqs={formattedFaqs} />
         </Suspense>
       )}
       {page?.content && (
@@ -43,9 +47,4 @@ export function BuildingPermitContent({ config, page, svgItems }: Props) {
       )}
     </>
   );
-}
-
-async function BPFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
-  const faqs = await getFaqsSafe({ group__slug: faqGroupSlug, page_size: 20 });
-  return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} />;
 }

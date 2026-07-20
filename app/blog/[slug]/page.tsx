@@ -1,10 +1,17 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getBlogBySlugSafe } from "@/api/services/blog.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import type { MediaItem } from "@/api/types/media.types";
+import type { BlogPost } from "@/api/types/blog.types";
+import type { FaqItem } from "@/api/types/faq.types";
 import { BlogPostInner } from "./_content";
+
+interface BlogDetailBundle {
+  blog_detail: BlogPost | null;
+  faqs: FaqItem[];
+}
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -12,7 +19,8 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getBlogBySlugSafe(slug);
+  const bundle = await getPageBundle<BlogDetailBundle>(slug, "blog/[slug]");
+  const post = bundle.blog_detail;
   if (!post) return { title: "Blog Not Found" };
   const description = post.meta_description || stripHtml(post.content || "").slice(0, 160) || post.title;
   return {
@@ -30,7 +38,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BlogPostPage({ params }: Props) {
 
   const { slug } = await params;
-  const post = await getBlogBySlugSafe(slug);
+  const bundle = await getPageBundle<BlogDetailBundle>(slug, "blog/[slug]");
+  const post = bundle.blog_detail;
   if (!post) notFound();
 
   const bannerImages: MediaItem[] = (post.banner_images ?? []).map((b) => ({
@@ -58,7 +67,7 @@ export default async function BlogPostPage({ params }: Props) {
       </section>
 
       <Suspense fallback={<div className="py-16 bg-white" style={{ minHeight: 800 }} />}>
-        <BlogPostInner post={post} slug={slug} />
+        <BlogPostInner post={post} slug={slug} faqs={bundle.faqs} />
       </Suspense>
     </>
   );
