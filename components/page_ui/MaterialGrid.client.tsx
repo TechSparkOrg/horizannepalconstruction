@@ -47,6 +47,49 @@ const MaterialGrid = ({ initialItems, initialTotal, svgUrl1, svgUrl2 }: { initia
 
   const hasMore = items.length < totalCount;
 
+  if (initialLoading) {
+    return (
+      <section className="bg-white py-16 sm:py-24">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center gap-6 mb-12">
+            <Image src={svgUrl1 || "/video-gif/school-book.svg"} alt="" aria-hidden="true"
+              width={90} height={120}
+              className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0"
+              sizes="(max-width: 1024px) 70px, 90px" unoptimized />
+            <div className="text-center shrink-0">
+              <div className="inline-flex items-center gap-3 mb-2">
+                <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+                <p className="text-[10px] font-bold tracking-[0.26em] uppercase text-[#cd2028]">Materials</p>
+                <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+              </div>
+              <h2 className="font-display font-bold text-[#0f2557] text-2xl sm:text-3xl tracking-tight">
+                Construction Materials
+              </h2>
+              <p className="mt-2 text-[13.5px] text-[#64748b] max-w-[480px] leading-relaxed">
+                Explore our comprehensive range of construction materials sourced from trusted partners.
+              </p>
+            </div>
+            <Image src={svgUrl2 || "/video-gif/constuction-worker-building.svg"} alt="" aria-hidden="true"
+              width={90} height={120}
+              className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0 scale-x-[-1]"
+              sizes="(max-width: 1024px) 70px, 90px" unoptimized />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[18px]">
+            {Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+              <div key={i} className="flex flex-col bg-white rounded-xl border border-light-gray/40 overflow-hidden">
+                <div className="aspect-[4/3] bg-light-gray/30 animate-pulse" />
+                <div className="p-4 space-y-2">
+                  <div className="h-4 w-3/4 rounded bg-light-gray/30 animate-pulse" />
+                  <div className="h-3 w-1/2 rounded bg-light-gray/20 animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="bg-white py-16 sm:py-24">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -89,10 +132,7 @@ const MaterialGrid = ({ initialItems, initialTotal, svgUrl1, svgUrl2 }: { initia
           </div>
         )}
 
-        {initialLoading && (
-          <p className="text-center text-[#64748b] py-20">Loading materials…</p>
-        )}
-        {!initialLoading && items.length === 0 && (
+        {items.length === 0 && (
           <p className="text-center text-[#64748b] py-20">No materials found.</p>
         )}
       </div>

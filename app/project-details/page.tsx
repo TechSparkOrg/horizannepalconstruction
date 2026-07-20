@@ -33,6 +33,7 @@ export default async function ProjectsPage() {
   return (
     <>
       <h1 className="sr-only">{page?.title || "Projects — Horizan Nepal"}</h1>
+      <link rel="preload" as="image" href={getSvgUrl(page?.svg_items, 0, "/video-gif/maintainace-building.svg")} fetchPriority="high" />
       <OurWorkHero svgUrl={getSvgUrl(page?.svg_items, 0, "/video-gif/maintainace-building.svg")} />
       <LazyPlane src={getSvgUrl(page?.svg_items, 1, "/video-gif/Loading-Paperplane.svg")} />
       <Suspense fallback={<div className="py-16 sm:py-24 bg-[#f8fafc]" style={{ minHeight: 2600 }} />}>

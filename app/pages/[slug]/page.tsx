@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPageBySlugSafe } from "@/api/services/page.service";
-import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import { siteUrl } from "@/lib/constants";
 import { CmsPageInner } from "./_content";
 
@@ -40,14 +39,9 @@ export default async function PageView({ params }: Props) {
   return (
     <>
       <h1 className="sr-only">{page.title}</h1>
+      {banners.map((b) => b.url ? <link key={b.id} rel="preload" as="image" href={b.url} /> : null)}
 
       <section className="relative min-h-[80vh] flex items-center overflow-hidden bg-[#0f2557]">
-        {banners.length > 0 ? (
-          <BannerCarousel slug={`${slug}-hero`} carousel
-            imgClassName="object-cover opacity-60" initialBanners={banners} />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0f2557]/40 to-[#0f2557]/70" />
-        )}
         <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 w-full pt-32 pb-2 text-center">
           <h1 className="font-display font-bold text-white mt-6 leading-[1.05] max-w-3xl mx-auto"
             style={{ fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)" }}>{page.title}</h1>

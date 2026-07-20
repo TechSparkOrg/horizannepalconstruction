@@ -4,7 +4,7 @@ function Skeleton({ className }: { className?: string }) {
 
 export function HeroSkeleton({ minH = "100vh" }: { minH?: string }) {
   return (
-    <section className={`relative min-h-[${minH}] h-full flex items-center bg-brand-dark px-4 sm:px-6 lg:px-8`}>
+    <section className="flex items-center bg-brand-dark px-4 sm:px-6 lg:px-8" style={{ minHeight: minH }}>
       <div className="max-w-[1200px] mx-auto w-full pt-32 pb-20 space-y-4">
         <Skeleton className="h-4 w-32 rounded-full" />
         <Skeleton className="h-12 w-[550px] max-w-full rounded-lg" />

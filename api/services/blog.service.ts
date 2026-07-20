@@ -1,9 +1,9 @@
-import { apiGet, type PaginatedResponse } from "@/api/ServiceHelper"
+import { api, type PaginatedResponse } from "@/api/ServiceHelper"
 import type { BlogPost } from "@/api/types/blog.types"
 
 export async function getBlogBySlugSafe(slug: string): Promise<BlogPost | null> {
   try {
-    return await apiGet<BlogPost>(`/blog/${slug}/`)
+    return await api.get<BlogPost>(`/blog/${slug}/`)
   } catch (err) {
     console.error("Failed to fetch blog post:", err)
     return null
@@ -12,7 +12,7 @@ export async function getBlogBySlugSafe(slug: string): Promise<BlogPost | null> 
 
 export async function getBlogsSafe(): Promise<BlogPost[]> {
   try {
-    const res = await apiGet<PaginatedResponse<BlogPost>>("/blog/");
+    const res = await api.get<PaginatedResponse<BlogPost>>("/blog/");
     return res.results ?? [];
   } catch (err) {
     console.error("Failed to fetch blogs:", err);
@@ -22,7 +22,7 @@ export async function getBlogsSafe(): Promise<BlogPost[]> {
 
 export async function getBlogsByCategorySafe(categorySlug: string): Promise<BlogPost[]> {
   try {
-    const res = await apiGet<PaginatedResponse<BlogPost>>(`/blog/?category=${categorySlug}`);
+    const res = await api.get<PaginatedResponse<BlogPost>>(`/blog/?category=${categorySlug}`);
     return res.results ?? [];
   } catch (err) {
     console.error("Failed to fetch blogs by category:", err);

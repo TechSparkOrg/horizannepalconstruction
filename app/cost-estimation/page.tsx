@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Image from "next/image";
 import { Calculator, Layers, Box } from "lucide-react";
-import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import { getPageBySlugSafe } from "@/api/services/page.service";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
@@ -41,6 +40,7 @@ export default async function CostEstimationPage() {
   return (
     <>
       <LdJson data={breadcrumbList("Cost Estimation", "cost-estimation")} />
+      {page?.banner_images?.map((b) => b.url ? <link key={b.id} rel="preload" as="image" href={b.url} /> : null)}
 
       {/* ── Hero ── */}
       <section
@@ -48,8 +48,6 @@ export default async function CostEstimationPage() {
         style={{ minHeight: "78vh" }}
         aria-label="Construction cost estimator"
       >
-        <BannerCarousel slug="cost-estimate-page-hero" imgClassName="object-cover" initialBanners={page?.banner_images} />
-
         {/* Gradient overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#07112b] via-[#07112b]/80 to-[#07112b]/40" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#07112b]/90 via-[#07112b]/35 to-transparent" />

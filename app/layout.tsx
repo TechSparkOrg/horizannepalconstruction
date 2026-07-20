@@ -7,9 +7,9 @@ import dynamic from "next/dynamic";
 import { Toaster } from "sonner";
 import { SettingsLoader } from "@/components/global_ui/SettingsLoader";
 import { SettingsHydrator } from "@/components/global_ui/SettingsHydrator";
-import { TrackingScripts } from "@/components/global_ui/TrackingScripts";
-import { ScriptInjector } from "@/components/global_ui/ScriptInjector";
-import { getCachedSettings } from "@/lib/cached-settings";
+const TrackingScripts = dynamic(() => import("@/components/global_ui/TrackingScripts").then((m) => ({ default: m.TrackingScripts })));
+const ScriptInjector = dynamic(() => import("@/components/global_ui/ScriptInjector").then((m) => ({ default: m.ScriptInjector })));
+import { getSettingsSafe } from "@/api/services/settings.service";
 
 const Header = dynamic(() => import("@/components/global_ui/Header").then((m) => ({ default: m.Header })));
 const WhatsAppButton = dynamic(() => import("@/components/global_ui/WhatsAppButton").then((m) => ({ default: m.WhatsAppButton })));
@@ -18,11 +18,13 @@ const Footer = dynamic(() => import("@/components/global_ui/Footer").then((m) =>
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const playfairDisplay = Playfair_Display({
@@ -53,7 +55,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const settings = await getCachedSettings();
+  const settings = await getSettingsSafe();
 
   return (
     <html

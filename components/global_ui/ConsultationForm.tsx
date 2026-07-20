@@ -71,7 +71,7 @@ export function ConsultationForm({ initialCategories, headerSvgUrl, emailSvgUrl 
     setSubmitting(true);
     try {
       await ConsultationPublic.submit(
-        { name, email, phone, service, description: desc, preferred_date: preferredDate, landmark },
+        { name, email: email.trim() || undefined, phone, service, description: desc, preferred_date: preferredDate, landmark },
         sitePhotos.length > 0 ? sitePhotos : undefined,
       );
       setSubmitting2(true);
@@ -190,15 +190,15 @@ export function ConsultationForm({ initialCategories, headerSvgUrl, emailSvgUrl 
               </div>
 
               <div>
-                <label className={LABEL} htmlFor="cf-email">Email Address</label>
-                <input id="cf-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                  className={INPUT} placeholder="your@email.com" />
+                <label className={LABEL} htmlFor="cf-phone">Phone Number</label>
+                <input id="cf-phone" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)}
+                  className={INPUT} placeholder="+977 98XXXXXXXX" />
               </div>
 
               <div>
-                <label className={LABEL} htmlFor="cf-phone">Phone Number</label>
-                <input id="cf-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
-                  className={INPUT} placeholder="+977 98XXXXXXXX" />
+                <label className={LABEL} htmlFor="cf-email">Email Address <span className="text-[#94a3b8] font-normal">(Optional)</span></label>
+                <input id="cf-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                  className={INPUT} placeholder="your@email.com" />
               </div>
 
               <div>

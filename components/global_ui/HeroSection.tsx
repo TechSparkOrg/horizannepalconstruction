@@ -23,7 +23,7 @@ export function HeroSection({ svgUrl }: { svgUrl?: string }) {
         alt=""
         fill
         sizes="100vw"
-        className="object-cover object-center"
+        className="object-contain object-center"
         priority
         unoptimized
         aria-hidden="true"

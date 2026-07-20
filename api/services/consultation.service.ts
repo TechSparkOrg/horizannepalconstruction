@@ -1,4 +1,4 @@
-import { apiPost, apiPostFormData } from "@/api/ServiceHelper"
+import { api } from "@/api/ServiceHelper"
 import type { ConsultationData, ConsultationResponse } from "@/api/types/consultation.types"
 
 export const ConsultationPublic = {
@@ -9,8 +9,8 @@ export const ConsultationPublic = {
         if (val !== undefined && val !== null && key !== 'site_photos') fd.append(key, val);
       });
       photos.forEach((file) => fd.append("site_photos", file));
-      return apiPostFormData<ConsultationResponse>("/consultation/", fd);
+      return api.upload<ConsultationResponse>("/consultation/", fd);
     }
-    return apiPost<ConsultationResponse>("/consultation/", data);
+    return api.post<ConsultationResponse>("/consultation/", data);
   },
 }

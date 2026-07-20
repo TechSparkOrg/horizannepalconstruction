@@ -18,6 +18,7 @@ import { BlogSection } from "@/components/global_ui/BlogSection";
 import { FAQWrapper } from "@/components/global_ui/faq-accordion";
 
 import { siteUrl } from "@/lib/constants";
+import { LdJson } from "@/components/global_ui/JsonLd";
 import ParsedContent from "@/lib/ParseContent.server";
 
 async function ServicesAsync({ svgUrl }: { svgUrl?: string }) {
@@ -94,6 +95,24 @@ export default async function HomePage() {
 
   return (
     <>
+      <LdJson data={{
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        name: settings?.company_info?.name || "Horizan Nepal Engineering Research & Construction",
+        url: siteUrl,
+        logo: `${siteUrl}/logo.png`,
+        image: getSvgUrl(svgItems, 0, "/video-gif/construnction-bull-dozer.svg"),
+        description: settings?.company_info?.description || "Trusted architecture, engineering, and construction firm in Nepal.",
+        address: settings?.contact_info?.address ? {
+          "@type": "PostalAddress",
+          streetAddress: settings.contact_info.address,
+          addressLocality: "Kathmandu",
+          addressCountry: "NP",
+        } : undefined,
+        telephone: settings?.contact_info?.phone || undefined,
+        priceRange: "NPR",
+      }} />
+      <link rel="preload" as="image" href={getSvgUrl(svgItems, 0, "/video-gif/construnction-bull-dozer.svg")} fetchPriority="high" />
       <HeroSection svgUrl={getSvgUrl(svgItems, 0, "/video-gif/construnction-bull-dozer.svg")} />
       <Suspense fallback={<ServicesSkeleton />}>
         <ServicesAsync svgUrl={getSvgUrl(svgItems, 1, "/video-gif/in-progress.svg")} />

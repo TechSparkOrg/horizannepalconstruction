@@ -54,6 +54,7 @@ export default async function DesignPage() {
     <>
       <h1 className="sr-only">{pageData?.title || "Design — Horizan Nepal"}</h1>
       <LdJson data={breadcrumbList("Design", "design")} />
+      <link rel="preload" as="image" href="/video-gif/Rumble.svg" fetchPriority="high" />
       <DesignHero />
       <Suspense fallback={
         <section className="bg-[#f8fafc] pt-16 sm:pt-24 pb-0 min-h-[500px] animate-pulse">

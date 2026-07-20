@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import ModelViewerBlock from "@/components/global_ui/model-viewer";
+import dynamic from "next/dynamic";
+const ModelViewerBlock = dynamic(() => import("@/components/global_ui/model-viewer"), {
+  loading: () => <div className="size-full flex items-center justify-center text-white/40 text-sm">Loading 3D viewer…</div>,
+});
 import { getModelBySlugSafe } from "@/api/services/model3d.service";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

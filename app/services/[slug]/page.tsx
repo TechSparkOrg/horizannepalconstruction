@@ -38,6 +38,7 @@ export default async function ServiceDetailPage({ params }: Props) {
   return (
     <>
       <h1 className="sr-only">{detail.name}</h1>
+      {detail.banner_images?.[0]?.url && <link rel="preload" as="image" href={detail.banner_images[0].url} />}
 
       {/* ── Hero ── */}
       <section className="relative min-h-[60vh] flex items-end overflow-hidden bg-[#0f2557]">

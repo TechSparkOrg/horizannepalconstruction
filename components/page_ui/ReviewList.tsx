@@ -216,8 +216,7 @@ export function ReviewList({ initialReviews, initialTotal, svgUrl1, svgUrl2, svg
       )}
 
       {/* ── Social + Form (single dark section) ── */}
-      {reviews.length > 0 && (
-        <section id="write-review" className="relative bg-[#0f2557] overflow-hidden">
+      <section id="write-review" className="relative bg-[#0f2557] overflow-hidden">
 
           {/* Row 1 — SocialQrGrid (left) · card-scoll-animation.svg (right) */}
           <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -390,8 +389,7 @@ export function ReviewList({ initialReviews, initialTotal, svgUrl1, svgUrl2, svg
             </div>
           </div>
 
-        </section>
-      )}
+      </section>
 
       {/* ── Remaining Reviews (Masonry) ── */}
       {rest.length > 0 && (

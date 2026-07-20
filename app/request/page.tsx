@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getCategoriesSafe } from "@/api/services/category.service";
-import { ConsultationForm } from "@/components/global_ui/ConsultationForm";
+import dynamic from "next/dynamic";
+const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then((m) => ({ default: m.ConsultationForm })));
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { breadcrumbList } from "@/lib/seo-utils";
 

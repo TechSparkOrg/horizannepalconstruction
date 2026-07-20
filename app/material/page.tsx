@@ -34,6 +34,7 @@ export default async function MaterialPage() {
     <>
       <LazyPlane src={getSvgUrl(page?.svg_items, 1, "/video-gif/Loading-Paperplane.svg")} />
       <h1 className="sr-only">{page?.title || "Construction Materials — Horizan Nepal"}</h1>
+      <link rel="preload" as="image" href={getSvgUrl(page?.svg_items, 0, "/video-gif/road-reparing.svg")} fetchPriority="high" />
 
       {/* ── Hero ── */}
       <section className="relative w-full bg-[#0f2557] overflow-hidden min-h-[68svh] sm:min-h-[72svh]">
