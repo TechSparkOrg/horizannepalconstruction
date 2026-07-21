@@ -19,7 +19,7 @@ interface BuildingPermitBundle {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const bundle = await getPageBundle<BuildingPermitBundle>("building-permit", "building-permit", { include: ["page"] });
+  const bundle = await getPageBundle<BuildingPermitBundle>("building-permit", "building-permit", { include: ["page", "permit", "faqs"] });
   const page = bundle.page;
   const url = `${siteUrl}/building-permit`;
   return {

@@ -15,7 +15,7 @@ interface HomeBundle {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const bundle = await getPageBundle<HomeBundle>("home", "home", { include: ["settings", "page", "services", "projects", "blogs", "faqs"], faq_page_size: 10 });
+  const bundle = await getPageBundle<HomeBundle>("home", "home", { include: ["page", "services", "projects", "blogs", "faqs"], faq_page_size: 10 });
   const { page } = bundle;
   const title = page?.meta_title || page?.title || "Horizan Nepal — Architecture, Engineering & Construction";
   const description = page?.meta_description || "Horizan Nepal — trusted architecture, engineering, and construction firm delivering innovative and sustainable designs across Nepal.";
@@ -28,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const bundle = await getPageBundle<HomeBundle>("home", "home", { include: ["settings", "page", "services", "projects", "blogs", "faqs"], faq_page_size: 10 });
+  const bundle = await getPageBundle<HomeBundle>("home", "home", { include: ["page", "services", "projects", "blogs", "faqs"], faq_page_size: 10 });
   const { page = null, services = [], projects = [], blogs = [], faqs = [] } = bundle;
   const svgItems = page?.svg_items;
 
