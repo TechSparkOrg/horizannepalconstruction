@@ -7,6 +7,8 @@ import Link from "next/link";
 import { getProjectsListSafe } from "@/api/services/project.service";
 import type { Project } from "@/api/types/project.types";
 import { ProjectCard, SkeletonCard } from "@/components/global_ui/ProjectCard";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 /* Rumble.svg internal animation is ~8s — sync card swap to that */
 const SVG_CYCLE_MS = 8000;
@@ -24,6 +26,7 @@ export function FeaturedProjects({
   const [batch, setBatch]               = useState(0);
   const [visible, setVisible]           = useState(true);
   const [cardsPerView, setCardsPerView] = useState(3);
+  const track = useTrackAction();
 
   useEffect(() => {
     if (initialProjects) return;
@@ -101,6 +104,7 @@ export function FeaturedProjects({
           </div>
           <Link prefetch={false}
             href="/project-details"
+            onClick={() => track(Events.PROJECT_CLICK, { slug: "view-all" })}
             className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-muted-foreground hover:text-brand-dark transition-colors focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2"
           >
             View all projects

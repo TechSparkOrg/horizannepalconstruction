@@ -7,6 +7,8 @@ import Image from "next/image";
 import { ReviewPublic } from "@/api/services/review.service";
 import type { Review } from "@/api/types/review.types";
 import { SocialQrGrid } from "@/components/global_ui/SocialQrGrid";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 function Stars({ value }: { value: number }) {
   return (
@@ -82,6 +84,7 @@ export function ReviewList({ initialReviews, initialTotal, svgUrl1, svgUrl2, svg
   const [total, setTotal] = useState(initialTotal);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const track = useTrackAction();
 
   // Inline form state
   const [formName, setFormName] = useState("");
@@ -119,6 +122,7 @@ export function ReviewList({ initialReviews, initialTotal, svgUrl1, svgUrl2, svg
       setFormRating(5);
       setFormText("");
       toast.success("Review submitted! It will appear after approval.");
+      track(Events.REVIEW_CREATED);
     } catch {
       toast.error("Failed to submit review. Please try again.");
     } finally {
@@ -418,7 +422,7 @@ export function ReviewList({ initialReviews, initialTotal, svgUrl1, svgUrl2, svg
         <div className="text-center py-10 bg-[#f5f7fb]">
           <button
             type="button"
-            onClick={loadMore}
+            onClick={() => { loadMore(); track(Events.REVIEW_LOAD_MORE); }}
             disabled={loading}
             className="inline-flex items-center gap-2 h-10 px-7 rounded-xl border border-[#e2e8f0] bg-white text-[#475569] font-semibold text-sm hover:border-[#0f2557] hover:text-[#0f2557] transition-colors disabled:opacity-50"
           >

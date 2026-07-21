@@ -1,9 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Calendar } from "lucide-react";
 import { CategoryBadge } from "@/components/global_ui/CategoryBadge";
 import { stripHtml } from "@/lib/extractTocItems";
 import type { BlogPost } from "@/api/types/blog.types";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { useTrackHover } from "@/hooks/useTrackHover";
+import { Events } from "@/lib/tracking";
 
 type BlogCardPost = Pick<BlogPost, "slug" | "title" | "image" | "category" | "date" | "content">;
 
@@ -28,13 +33,19 @@ function NoImage() {
 export function BlogCard({ post, variant = "default" }: BlogCardProps) {
   const category = post?.category ?? null;
   const description = post?.content ? stripHtml(post.content).slice(0, 180) : null;
+  const track = useTrackAction();
+  const hoverRef = useTrackHover<HTMLAnchorElement>(Events.BLOG_HOVER);
+
+  const handleBlogClick = () => track(Events.BLOG_CLICK, { slug: post?.slug, title: post?.title });
 
   // ── Featured ─────────────────────────────────────────────────────────────────
   if (variant === "featured") {
     return (
       <Link
         prefetch={false}
+        ref={variant === "featured" ? hoverRef : undefined}
         href={`/blog/${post?.slug}`}
+        onClick={handleBlogClick}
         className="group relative block w-full overflow-hidden rounded-2xl"
         style={{ aspectRatio: "21/8" }}
       >
@@ -97,6 +108,7 @@ export function BlogCard({ post, variant = "default" }: BlogCardProps) {
       <Link
         prefetch={false}
         href={`/blog/${post?.slug}`}
+        onClick={handleBlogClick}
         className="group relative block overflow-hidden rounded-xl"
         style={{ aspectRatio: "4/3" }}
       >
@@ -138,6 +150,7 @@ export function BlogCard({ post, variant = "default" }: BlogCardProps) {
     <Link
       prefetch={false}
       href={`/blog/${post?.slug}`}
+      onClick={handleBlogClick}
       className="group relative block overflow-hidden rounded-2xl"
       style={{ aspectRatio: "3/4" }}
     >

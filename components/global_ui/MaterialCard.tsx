@@ -1,8 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { stripHtml } from "@/lib/extractTocItems";
 import type { PublicMaterialItem } from "@/api/types/material.types";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { useTrackHover } from "@/hooks/useTrackHover";
+import { Events } from "@/lib/tracking";
 
 interface Props {
   item: PublicMaterialItem;
@@ -11,10 +16,14 @@ interface Props {
 export function MaterialCard({ item }: Props) {
   const image = item.banner_url || item.logo;
   const description = item.description ? stripHtml(item.description).slice(0, 120) : null;
+  const track = useTrackAction();
+  const hoverRef = useTrackHover<HTMLAnchorElement>(Events.MATERIAL_HOVER);
 
   return (
     <Link prefetch={false}
+      ref={hoverRef}
       href={`/material/${item.slug}`}
+      onClick={() => track(Events.MATERIAL_CLICK, { slug: item.slug, name: item.name })}
       className="group flex flex-col bg-white rounded-lg border border-[#e8edf5] overflow-hidden hover:border-[#cd2028] transition-colors duration-200"
     >
       <div className="relative h-[180px] overflow-hidden bg-[#e8edf5] shrink-0">

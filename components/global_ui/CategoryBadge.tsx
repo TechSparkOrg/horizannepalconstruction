@@ -1,6 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 interface CategoryBadgeProps {
   name: string;
@@ -10,11 +12,13 @@ interface CategoryBadgeProps {
 
 export function CategoryBadge({ name, slug, size = "sm" }: CategoryBadgeProps) {
   const router = useRouter();
+  const track = useTrackAction();
 
   const handleClick = (e: React.MouseEvent) => {
     if (!slug) return;
     e.stopPropagation();
     e.preventDefault();
+    track(Events.BLOG_CATEGORY_CLICK, { slug, name });
     router.push(`/blog?category=${slug}`);
   };
 

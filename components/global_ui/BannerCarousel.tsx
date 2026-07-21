@@ -3,6 +3,8 @@
 import { useState, useEffect, type ReactNode } from "react";
 import Image from "next/image";
 import type { MediaItem } from "@/api/types/media.types";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 interface Props {
   slug?: string;
@@ -17,6 +19,7 @@ interface Props {
 export function BannerCarousel({ children, overlay, carousel = true, className = "", imgClassName = "object-cover", initialBanners ,slug}: Props) {
   const banners = initialBanners ?? [];
   const [current, setCurrent] = useState(0);
+  const track = useTrackAction();
 
   const slides = banners.filter(b => b.url);
   const hasSlides = slides.length > 0;
@@ -64,7 +67,7 @@ export function BannerCarousel({ children, overlay, carousel = true, className =
             <button
               key={i}
               type="button"
-              onClick={() => setCurrent(i)}
+              onClick={() => { setCurrent(i); track(Events.BANNER_CLICK, { slide: i }); }}
               className={`flex items-center justify-center size-6 rounded-full transition-opacity duration-300 ${
                 i === current ? "" : "hover:opacity-60"
               }`}

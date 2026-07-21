@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { BlogCard } from "@/components/global_ui/BlogCard";
 import type { BlogPost } from "@/api/types/blog.types";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 interface CategoryItem {
   id: string;
@@ -21,6 +23,7 @@ export default function BlogGrid({ posts = [], categories = [] }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [active, setActive] = useState<string | null>(null);
+  const track = useTrackAction();
 
   useEffect(() => {
     let mounted = true;
@@ -34,12 +37,13 @@ export default function BlogGrid({ posts = [], categories = [] }: Props) {
 
   const handleCategoryClick = (id: string | null) => {
     setActive(id);
+    const cat = id ? categories.find((c) => c.id === id) : null;
     if (id) {
-      const cat = categories.find((c) => c.id === id);
       router.push(cat ? `/blog?category=${cat.slug}` : "/blog", { scroll: false });
     } else {
       router.push("/blog", { scroll: false });
     }
+    track(Events.BLOG_CATEGORY_CLICK, { category: cat?.name || "All" });
   };
 
   const filtered = active

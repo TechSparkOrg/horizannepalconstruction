@@ -2,6 +2,8 @@
 
 import { MessageCircle } from "lucide-react";
 import { useSettings } from "@/stores/settings-store";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 const MESSAGE = "Hello! I'd like to know more about Horizon Nepal's services.";
 
@@ -9,12 +11,14 @@ export function WhatsAppButton() {
   const contactInfo = useSettings((s) => s.settings?.contact_info);
   const waNumber = contactInfo?.whatsappNumber || contactInfo?.phone?.replace(/[^0-9]/g, "") || "";
   const href = waNumber ? `https://wa.me/${waNumber}?text=${encodeURIComponent(MESSAGE)}` : "#";
+  const track = useTrackAction();
 
   if (!waNumber) return null;
 
   return (
     <a
       href={href}
+      onClick={() => track(Events.WHATSAPP_CLICK)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"

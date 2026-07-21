@@ -10,6 +10,8 @@ import { useSettings } from "@/stores/settings-store";
 import type { Category } from "@/api/types/category.types";
 import type { LocationData } from "@/components/global_ui/Googlemap";
 import Image from "next/image";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 const GoogleMapAddress = dynamic(() => import("@/components/global_ui/Googlemap"), {
   ssr: false,
@@ -32,6 +34,7 @@ const trust = [
 export function ConsultationForm({ initialCategories, headerSvgUrl, emailSvgUrl }: { initialCategories?: Category[]; headerSvgUrl?: string; emailSvgUrl?: string }) {
   const contactInfo = useSettings((s) => s.settings?.contact_info);
   const [categories, setCategories] = useState<Category[]>(initialCategories ?? []);
+  const track = useTrackAction();
 
   useEffect(() => {
     if (initialCategories) return;
@@ -76,6 +79,7 @@ export function ConsultationForm({ initialCategories, headerSvgUrl, emailSvgUrl 
       );
       setSubmitting2(true);
       setSubmitCount((c) => c + 1);
+      track(Events.CONSULTATION_CREATED);
     } finally {
       setSubmitting(false);
     }

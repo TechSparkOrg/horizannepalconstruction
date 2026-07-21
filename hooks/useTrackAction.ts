@@ -1,16 +1,11 @@
 "use client"
 
 import { useCallback } from "react"
+import { trackEvent, type EventName } from "@/lib/tracking"
 
 export function useTrackAction() {
-  const track = useCallback((action: string, data?: Record<string, unknown>) => {
-    if (typeof window !== "undefined" && "gtag" in window) {
-      ;(window as Record<string, unknown> & { gtag?: (...args: unknown[]) => void }).gtag?.("event", action, data)
-    }
-  }, [])
-  return track
-}
-
-export function AnalyticsTracker() {
-  return null
+  return useCallback(
+    (action: EventName, data?: Record<string, unknown>) => trackEvent(action, data),
+    [],
+  )
 }
