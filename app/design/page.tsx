@@ -21,7 +21,7 @@ interface DesignBundle {
 const SLUG = "design"
 
 export async function generateMetadata(): Promise<Metadata> {
-  const bundle = await getPageBundle<DesignBundle>(SLUG, "design")
+  const bundle = await getPageBundle<DesignBundle>(SLUG, "design", { include: ["page", "models", "categories", "faqs"] })
   const page = bundle.page
   const base = pageMetadataBase(page, SLUG)
   return {
@@ -45,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function DesignPage() {
-  const bundle = await getPageBundle<DesignBundle>(SLUG, "design")
+  const bundle = await getPageBundle<DesignBundle>(SLUG, "design", { include: ["page", "models", "categories", "faqs"] })
   const pageData = bundle.page ?? null
   const categories = bundle.categories?.results ?? []
 

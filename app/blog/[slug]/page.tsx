@@ -1,17 +1,11 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getPageBundle } from "@/api/services/page-bundle.service";
+import { getBlogBySlugSafe } from "@/api/services/blog.service";
+import { getFaqsByGroupSlugSafe } from "@/api/services/faq.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import type { MediaItem } from "@/api/types/media.types";
-import type { BlogPost } from "@/api/types/blog.types";
-import type { FaqItem } from "@/api/types/faq.types";
 import { BlogPostInner } from "./_content";
-
-interface BlogDetailBundle {
-  blog_detail: BlogPost | null;
-  faqs: FaqItem[];
-}
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -19,8 +13,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const bundle = await getPageBundle<BlogDetailBundle>(slug, "blog/[slug]");
-  const post = bundle.blog_detail;
+  const post = await getBlogBySlugSafe(slug);
   if (!post) return { title: "Blog Not Found" };
   const description = post.meta_description || stripHtml(post.content || "").slice(0, 160) || post.title;
   return {
@@ -36,11 +29,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-
   const { slug } = await params;
-  const bundle = await getPageBundle<BlogDetailBundle>(slug, "blog/[slug]");
-  const post = bundle.blog_detail;
+  const post = await getBlogBySlugSafe(slug);
   if (!post) notFound();
+  
+  // fetch FAQs if the post has a FAQ group
+  let faqs: import("@/api/types/faq.types").FaqItem[] = [];
+  if (post.faq_group_slug) {
+    faqs = await getFaqsByGroupSlugSafe(post.faq_group_slug);
+  }
 
   const bannerImages: MediaItem[] = (post.banner_images ?? []).map((b) => ({
     id: b.id, url: b.url, alt: post.title, title: b.name,
@@ -67,7 +64,7 @@ export default async function BlogPostPage({ params }: Props) {
       </section>
 
       <Suspense fallback={<div className="py-16 bg-white" style={{ minHeight: 800 }} />}>
-        <BlogPostInner post={post} slug={slug} faqs={bundle.faqs} />
+        <BlogPostInner post={post} slug={slug} faqs={faqs} />
       </Suspense>
     </>
   );

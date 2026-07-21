@@ -21,7 +21,7 @@ interface ProjectsBundle {
 const SLUG = "project-details";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const bundle = await getPageBundle<ProjectsBundle>(SLUG, "project-details");
+  const bundle = await getPageBundle<ProjectsBundle>(SLUG, "project-details", { include: ["page", "projects", "faqs"] });
   const page = bundle.page;
   return {
     title: page?.meta_title || "Projects | Horizan Nepal",
@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProjectsPage() {
-  const bundle = await getPageBundle<ProjectsBundle>(SLUG, "project-details");
+  const bundle = await getPageBundle<ProjectsBundle>(SLUG, "project-details", { include: ["page", "projects", "faqs"] });
   const { page = null, projects = [], faqs = [] } = bundle;
 
   return (

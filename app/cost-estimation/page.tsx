@@ -16,7 +16,7 @@ interface CostEstimationBundle {
 const SLUG = "cost-estimation"
 
 export async function generateMetadata(): Promise<Metadata> {
-  const bundle = await getPageBundle<CostEstimationBundle>(SLUG, "cost-estimation")
+  const bundle = await getPageBundle<CostEstimationBundle>(SLUG, "cost-estimation", { include: ["page"] })
   const page = bundle.page
   const base = pageMetadataBase(page, SLUG)
   return {
@@ -40,7 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CostEstimationPage() {
-  const bundle = await getPageBundle<CostEstimationBundle>(SLUG, "cost-estimation")
+  const bundle = await getPageBundle<CostEstimationBundle>(SLUG, "cost-estimation", { include: ["page"] })
   const page = bundle.page
 
   return (

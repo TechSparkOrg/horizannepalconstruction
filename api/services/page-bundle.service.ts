@@ -30,16 +30,10 @@ export type BundleResource =
 export type PageType =
   | "home"
   | "about"
-  | "services/[slug]"
-  | "material/[slug]"
   | "material"
-  | "blog/[slug]"
   | "blog"
-  | "unit-convert/[slug]"
   | "unit-convert"
-  | "project-details/[slug]"
   | "project-details"
-  | "project-details/category/[slug]"
   | "design"
   | "building-permit"
   | "vastu-shastra"
@@ -49,13 +43,18 @@ export type PageType =
   | "emi-calculator"
   | "reviews"
   | "request"
-  | "models/[slug]"
 
 export interface BundleOverrides {
+  include?: BundleResource[]
   faq_group_slug?: string
   faq_page_size?: number
   blog_limit?: number
+  blog_page?: number
+  blog_page_size?: number
   project_limit?: number
+  project_page?: number
+  project_page_size?: number
+  faq_page?: number
   project_category?: string
   material_page?: number
   material_page_size?: number
@@ -74,7 +73,11 @@ export async function getPageBundle<T = Record<string, unknown>>(
   try {
     const params = new URLSearchParams({ page_type: pageType })
     if (overrides) {
-      for (const [key, value] of Object.entries(overrides)) {
+      const { include, ...rest } = overrides
+      if (include && include.length > 0) {
+        params.set("include", include.join(","))
+      }
+      for (const [key, value] of Object.entries(rest)) {
         if (value !== undefined && value !== null) {
           params.set(key, String(value))
         }

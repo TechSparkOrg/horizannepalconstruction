@@ -22,7 +22,7 @@ interface MaterialBundle {
 const SLUG = "material";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const bundle = await getPageBundle<MaterialBundle>(SLUG, "material");
+  const bundle = await getPageBundle<MaterialBundle>(SLUG, "material", { include: ["page", "vendors", "materials", "faqs"] });
   const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
@@ -41,7 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MaterialPage() {
-  const bundle = await getPageBundle<MaterialBundle>(SLUG, "material");
+  const bundle = await getPageBundle<MaterialBundle>(SLUG, "material", { include: ["page", "vendors", "materials", "faqs"] });
   const { page = null, vendors = { results: [] }, materials = { results: [], count: 0 }, faqs = [] } = bundle;
 
   return (

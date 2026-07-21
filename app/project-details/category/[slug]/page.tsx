@@ -4,19 +4,12 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { getPageBundle } from "@/api/services/page-bundle.service";
+import { getProjectCategoryDetailSafe } from "@/api/services/category.service";
+import { getProjectsByCategorySafe } from "@/api/services/project.service";
+import { getFaqsByGroupSlugSafe } from "@/api/services/faq.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
 import { ProjectCategoryDetailInner } from "./_content";
-import type { ProjectCategoryDetail } from "@/api/types/category.types";
-import type { Project } from "@/api/types/project.types";
-import type { FaqItem } from "@/api/types/faq.types";
-
-interface ProjectCategoryBundle {
-  project_category: ProjectCategoryDetail | null;
-  projects: Project[];
-  faqs: FaqItem[];
-}
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -26,8 +19,7 @@ import { siteUrl } from "@/lib/constants";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const bundle = await getPageBundle<ProjectCategoryBundle>(slug, "project-details/category/[slug]");
-  const detail = bundle.project_category;
+  const detail = await getProjectCategoryDetailSafe(slug);
   if (!detail) return {};
   const url = `${siteUrl}/project-details/category/${slug}`;
   const desc = detail.meta_description || stripHtml(detail.description).substring(0, 160);
@@ -48,12 +40,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProjectCategoryDetailPage({ params }: Props) {
-
   const { slug } = await params;
-  const bundle = await getPageBundle<ProjectCategoryBundle>(slug, "project-details/category/[slug]");
-  const detail = bundle.project_category;
+  const detail = await getProjectCategoryDetailSafe(slug);
   if (!detail) notFound();
 
+  const projects = await getProjectsByCategorySafe(slug);
+  let faqs: import("@/api/types/faq.types").FaqItem[] = [];
+  if (detail.faq_group_slug) {
+    faqs = await getFaqsByGroupSlugSafe(detail.faq_group_slug);
+  }
+
+  const bundle = { projects, faqs };
   const heroImg = detail.banner_images?.[0]?.url || detail.image;
 
   return (

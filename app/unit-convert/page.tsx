@@ -18,7 +18,7 @@ interface UnitConvertBundle {
 const SLUG = "unit-convert";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const bundle = await getPageBundle<UnitConvertBundle>(SLUG, "unit-convert");
+  const bundle = await getPageBundle<UnitConvertBundle>(SLUG, "unit-convert", { include: ["page", "faqs"] });
   const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
@@ -42,7 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function UnitConvertPage() {
-  const bundle = await getPageBundle<UnitConvertBundle>(SLUG, "unit-convert");
+  const bundle = await getPageBundle<UnitConvertBundle>(SLUG, "unit-convert", { include: ["page", "faqs"] });
   const { page = null, faqs = [] } = bundle;
 
   return (

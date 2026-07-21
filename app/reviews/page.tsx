@@ -14,7 +14,7 @@ interface ReviewsBundle {
 const SLUG = "reviews";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const bundle = await getPageBundle<ReviewsBundle>(SLUG, "reviews");
+  const bundle = await getPageBundle<ReviewsBundle>(SLUG, "reviews", { include: ["page", "reviews"] });
   const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ReviewsPage() {
-  const bundle = await getPageBundle<ReviewsBundle>(SLUG, "reviews");
+  const bundle = await getPageBundle<ReviewsBundle>(SLUG, "reviews", { include: ["page", "reviews"] });
   const { page = null, reviews = { results: [], count: 0 } } = bundle;
 
   return (

@@ -11,7 +11,7 @@ const SLUG = "about";
 interface AboutBundle {
   page: import("@/api/types/page.types").Page | null
   services: import("@/api/types/category.types").ServiceCategory[]
-  team: import("@/api/types/team.types").TeamMember[]
+  team: { results: import("@/api/types/team.types").TeamMember[] }
   vendors: { results: import("@/api/types/material.types").PublicVendor[] }
   banks: import("@/api/types/emi.types").EmiBank[]
   reviews: { results: import("@/api/types/review.types").Review[] }
@@ -20,7 +20,7 @@ interface AboutBundle {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const bundle = await getPageBundle<AboutBundle>(SLUG, "about");
+  const bundle = await getPageBundle<AboutBundle>(SLUG, "about", { include: ["page", "services", "team", "vendors", "banks", "reviews", "categories", "faqs"] });
   const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
@@ -39,8 +39,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const bundle = await getPageBundle<AboutBundle>(SLUG, "about");
-  const { page = null, services = [], team = [], vendors = { results: [] }, banks = [], reviews = { results: [] }, categories = { results: [] }, faqs = [] } = bundle;
+  const bundle = await getPageBundle<AboutBundle>(SLUG, "about", { include: ["page", "services", "team", "vendors", "banks", "reviews", "categories", "faqs"] });
+  const { page = null, services = [], team = { results: [] }, vendors = { results: [] }, banks = [], reviews = { results: [] }, categories = { results: [] }, faqs = [] } = bundle;
   const gallery = page?.banner_images ?? [];
 
   return (

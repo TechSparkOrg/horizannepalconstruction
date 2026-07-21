@@ -20,7 +20,7 @@ interface BlogBundle {
 const SLUG = "blog";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const bundle = await getPageBundle<BlogBundle>(SLUG, "blog");
+  const bundle = await getPageBundle<BlogBundle>(SLUG, "blog", { include: ["page", "blogs", "categories", "faqs"] });
   const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BlogPage() {
-  const bundle = await getPageBundle<BlogBundle>(SLUG, "blog");
+  const bundle = await getPageBundle<BlogBundle>(SLUG, "blog", { include: ["page", "blogs", "categories", "faqs"] });
   const { page = null, blogs = [], categories = { results: [] }, faqs = [] } = bundle;
 
   return (

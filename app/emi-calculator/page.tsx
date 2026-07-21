@@ -59,7 +59,7 @@ function EmiContentSkeleton() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const bundle = await getPageBundle<EmiBundle>(SLUG, "emi-calculator");
+  const bundle = await getPageBundle<EmiBundle>(SLUG, "emi-calculator", { include: ["page", "banks"] });
   const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
@@ -83,7 +83,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function EmiCalculatorPage() {
-  const bundle = await getPageBundle<EmiBundle>(SLUG, "emi-calculator");
+  const bundle = await getPageBundle<EmiBundle>(SLUG, "emi-calculator", { include: ["page", "banks"] });
   const page = bundle.page;
 
   return (

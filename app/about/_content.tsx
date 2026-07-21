@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import type { Page, PageSvgItem } from "@/api/types/page.types";
@@ -28,7 +27,7 @@ interface Props {
   gallery: MediaItem[];
   svgItems?: PageSvgItem[];
   services: ServiceCategory[];
-  team: TeamMember[];
+  team: { results: TeamMember[] };
   vendors: { results: PublicVendor[] };
   banks: EmiBank[];
   reviews: { results: Review[] };
@@ -51,7 +50,7 @@ export function AboutContent({ page, gallery, svgItems, services, team, vendors,
         <ServicesSection initialServices={services} svgUrl={getSvgUrl(svgItems, 0, "/video-gif/in-progress.svg")} />
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-28 bg-[#f8fafc]")}>
-        <TeamSection members={team} svgUrl={getSvgUrl(svgItems, 1, "/video-gif/work-team.svg")} />
+        <TeamSection members={team.results ?? []} svgUrl={getSvgUrl(svgItems, 1, "/video-gif/work-team.svg")} />
       </ViewportSection>
       <ViewportSection fallback={F("py-16 sm:py-24 bg-white")}>
         <PartnersSection initialVendors={vendors.results ?? []} initialBanks={banks} svgUrl={getSvgUrl(svgItems, 2, "/video-gif/Business.svg")} />

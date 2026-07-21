@@ -38,6 +38,16 @@ export async function getFaqsSafeRaw(params?: Record<string, string | number>): 
   }
 }
 
+export async function getFaqsByGroupSlugSafe(groupSlug: string, pageSize = 20): Promise<FaqItem[]> {
+  try {
+    const res = await api.get<PaginatedResponse<FaqItem>>(`/faq-items/?group__slug=${groupSlug}&page_size=${pageSize}`);
+    return res.results ?? [];
+  } catch (err) {
+    console.error("Failed to fetch FAQs by group:", err);
+    return [];
+  }
+}
+
 export async function getFaqsSafe(params?: Record<string, string | number>): Promise<{ q: string; a: string }[]> {
   try {
     const res = await getFaqs(params);

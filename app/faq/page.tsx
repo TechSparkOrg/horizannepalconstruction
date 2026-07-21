@@ -21,7 +21,7 @@ interface FaqBundle {
 const SLUG = "faq";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const bundle = await getPageBundle<FaqBundle>(SLUG, "faq");
+  const bundle = await getPageBundle<FaqBundle>(SLUG, "faq", { include: ["page", "faq_groups"] });
   const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
@@ -40,7 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FAQPage() {
-  const bundle = await getPageBundle<FaqBundle>(SLUG, "faq");
+  const bundle = await getPageBundle<FaqBundle>(SLUG, "faq", { include: ["page", "faq_groups"] });
   const { page = null, faq_groups = [] } = bundle;
 
   return (

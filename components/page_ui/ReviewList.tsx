@@ -434,12 +434,6 @@ export function ReviewList({ initialReviews, initialTotal, svgUrl1, svgUrl2, svg
             <Quote className="size-12 text-[#cbd5e1] mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-[#475569]">No reviews yet</h2>
             <p className="text-sm text-[#64748b] mt-1">Be the first to share your experience!</p>
-            <a
-              href="#write-review"
-              className="mt-6 inline-flex items-center gap-2 h-10 px-6 bg-[#0f2557] text-white font-semibold text-sm rounded-xl hover:bg-[#1e3a8a] transition-colors"
-            >
-              Write a Review <ArrowRight className="size-4" />
-            </a>
           </div>
         </section>
       )}

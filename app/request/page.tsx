@@ -37,7 +37,7 @@ const steps = [
 ];
 
 export default async function RequestPage() {
-  const bundle = await getPageBundle<RequestBundle>("request", "request");
+  const bundle = await getPageBundle<RequestBundle>("request", "request", { include: ["categories"] });
   const categories = bundle.categories?.results ?? [];
 
   return (

@@ -1,19 +1,14 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getPageBundle } from "@/api/services/page-bundle.service";
+import { getUnitConversionBySlugSafe } from "@/api/services/unit-converter-public.service";
+import { getFaqsByGroupSlugSafe } from "@/api/services/faq.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
 import type { MediaItem } from "@/api/types/media.types";
 import type { PublicUnitConversionDetail } from "@/api/types/unit-converter.types";
-import type { FaqItem } from "@/api/types/faq.types";
 import { siteUrl } from "@/lib/constants";
 import { UnitConvertDetailContent } from "./_content";
-
-interface UnitConvertDetailBundle {
-  unit_conversion: PublicUnitConversionDetail | null;
-  faqs: FaqItem[];
-}
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -28,8 +23,7 @@ function getMeta(item: PublicUnitConversionDetail, slug: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const bundle = await getPageBundle<UnitConvertDetailBundle>(slug, "unit-convert/[slug]");
-  const item = bundle.unit_conversion;
+  const item = await getUnitConversionBySlugSafe(slug);
   if (!item) return { title: "Not Found", robots: { index: false } };
 
   const { url, description, ogImage } = getMeta(item, slug);
@@ -57,9 +51,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function UnitConvertDetailPage({ params }: Props) {
 
   const { slug } = await params;
-  const bundle = await getPageBundle<UnitConvertDetailBundle>(slug, "unit-convert/[slug]");
-  const item = bundle.unit_conversion;
+  const item = await getUnitConversionBySlugSafe(slug);
   if (!item) notFound();
+
+  const faqs = item.faq_group_slug ? await getFaqsByGroupSlugSafe(item.faq_group_slug) : [];
 
   const { url } = getMeta(item, slug);
 
@@ -117,7 +112,7 @@ export default async function UnitConvertDetailPage({ params }: Props) {
       </section>
 
       <Suspense fallback={<div className="py-16 bg-white" style={{ minHeight: 1050 }} />}>
-        <UnitConvertDetailContent item={item} faqs={bundle.faqs} />
+        <UnitConvertDetailContent item={item} faqs={faqs} />
       </Suspense>
     </>
   );

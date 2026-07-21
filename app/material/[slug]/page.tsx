@@ -2,21 +2,16 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { getPageBundle } from "@/api/services/page-bundle.service";
+import { getMaterialBySlugSafe } from "@/api/services/material-public.service";
+import { getFaqsByGroupSlugSafe } from "@/api/services/faq.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
 import type { MediaItem } from "@/api/types/media.types";
 import type { PublicMaterialDetail } from "@/api/types/material.types";
-import type { FaqItem } from "@/api/types/faq.types";
 import { MaterialDetailContent } from "./_content";
 
 import { siteUrl } from "@/lib/constants";
-
-interface MaterialDetailBundle {
-  material_detail: PublicMaterialDetail;
-  faqs: FaqItem[];
-}
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -32,8 +27,7 @@ function getMeta(item: PublicMaterialDetail, slug: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const bundle = await getPageBundle<MaterialDetailBundle>(slug, "material/[slug]");
-  const item = bundle.material_detail;
+  const item = await getMaterialBySlugSafe(slug);
   if (!item) return { title: "Material Not Found" };
 
   const { url, description, ogImage } = getMeta(item, slug);
@@ -60,11 +54,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function MaterialDetailPage({ params }: Props) {
-
   const { slug } = await params;
-  const bundle = await getPageBundle<MaterialDetailBundle>(slug, "material/[slug]");
-  const item = bundle.material_detail;
+  const item = await getMaterialBySlugSafe(slug);
   if (!item) notFound();
+
+  let faqs: import("@/api/types/faq.types").FaqItem[] = [];
+  if (item.faq_group_slug) {
+    faqs = await getFaqsByGroupSlugSafe(item.faq_group_slug);
+  }
 
   const { url, description, ogImage } = getMeta(item, slug);
 
@@ -143,7 +140,7 @@ export default async function MaterialDetailPage({ params }: Props) {
       </section>
 
       <Suspense fallback={<div className="py-16 bg-white" style={{ minHeight: 1200 }} />}>
-        <MaterialDetailContent item={item} faqs={bundle.faqs} />
+        <MaterialDetailContent item={item} faqs={faqs} />
       </Suspense>
     </>
   );

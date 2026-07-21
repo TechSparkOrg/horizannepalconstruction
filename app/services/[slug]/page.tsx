@@ -2,21 +2,16 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { getPageBundle } from "@/api/services/page-bundle.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { siteUrl } from "@/lib/constants";
+import { getServiceCategoryDetailSafe } from "@/api/services/category.service";
+import { getBlogsByCategorySafe } from "@/api/services/blog.service";
+import { getProjectsByCategorySafe } from "@/api/services/project.service";
+import { getFaqsByGroupSlugSafe } from "@/api/services/faq.service";
 import { ServiceDetailInner } from "./_content";
 import type { ServiceCategoryDetail } from "@/api/types/category.types";
 import type { BlogPost } from "@/api/types/blog.types";
 import type { Project } from "@/api/types/project.types";
-import type { FaqItem } from "@/api/types/faq.types";
-
-interface ServiceDetailBundle {
-  service_detail: ServiceCategoryDetail;
-  blog_categories: Record<string, BlogPost[]>;
-  projects_by_category: Record<string, Project[]>;
-  faqs: FaqItem[];
-}
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -24,8 +19,7 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const bundle = await getPageBundle<ServiceDetailBundle>(slug, "services/[slug]");
-  const detail = bundle.service_detail;
+  const detail = await getServiceCategoryDetailSafe(slug);
   if (!detail) return {};
   return {
     title: detail.meta_title || `${detail.name} | Horizan Nepal`,
@@ -42,11 +36,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ServiceDetailPage({ params }: Props) {
-
   const { slug } = await params;
-  const bundle = await getPageBundle<ServiceDetailBundle>(slug, "services/[slug]");
-  const detail = bundle.service_detail;
+  const detail = await getServiceCategoryDetailSafe(slug);
   if (!detail) notFound();
+
+  const [blog_categories, projects_by_category, faqs] = await Promise.all([
+    fetchGroupedByCategory(detail.blog_categories, getBlogsByCategorySafe),
+    fetchGroupedByCategory(detail.project_categories, getProjectsByCategorySafe),
+    detail.faq_group_slug ? getFaqsByGroupSlugSafe(detail.faq_group_slug) : Promise.resolve([] as import("@/api/types/faq.types").FaqItem[]),
+  ]);
+
+  const bundle = { blog_categories, projects_by_category, faqs };
 
   return (
     <>
@@ -77,4 +77,17 @@ export default async function ServiceDetailPage({ params }: Props) {
       </Suspense>
     </>
   );
+}
+
+async function fetchGroupedByCategory<T>(
+  cats: { name: string; slug: string }[] | undefined,
+  fetcher: (slug: string) => Promise<T[]>,
+): Promise<Record<string, T[]>> {
+  if (!cats || cats.length === 0) return {};
+  const results = await Promise.all(cats.map((c) => fetcher(c.slug)));
+  const grouped: Record<string, T[]> = {};
+  cats.forEach((c, i) => {
+    grouped[c.slug] = results[i];
+  });
+  return grouped;
 }

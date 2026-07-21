@@ -18,12 +18,10 @@ interface BuildingPermitBundle {
   faqs: FaqItem[];
 }
 
-const SLUG = "building-permit";
-
 export async function generateMetadata(): Promise<Metadata> {
-  const bundle = await getPageBundle<BuildingPermitBundle>(SLUG, "building-permit");
+  const bundle = await getPageBundle<BuildingPermitBundle>("building-permit", "building-permit", { include: ["page"] });
   const page = bundle.page;
-  const url = `${siteUrl}/${SLUG}`;
+  const url = `${siteUrl}/building-permit`;
   return {
     title: page?.meta_title || "Building Permit Assistant | Horizan Nepal",
     description: page?.meta_description || "Navigate Nepal's building permit process with confidence. Step-by-step workflow guide, document checklist, regulations, and municipality directory for construction permits.",
@@ -41,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function BuildingPermitPage() {
 
-  const bundle = await getPageBundle<BuildingPermitBundle>(SLUG, "building-permit");
+  const bundle = await getPageBundle<BuildingPermitBundle>("building-permit", "building-permit", { include: ["page", "permit", "faqs"] });
   const page = bundle.page;
   const config = bundle.permit;
   if (!config) notFound();

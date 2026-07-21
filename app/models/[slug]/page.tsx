@@ -6,28 +6,21 @@ import dynamic from "next/dynamic";
 const ModelViewerBlock = dynamic(() => import("@/components/global_ui/model-viewer"), {
   loading: () => <div className="size-full flex items-center justify-center text-white/40 text-sm">Loading 3D viewer…</div>,
 });
-import { getPageBundle } from "@/api/services/page-bundle.service";
-import type { Model3D } from "@/api/types/model3d.types";
-
-interface ModelDetailBundle {
-  model_detail: Model3D | null;
-}
+import { getModelBySlugSafe } from "@/api/services/model3d.service";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const bundle = await getPageBundle<ModelDetailBundle>(slug, "models/[slug]");
-  const model = bundle.model_detail;
-  if (!model) return { title: "Model Not Found" };
+  const model = await getModelBySlugSafe(slug);
+  if (!model) return { title: "3D Model Not Found" };
   return {
-    title: `${model.title} | 3D Model`,
+    title: model.title || "3D Model | Horizan Nepal",
     description: model.description || "",
   };
 }
 
-export default async function ModelViewerPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ModelDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const bundle = await getPageBundle<ModelDetailBundle>(slug, "models/[slug]");
-  const model = bundle.model_detail;
+  const model = await getModelBySlugSafe(slug);
   if (!model) notFound();
 
   return (

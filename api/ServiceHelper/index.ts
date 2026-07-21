@@ -18,7 +18,7 @@ async function get<T>(path: string, timeoutMs = 5000): Promise<T> {
   const timeout = setTimeout(() => controller.abort(), timeoutMs)
   const promise = (async () => {
     try {
-      const res = await fetch(url, { signal: controller.signal })
+      const res = await fetch(url, { signal: controller.signal, next: { revalidate: 60 } })
       clearTimeout(timeout)
       if (!res.ok) {
         const err = await parseApiError(res)

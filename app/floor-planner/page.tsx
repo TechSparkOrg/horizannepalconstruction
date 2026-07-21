@@ -26,7 +26,7 @@ const benefits = [
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
-  const bundle = await getPageBundle<FloorPlannerBundle>(SLUG, "floor-planner");
+  const bundle = await getPageBundle<FloorPlannerBundle>(SLUG, "floor-planner", { include: ["page", "faqs"] });
   const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
@@ -50,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FloorPlannerPage() {
-  const bundle = await getPageBundle<FloorPlannerBundle>(SLUG, "floor-planner");
+  const bundle = await getPageBundle<FloorPlannerBundle>(SLUG, "floor-planner", { include: ["page", "faqs"] });
   const { page = null, faqs = [] } = bundle;
 
   return (
