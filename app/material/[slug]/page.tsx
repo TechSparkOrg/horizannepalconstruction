@@ -3,10 +3,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { getMaterialBySlugSafe } from "@/api/services/material-public.service";
+import { getFaqsByGroupSlugSafe } from "@/api/services/faq.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
-import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import type { MediaItem } from "@/api/types/media.types";
 import type { PublicMaterialDetail } from "@/api/types/material.types";
 import { MaterialDetailContent } from "./_content";
@@ -54,10 +54,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function MaterialDetailPage({ params }: Props) {
-
   const { slug } = await params;
   const item = await getMaterialBySlugSafe(slug);
   if (!item) notFound();
+
+  let faqs: import("@/api/types/faq.types").FaqItem[] = [];
+  if (item.faq_group_slug) {
+    faqs = await getFaqsByGroupSlugSafe(item.faq_group_slug);
+  }
 
   const { url, description, ogImage } = getMeta(item, slug);
 
@@ -91,16 +95,10 @@ export default async function MaterialDetailPage({ params }: Props) {
       <LazyAiBot />
       <LdJson data={productSchema} />
       <h1 className="sr-only">{item.name}</h1>
+      {bannerImages.map((b) => b.url ? <link key={b.id} rel="preload" as="image" href={b.url} /> : null)}
 
       {/* ── Hero ── */}
       <section className="relative w-full bg-[#0f2557] overflow-hidden min-h-[62svh] sm:min-h-[68svh] flex items-end">
-        <BannerCarousel
-          initialBanners={bannerImages}
-          slug={slug}
-          overlay="linear-gradient(to top, rgba(15,37,87,0.95) 0%, rgba(15,37,87,0.55) 40%, rgba(15,37,87,0.15) 100%)"
-          carousel={bannerImages.length > 1}
-          imgClassName="object-cover"
-        />
         <div className="absolute top-0 inset-x-0 h-1 bg-[#cd2028] z-20" aria-hidden="true" />
 
         <div className="relative z-20 w-full max-w-[1200px] mx-auto px-4 sm:px-8 pb-12 sm:pb-16 pt-28">
@@ -142,7 +140,7 @@ export default async function MaterialDetailPage({ params }: Props) {
       </section>
 
       <Suspense fallback={<div className="py-16 bg-white" style={{ minHeight: 1200 }} />}>
-        <MaterialDetailContent item={item} />
+        <MaterialDetailContent item={item} faqs={faqs} />
       </Suspense>
     </>
   );

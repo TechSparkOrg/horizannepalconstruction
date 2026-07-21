@@ -3,12 +3,15 @@
 import { useState } from "react";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { ConsultationPublic } from "@/api/services/consultation.service";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 export function QuestionForm() {
   const [question, setQuestion]     = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted]   = useState(false);
   const [submitCount, setSubmitCount] = useState(0);
+  const track = useTrackAction();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,6 +21,7 @@ export function QuestionForm() {
       await ConsultationPublic.submit({ name: "Visitor", phone: "N/A", description: question.trim() });
       setSubmitted(true);
       setSubmitCount((c) => c + 1);
+      track(Events.QUESTION_CREATED);
     } finally {
       setSubmitting(false);
     }

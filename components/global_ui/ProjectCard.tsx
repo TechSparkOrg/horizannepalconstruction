@@ -5,6 +5,9 @@ import Image from "next/image";
 import { ArrowUpRight, MapPin, CheckCircle2, Clock3, PauseCircle } from "lucide-react";
 import type { Project } from "@/api/types/project.types";
 import { getProjectStatus } from "@/lib/project-status";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { useTrackHover } from "@/hooks/useTrackHover";
+import { Events } from "@/lib/tracking";
 
 const statusStyle: Record<string, { icon: React.ElementType; cls: string }> = {
   completed: { icon: CheckCircle2, cls: "text-emerald-700 bg-emerald-50" },
@@ -17,11 +20,15 @@ export function ProjectCard({ p, delay }: { p: Project; delay: number }) {
   const { icon: StatusIcon, cls } = statusStyle[status.key];
   const label = status.label;
   const imgSrc = p.thumbnail || p.images?.[0] || p.banner_images?.[0]?.url || "";
+  const track = useTrackAction();
+  const hoverRef = useTrackHover<HTMLAnchorElement>(Events.PROJECT_HOVER);
 
   return (
     <Link
       prefetch={false}
+      ref={hoverRef}
       href={`/project-details/${p.slug}`}
+      onClick={() => track(Events.PROJECT_CLICK, { slug: p.slug, title: p.title })}
       className="group relative flex flex-col bg-white rounded-2xl overflow-hidden border border-[#e2e8f0] hover:border-[#0f2557]/25 hover:shadow-[0_12px_30px_rgba(15,37,87,0.08)] transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#cd2028] focus-visible:ring-offset-2"
       style={{ animation: `card-enter 0.5s ease-out ${delay}ms both` }}
       aria-label={`View project: ${p.title}`}

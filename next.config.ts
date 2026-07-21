@@ -21,7 +21,7 @@ const config: NextConfig = {
 
   experimental: {
     inlineCss: true,
-    staleTimes: { dynamic: 30, static: 180 },
+    staleTimes: { dynamic: 60, static: 180 },
     staticGenerationMaxConcurrency: 8,
   },
 

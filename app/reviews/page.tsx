@@ -1,12 +1,21 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { getPageBySlugSafe } from "@/api/services/page.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import { siteUrl } from "@/lib/constants";
 import { ReviewsContent } from "./_content";
+import type { Page } from "@/api/types/page.types";
+import type { Review } from "@/api/types/review.types";
+
+interface ReviewsBundle {
+  page: Page | null;
+  reviews: { results: Review[]; count: number };
+}
+
 const SLUG = "reviews";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlugSafe(SLUG);
+  const bundle = await getPageBundle<ReviewsBundle>(SLUG, "reviews", { include: ["page", "reviews"] });
+  const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Reviews | Horizan Nepal",
@@ -24,14 +33,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ReviewsPage() {
-  const page = await getPageBySlugSafe(SLUG);
+  const bundle = await getPageBundle<ReviewsBundle>(SLUG, "reviews", { include: ["page", "reviews"] });
+  const { page = null, reviews = { results: [], count: 0 } } = bundle;
 
   return (
     <>
       <h1 className="sr-only">{page?.meta_title || "Client Reviews — Horizan Nepal Construction"}</h1>
       {page?.banner_images?.map((b) => b.url ? <link key={b.id} rel="preload" as="image" href={b.url} /> : null)}
       <Suspense fallback={<div className="min-h-[60svh] bg-[#0f2557]" />}>
-        <ReviewsContent page={page} svgItems={page?.svg_items} />
+        <ReviewsContent page={page} svgItems={page?.svg_items} bundle={bundle} />
       </Suspense>
     </>
   );

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Minus, Plus } from "lucide-react";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 interface FAQType {
   id: string;
@@ -26,6 +28,7 @@ interface FAQAccordionProps {
 export function FAQAccordion({ items, types, filterAll, empty }: FAQAccordionProps) {
   const [open, setOpen] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  const track = useTrackAction();
 
   const filtered = typeFilter
     ? items.filter((f) => f.faqType?.id === typeFilter)
@@ -38,7 +41,7 @@ export function FAQAccordion({ items, types, filterAll, empty }: FAQAccordionPro
           <div className="mt-12 sm:mt-16 flex flex-wrap gap-3 justify-center">
             <button
               type="button"
-              onClick={() => { setTypeFilter(null); setOpen(null); }}
+              onClick={() => { setTypeFilter(null); setOpen(null); track(Events.FAQ_READ, { filter: "All" }); }}
               className={`px-6 py-2.5 text-sm font-bold tracking-wide rounded-lg border-2 transition-all duration-200 ${
                 !typeFilter
                   ? "bg-brand-primary text-white border-brand-primary shadow-lg shadow-brand-primary/25 scale-105"
@@ -51,7 +54,7 @@ export function FAQAccordion({ items, types, filterAll, empty }: FAQAccordionPro
               <button
                 key={ft.id}
                 type="button"
-                onClick={() => { setTypeFilter(ft.id); setOpen(null); }}
+                onClick={() => { setTypeFilter(ft.id); setOpen(null); track(Events.FAQ_READ, { filter: ft.name }); }}
                 className={`px-6 py-2.5 text-sm font-bold tracking-wide rounded-lg border-2 transition-all duration-200 ${
                   typeFilter === ft.id
                     ? "bg-brand-primary text-white border-brand-primary shadow-lg shadow-brand-primary/25 scale-105"
@@ -82,7 +85,7 @@ export function FAQAccordion({ items, types, filterAll, empty }: FAQAccordionPro
                   <button
                     type="button"
                     aria-expanded={isOpen}
-                    onClick={() => setOpen(isOpen ? null : f.id)}
+                    onClick={() => { const next = isOpen ? null : f.id; setOpen(next); if (next) track(Events.FAQ_READ, { question: f.question }); }}
                     className="w-full flex items-start justify-between gap-3 text-left px-5 py-5"
                   >
                     <div className="flex items-start gap-3 min-w-0">

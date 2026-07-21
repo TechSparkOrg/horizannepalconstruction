@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { MediaItem } from "@/api/types/media.types";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 interface Props {
   banners: MediaItem[];
@@ -51,6 +53,7 @@ export function BannerGridCarousel({ banners, className = "", cardsPerView = 3 }
   const items = banners.filter((b) => b.url);
   const totalSets = Math.ceil(items.length / cardsPerView);
   const [currentSet, setCurrentSet] = useState(0);
+  const track = useTrackAction();
 
   const next = useCallback(() => {
     setCurrentSet((c) => (c + 1) % totalSets);
@@ -86,7 +89,7 @@ export function BannerGridCarousel({ banners, className = "", cardsPerView = 3 }
           <>
             <button
               type="button"
-              onClick={prev}
+              onClick={() => { prev(); track(Events.BANNER_CLICK, { direction: "prev" }); }}
               className="absolute -left-4 top-1/2 -translate-y-1/2 size-10 rounded-full bg-white shadow-lg flex items-center justify-center text-brand-dark hover:text-brand-primary transition-colors z-10"
               aria-label="Previous"
             >
@@ -94,7 +97,7 @@ export function BannerGridCarousel({ banners, className = "", cardsPerView = 3 }
             </button>
             <button
               type="button"
-              onClick={next}
+              onClick={() => { next(); track(Events.BANNER_CLICK, { direction: "next" }); }}
               className="absolute -right-4 top-1/2 -translate-y-1/2 size-10 rounded-full bg-white shadow-lg flex items-center justify-center text-brand-dark hover:text-brand-primary transition-colors z-10"
               aria-label="Next"
             >
@@ -110,7 +113,7 @@ export function BannerGridCarousel({ banners, className = "", cardsPerView = 3 }
             <button
               key={i}
               type="button"
-              onClick={() => setCurrentSet(i)}
+              onClick={() => { setCurrentSet(i); track(Events.BANNER_CLICK, { set: i }); }}
               className={`rounded-full transition-all duration-300 ${
                 i === currentSet
                   ? "bg-brand-primary w-6 h-2"

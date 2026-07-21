@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getProjectCategoryDetailSafe } from "@/api/services/category.service";
+import { getProjectsByCategorySafe } from "@/api/services/project.service";
+import { getFaqsByGroupSlugSafe } from "@/api/services/faq.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
 import { ProjectCategoryDetailInner } from "./_content";
@@ -38,11 +40,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProjectCategoryDetailPage({ params }: Props) {
-
   const { slug } = await params;
   const detail = await getProjectCategoryDetailSafe(slug);
   if (!detail) notFound();
 
+  const projects = await getProjectsByCategorySafe(slug);
+  let faqs: import("@/api/types/faq.types").FaqItem[] = [];
+  if (detail.faq_group_slug) {
+    faqs = await getFaqsByGroupSlugSafe(detail.faq_group_slug);
+  }
+
+  const bundle = { projects, faqs };
   const heroImg = detail.banner_images?.[0]?.url || detail.image;
 
   return (
@@ -76,10 +84,8 @@ export default async function ProjectCategoryDetailPage({ params }: Props) {
       </section>
    <LazyAiBot />
       <Suspense fallback={<div className="py-16 bg-white" style={{ minHeight: 1100 }} />}>
-        <ProjectCategoryDetailInner detail={detail} />
+        <ProjectCategoryDetailInner detail={detail} bundle={bundle} />
       </Suspense>
-
-   
     </>
   );
 }

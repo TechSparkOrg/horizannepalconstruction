@@ -3,17 +3,25 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { getBuildingPermitSingleSafe } from "@/api/services/building-permit.service";
-import { getPageBySlugSafe } from "@/api/services/page.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import { siteUrl } from "@/lib/constants";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { BuildingPermitContent } from "./_content";
-const SLUG = "building-permit";
+import type { Page } from "@/api/types/page.types";
+import type { BuildingPermitConfig } from "@/api/types/building-permit.types";
+import type { FaqItem } from "@/api/types/faq.types";
+
+interface BuildingPermitBundle {
+  page: Page | null;
+  permit: BuildingPermitConfig | null;
+  faqs: FaqItem[];
+}
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlugSafe(SLUG);
-  const url = `${siteUrl}/${SLUG}`;
+  const bundle = await getPageBundle<BuildingPermitBundle>("building-permit", "building-permit", { include: ["page", "permit", "faqs"] });
+  const page = bundle.page;
+  const url = `${siteUrl}/building-permit`;
   return {
     title: page?.meta_title || "Building Permit Assistant | Horizan Nepal",
     description: page?.meta_description || "Navigate Nepal's building permit process with confidence. Step-by-step workflow guide, document checklist, regulations, and municipality directory for construction permits.",
@@ -31,10 +39,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function BuildingPermitPage() {
 
-  const [page, config] = await Promise.all([
-    getPageBySlugSafe(SLUG),
-    getBuildingPermitSingleSafe(),
-  ]);
+  const bundle = await getPageBundle<BuildingPermitBundle>("building-permit", "building-permit", { include: ["page", "permit", "faqs"] });
+  const page = bundle.page;
+  const config = bundle.permit;
   if (!config) notFound();
 
   return (
@@ -77,7 +84,7 @@ export default async function BuildingPermitPage() {
         <LazyPlane src={getSvgUrl(page?.svg_items, 1, "/video-gif/Loading-Paperplane.svg")} />
 
       <Suspense fallback={<div className="py-16 sm:py-24 bg-white" />}>
-        <BuildingPermitContent config={config} page={page} svgItems={page?.svg_items} />
+        <BuildingPermitContent config={config} page={page} svgItems={page?.svg_items} bundle={bundle} />
       </Suspense>
     </>
   );

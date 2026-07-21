@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { ProjectCard } from "@/components/global_ui/ProjectCard";
 import type { Project } from "@/api/types/project.types";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 interface Props {
-  projects: Project[];
+  projects?: Project[];
 }
 
-export function ProjectsGrid({ projects }: Props) {
+export function ProjectsGrid({ projects = [] }: Props) {
   const searchParams = useSearchParams();
   const initialCat = searchParams.get("category") || "All";
   const categoryMap = new Map<string, string>();
@@ -20,6 +22,7 @@ export function ProjectsGrid({ projects }: Props) {
   });
 
   const [active, setActive] = useState("All");
+  const track = useTrackAction();
 
   const filtered =
     active === "All" ? projects : projects.filter((p) => p.category?.id === active);
@@ -32,7 +35,7 @@ export function ProjectsGrid({ projects }: Props) {
           <button
             role="tab"
             aria-selected={active === "All"}
-            onClick={() => setActive("All")}
+            onClick={() => { setActive("All"); track(Events.PROJECT_CATEGORY_CLICK, { category: "All" }); }}
             className={[
               "h-9 px-4 rounded-full text-[12.5px] font-semibold transition-all duration-150",
               "focus-visible:ring-2 focus-visible:ring-[#cd2028] focus-visible:ring-offset-2",
@@ -48,7 +51,7 @@ export function ProjectsGrid({ projects }: Props) {
               key={id}
               role="tab"
               aria-selected={active === id}
-              onClick={() => setActive(id)}
+              onClick={() => { setActive(id); track(Events.PROJECT_CATEGORY_CLICK, { category: name }); }}
               className={[
                 "h-9 px-4 rounded-full text-[12.5px] font-semibold transition-all duration-150 capitalize",
                 "focus-visible:ring-2 focus-visible:ring-[#cd2028] focus-visible:ring-offset-2",

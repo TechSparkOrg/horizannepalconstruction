@@ -1,18 +1,27 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getPageBySlugSafe } from "@/api/services/page.service";
-import { getBlogsSafe } from "@/api/services/blog.service";
-import { getCategoriesSafe } from "@/api/services/category.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
+import type { Page } from "@/api/types/page.types";
+import type { BlogPost } from "@/api/types/blog.types";
 import type { Category } from "@/api/types/category.types";
+import type { FaqItem } from "@/api/types/faq.types";
 import { siteUrl } from "@/lib/constants";
 import { getSvgUrl } from "@/lib/svg-utils";
-import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import { BlogPageContent } from "./_content";
+
+interface BlogBundle {
+  page: Page | null;
+  blogs: BlogPost[];
+  categories: { results: Category[] };
+  faqs: FaqItem[];
+}
+
 const SLUG = "blog";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlugSafe(SLUG);
+  const bundle = await getPageBundle<BlogBundle>(SLUG, "blog", { include: ["page", "blogs", "categories", "faqs"] });
+  const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Blog | Horizan Nepal",
@@ -30,15 +39,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BlogPage() {
-  const [page, blogsRes, categoriesRes] = await Promise.all([
-    getPageBySlugSafe(SLUG),
-    getBlogsSafe(),
-    getCategoriesSafe(),
-  ]);
+  const bundle = await getPageBundle<BlogBundle>(SLUG, "blog", { include: ["page", "blogs", "categories", "faqs"] });
+  const { page = null, blogs = [], categories = { results: [] }, faqs = [] } = bundle;
 
   return (
     <>
-      <h1 className="sr-only">{page?.title || "Blog — Horizan Nepal"}</h1>
       {page?.banner_images?.map((b) =>
         b.url ? <link key={b.id} rel="preload" as="image" href={b.url} /> : null
       )}
@@ -49,8 +54,6 @@ export default async function BlogPage() {
 
         <div className="flex flex-col lg:flex-row" style={{ minHeight: "80vh" }}>
           <div className="relative flex-1 flex items-end min-h-[80svh] lg:min-h-0">
-            <BannerCarousel slug="blog-page-hero" imgClassName="object-cover"
-              initialBanners={page?.banner_images} />
             <div className="absolute inset-0 pointer-events-none"
               style={{ background: "linear-gradient(to top, #0a1a3d 0%, rgba(15,37,87,0.55) 45%, transparent 100%)" }} />
             <div className="absolute inset-y-0 right-0 w-20 hidden lg:block pointer-events-none"
@@ -87,7 +90,7 @@ export default async function BlogPage() {
       </section>
 
       <Suspense fallback={<div className="py-16 bg-off-white" style={{ minHeight: 1100 }} />}>
-        <BlogPageContent page={page} blogs={blogsRes} categories={categoriesRes.results ?? []} svgItems={page?.svg_items} />
+        <BlogPageContent page={page} blogs={blogs} categories={categories.results} svgItems={page?.svg_items} bundle={{ faqs }} />
       </Suspense>
     </>
   );

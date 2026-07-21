@@ -1,21 +1,25 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getFaqsSafe } from "@/api/services/faq.service";
 import type { Page, PageSvgItem } from "@/api/types/page.types";
+import type { FaqItem } from "@/api/types/faq.types";
 import { getSvgUrl } from "@/lib/svg-utils";
 
 const UnitConverterGrid = dynamic(() => import("@/components/page_ui/UnitConverterGrid.client"));
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
 import ParsedContent from "@/lib/ParseContent.server";
 
+const formatFaq = (items?: FaqItem[]) => (items ?? []).map(f => ({ q: f.question?.en ?? '', a: f.answer?.en ?? '' }));
+
 interface Props {
   page: Page | null;
   svgItems?: PageSvgItem[];
+  bundle: { faqs: FaqItem[] };
 }
 
-export function UnitConvertContent({ page, svgItems }: Props) {
+export function UnitConvertContent({ page, svgItems, bundle }: Props) {
   const F = (className: string) => <div className={className} />;
+  const formattedFaqs = formatFaq(bundle.faqs ?? []);
 
   return (
     <>
@@ -27,7 +31,7 @@ export function UnitConvertContent({ page, svgItems }: Props) {
       {page?.faq_group_slug && (
         <ViewportSection fallback={F("py-12 sm:py-16 bg-white min-h-[200px]")}>
           <Suspense fallback={F("py-12 sm:py-16 bg-white min-h-[200px]")}>
-            <UnitConvertFaqInner faqGroupSlug={page.faq_group_slug} />
+            <FaqClient categorySlug={page.faq_group_slug} initialFaqs={formattedFaqs} />
           </Suspense>
         </ViewportSection>
       )}
@@ -40,9 +44,4 @@ export function UnitConvertContent({ page, svgItems }: Props) {
       )}
     </>
   );
-}
-
-async function UnitConvertFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
-  const faqs = await getFaqsSafe({ group__slug: faqGroupSlug, page_size: 20 });
-  return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} />;
 }

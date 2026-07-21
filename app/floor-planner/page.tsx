@@ -2,10 +2,18 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { getPageBySlugSafe } from "@/api/services/page.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { siteUrl } from "@/lib/constants";
 import { FloorPlannerContent } from "./_content";
+import type { Page } from "@/api/types/page.types";
+import type { FaqItem } from "@/api/types/faq.types";
+
+interface FloorPlannerBundle {
+  page: Page | null;
+  faqs: FaqItem[];
+}
+
 const SLUG = "floor-planner";
 
 const benefits = [
@@ -18,7 +26,8 @@ const benefits = [
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlugSafe(SLUG);
+  const bundle = await getPageBundle<FloorPlannerBundle>(SLUG, "floor-planner", { include: ["page", "faqs"] });
+  const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Floor Planner | Horizan Nepal",
@@ -41,7 +50,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FloorPlannerPage() {
-  const page = await getPageBySlugSafe(SLUG);
+  const bundle = await getPageBundle<FloorPlannerBundle>(SLUG, "floor-planner", { include: ["page", "faqs"] });
+  const { page = null, faqs = [] } = bundle;
 
   return (
     <>
@@ -112,7 +122,7 @@ export default async function FloorPlannerPage() {
       </section>
 
       <Suspense fallback={<div className="py-16 sm:py-24 bg-white" style={{ minHeight: 1000 }} />}>
-        <FloorPlannerContent page={page} svgItems={page?.svg_items} />
+        <FloorPlannerContent page={page} svgItems={page?.svg_items} bundle={bundle} />
       </Suspense>
     </>
   );

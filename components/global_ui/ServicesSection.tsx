@@ -10,6 +10,9 @@ import {
 import { getServiceCategoriesSafe } from "@/api/services/category.service"
 import { stripHtml } from "@/lib/extractTocItems"
 import type { ServiceCategory } from "@/api/types/category.types"
+import { useTrackAction } from "@/hooks/useTrackAction"
+import { useTrackHover } from "@/hooks/useTrackHover"
+import { Events } from "@/lib/tracking"
 
 const iconMap: Record<string, LucideIcon> = {
   "architectural-design": PencilRuler,
@@ -27,10 +30,14 @@ function truncate(text: string, max = 90): string {
 
 function ServiceCard({ service, index }: { service: ServiceCategory; index: number }) {
   const Icon = iconMap[service.slug] || Wrench
+  const track = useTrackAction()
+  const hoverRef = useTrackHover<HTMLAnchorElement>(Events.SERVICE_HOVER)
 
   return (
     <Link prefetch={false}
+      ref={hoverRef}
       href={`/services/${service.slug}`}
+      onClick={() => track(Events.SERVICE_CLICK, { slug: service.slug, name: service.name })}
       className="group relative flex flex-col gap-4 bg-white p-5 sm:p-7 hover:bg-[#f8faff] transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[#1d4ed8] focus-visible:ring-inset"
     >
       <span

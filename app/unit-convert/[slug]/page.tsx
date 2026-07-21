@@ -2,9 +2,9 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getUnitConversionBySlugSafe } from "@/api/services/unit-converter-public.service";
+import { getFaqsByGroupSlugSafe } from "@/api/services/faq.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LazyAiBot } from "@/components/viewport/LazyAiBot";
-import { BannerCarousel } from "@/components/global_ui/BannerCarousel";
 import type { MediaItem } from "@/api/types/media.types";
 import type { PublicUnitConversionDetail } from "@/api/types/unit-converter.types";
 import { siteUrl } from "@/lib/constants";
@@ -54,6 +54,8 @@ export default async function UnitConvertDetailPage({ params }: Props) {
   const item = await getUnitConversionBySlugSafe(slug);
   if (!item) notFound();
 
+  const faqs = item.faq_group_slug ? await getFaqsByGroupSlugSafe(item.faq_group_slug) : [];
+
   const { url } = getMeta(item, slug);
 
   const bannerImages: MediaItem[] = (item.banner_images ?? []).map((b) => ({
@@ -78,16 +80,10 @@ export default async function UnitConvertDetailPage({ params }: Props) {
       <LazyAiBot />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <h1 className="sr-only">{item.title}</h1>
+      {bannerImages.map((b) => b.url ? <link key={b.id} rel="preload" as="image" href={b.url} /> : null)}
 
       {/* ── Hero ── */}
       <section className="relative w-full bg-[#0f2557] overflow-hidden min-h-[56svh] sm:min-h-[62svh] flex items-end">
-        <BannerCarousel
-          initialBanners={bannerImages}
-          slug={slug}
-          overlay="linear-gradient(to top, rgba(15,37,87,0.95) 0%, rgba(15,37,87,0.55) 40%, rgba(15,37,87,0.15) 100%)"
-          carousel={bannerImages.length > 1}
-          imgClassName="object-cover"
-        />
         <div className="absolute top-0 inset-x-0 h-1 bg-[#cd2028] z-20" aria-hidden="true" />
 
         <div className="relative z-20 w-full max-w-[1200px] mx-auto px-4 sm:px-8 pb-10 sm:pb-14 pt-28">
@@ -116,7 +112,7 @@ export default async function UnitConvertDetailPage({ params }: Props) {
       </section>
 
       <Suspense fallback={<div className="py-16 bg-white" style={{ minHeight: 1050 }} />}>
-        <UnitConvertDetailContent item={item} />
+        <UnitConvertDetailContent item={item} faqs={faqs} />
       </Suspense>
     </>
   );

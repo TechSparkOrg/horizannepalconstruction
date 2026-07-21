@@ -2,10 +2,16 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { getServiceCategoryDetailSafe } from "@/api/services/category.service";
 import { stripHtml } from "@/lib/extractTocItems";
 import { siteUrl } from "@/lib/constants";
+import { getServiceCategoryDetailSafe } from "@/api/services/category.service";
+import { getBlogsByCategorySafe } from "@/api/services/blog.service";
+import { getProjectsByCategorySafe } from "@/api/services/project.service";
+import { getFaqsByGroupSlugSafe } from "@/api/services/faq.service";
 import { ServiceDetailInner } from "./_content";
+import type { ServiceCategoryDetail } from "@/api/types/category.types";
+import type { BlogPost } from "@/api/types/blog.types";
+import type { Project } from "@/api/types/project.types";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -30,14 +36,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ServiceDetailPage({ params }: Props) {
-
   const { slug } = await params;
   const detail = await getServiceCategoryDetailSafe(slug);
   if (!detail) notFound();
 
+  const [blog_categories, projects_by_category, faqs] = await Promise.all([
+    fetchGroupedByCategory(detail.blog_categories, getBlogsByCategorySafe),
+    fetchGroupedByCategory(detail.project_categories, getProjectsByCategorySafe),
+    detail.faq_group_slug ? getFaqsByGroupSlugSafe(detail.faq_group_slug) : Promise.resolve([] as import("@/api/types/faq.types").FaqItem[]),
+  ]);
+
+  const bundle = { blog_categories, projects_by_category, faqs };
+
   return (
     <>
       <h1 className="sr-only">{detail.name}</h1>
+      {detail.banner_images?.[0]?.url && <link rel="preload" as="image" href={detail.banner_images[0].url} />}
 
       {/* ── Hero ── */}
       <section className="relative min-h-[60vh] flex items-end overflow-hidden bg-[#0f2557]">
@@ -59,8 +73,21 @@ export default async function ServiceDetailPage({ params }: Props) {
       </section>
 
       <Suspense fallback={<div className="py-16 bg-white" style={{ minHeight: 1000 }} />}>
-        <ServiceDetailInner detail={detail} />
+        <ServiceDetailInner detail={detail} bundle={bundle} />
       </Suspense>
     </>
   );
+}
+
+async function fetchGroupedByCategory<T>(
+  cats: { name: string; slug: string }[] | undefined,
+  fetcher: (slug: string) => Promise<T[]>,
+): Promise<Record<string, T[]>> {
+  if (!cats || cats.length === 0) return {};
+  const results = await Promise.all(cats.map((c) => fetcher(c.slug)));
+  const grouped: Record<string, T[]> = {};
+  cats.forEach((c, i) => {
+    grouped[c.slug] = results[i];
+  });
+  return grouped;
 }

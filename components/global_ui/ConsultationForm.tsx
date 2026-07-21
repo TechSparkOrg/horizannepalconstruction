@@ -10,6 +10,8 @@ import { useSettings } from "@/stores/settings-store";
 import type { Category } from "@/api/types/category.types";
 import type { LocationData } from "@/components/global_ui/Googlemap";
 import Image from "next/image";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 const GoogleMapAddress = dynamic(() => import("@/components/global_ui/Googlemap"), {
   ssr: false,
@@ -32,6 +34,7 @@ const trust = [
 export function ConsultationForm({ initialCategories, headerSvgUrl, emailSvgUrl }: { initialCategories?: Category[]; headerSvgUrl?: string; emailSvgUrl?: string }) {
   const contactInfo = useSettings((s) => s.settings?.contact_info);
   const [categories, setCategories] = useState<Category[]>(initialCategories ?? []);
+  const track = useTrackAction();
 
   useEffect(() => {
     if (initialCategories) return;
@@ -71,11 +74,12 @@ export function ConsultationForm({ initialCategories, headerSvgUrl, emailSvgUrl 
     setSubmitting(true);
     try {
       await ConsultationPublic.submit(
-        { name, email, phone, service, description: desc, preferred_date: preferredDate, landmark },
+        { name, email: email.trim() || undefined, phone, service, description: desc, preferred_date: preferredDate, landmark },
         sitePhotos.length > 0 ? sitePhotos : undefined,
       );
       setSubmitting2(true);
       setSubmitCount((c) => c + 1);
+      track(Events.CONSULTATION_CREATED);
     } finally {
       setSubmitting(false);
     }
@@ -190,15 +194,15 @@ export function ConsultationForm({ initialCategories, headerSvgUrl, emailSvgUrl 
               </div>
 
               <div>
-                <label className={LABEL} htmlFor="cf-email">Email Address</label>
-                <input id="cf-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-                  className={INPUT} placeholder="your@email.com" />
+                <label className={LABEL} htmlFor="cf-phone">Phone Number</label>
+                <input id="cf-phone" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)}
+                  className={INPUT} placeholder="+977 98XXXXXXXX" />
               </div>
 
               <div>
-                <label className={LABEL} htmlFor="cf-phone">Phone Number</label>
-                <input id="cf-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
-                  className={INPUT} placeholder="+977 98XXXXXXXX" />
+                <label className={LABEL} htmlFor="cf-email">Email Address <span className="text-[#94a3b8] font-normal">(Optional)</span></label>
+                <input id="cf-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                  className={INPUT} placeholder="your@email.com" />
               </div>
 
               <div>

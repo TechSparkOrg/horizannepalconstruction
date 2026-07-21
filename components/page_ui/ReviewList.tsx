@@ -7,6 +7,8 @@ import Image from "next/image";
 import { ReviewPublic } from "@/api/services/review.service";
 import type { Review } from "@/api/types/review.types";
 import { SocialQrGrid } from "@/components/global_ui/SocialQrGrid";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 function Stars({ value }: { value: number }) {
   return (
@@ -82,6 +84,7 @@ export function ReviewList({ initialReviews, initialTotal, svgUrl1, svgUrl2, svg
   const [total, setTotal] = useState(initialTotal);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const track = useTrackAction();
 
   // Inline form state
   const [formName, setFormName] = useState("");
@@ -119,6 +122,7 @@ export function ReviewList({ initialReviews, initialTotal, svgUrl1, svgUrl2, svg
       setFormRating(5);
       setFormText("");
       toast.success("Review submitted! It will appear after approval.");
+      track(Events.REVIEW_CREATED);
     } catch {
       toast.error("Failed to submit review. Please try again.");
     } finally {
@@ -216,8 +220,7 @@ export function ReviewList({ initialReviews, initialTotal, svgUrl1, svgUrl2, svg
       )}
 
       {/* ── Social + Form (single dark section) ── */}
-      {reviews.length > 0 && (
-        <section id="write-review" className="relative bg-[#0f2557] overflow-hidden">
+      <section id="write-review" className="relative bg-[#0f2557] overflow-hidden">
 
           {/* Row 1 — SocialQrGrid (left) · card-scoll-animation.svg (right) */}
           <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -390,8 +393,7 @@ export function ReviewList({ initialReviews, initialTotal, svgUrl1, svgUrl2, svg
             </div>
           </div>
 
-        </section>
-      )}
+      </section>
 
       {/* ── Remaining Reviews (Masonry) ── */}
       {rest.length > 0 && (
@@ -420,7 +422,7 @@ export function ReviewList({ initialReviews, initialTotal, svgUrl1, svgUrl2, svg
         <div className="text-center py-10 bg-[#f5f7fb]">
           <button
             type="button"
-            onClick={loadMore}
+            onClick={() => { loadMore(); track(Events.REVIEW_LOAD_MORE); }}
             disabled={loading}
             className="inline-flex items-center gap-2 h-10 px-7 rounded-xl border border-[#e2e8f0] bg-white text-[#475569] font-semibold text-sm hover:border-[#0f2557] hover:text-[#0f2557] transition-colors disabled:opacity-50"
           >
@@ -436,12 +438,6 @@ export function ReviewList({ initialReviews, initialTotal, svgUrl1, svgUrl2, svg
             <Quote className="size-12 text-[#cbd5e1] mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-[#475569]">No reviews yet</h2>
             <p className="text-sm text-[#64748b] mt-1">Be the first to share your experience!</p>
-            <a
-              href="#write-review"
-              className="mt-6 inline-flex items-center gap-2 h-10 px-6 bg-[#0f2557] text-white font-semibold text-sm rounded-xl hover:bg-[#1e3a8a] transition-colors"
-            >
-              Write a Review <ArrowRight className="size-4" />
-            </a>
           </div>
         </section>
       )}

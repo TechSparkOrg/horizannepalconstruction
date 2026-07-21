@@ -3,25 +3,20 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getFaqGroupsSafe } from "@/api/services/faq.service";
-
-async function FaqGroupsSection() {
-  const groups = await getFaqGroupsSafe();
-  return <FAQTimeline initialGroups={groups} />;
-}
+import type { FaqGroupResponse } from "@/api/types/faq.types";
 
 const FAQTimeline = dynamic(() => import("@/components/page_ui/FAQTimeline").then((m) => ({ default: m.FAQTimeline })));
 const ConsultationForm = dynamic(() => import("@/components/global_ui/ConsultationForm").then((m) => ({ default: m.ConsultationForm })));
 const QuestionForm = dynamic(() => import("@/components/page_ui/QuestionForm").then((m) => ({ default: m.QuestionForm })));
 
-export function FaqContent({ svgItems }: { svgItems?: import("@/api/types/page.types").PageSvgItem[] }) {
+export function FaqContent({ svgItems, bundle }: { svgItems?: import("@/api/types/page.types").PageSvgItem[]; bundle: { faq_groups: FaqGroupResponse[] } }) {
   const F = (className: string) => <div className={className} />;
 
   return (
     <>
       <ViewportSection fallback={F("py-16 sm:py-28")}>
         <Suspense fallback={F("py-16 sm:py-28")}>
-          <FaqGroupsSection />
+          <FAQTimeline initialGroups={bundle.faq_groups ?? []} />
         </Suspense>
       </ViewportSection>
       <ViewportSection fallback={F("min-h-[600px] bg-[#f8fafc]")}>

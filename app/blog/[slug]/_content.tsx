@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getFaqsSafe } from "@/api/services/faq.service";
 import BlogMetaBar from "@/components/page_ui/BlogMetaBar.client";
 import BlogProjectReference from "@/components/page_ui/BlogProjectReference";
 import type { BlogPost } from "@/api/types/blog.types";
+import type { FaqItem } from "@/api/types/faq.types";
 
 const BlogContent = dynamic(() => import("@/components/page_ui/BlogContent.client"));
 const VideoEmbed = dynamic(() => import("@/components/global_ui/VideoEmbed.client"));
@@ -33,14 +33,18 @@ const RelatedArticles = dynamic(() => import("@/components/page_ui/RelatedArticl
   ),
 });
 
+const formatFaq = (items?: FaqItem[]) => (items ?? []).map(f => ({ q: f.question?.en ?? '', a: f.answer?.en ?? '' }));
+
 interface Props {
   post: BlogPost;
   slug: string;
+  faqs: FaqItem[];
 }
 
-export function BlogPostInner({ post, slug }: Props) {
+export function BlogPostInner({ post, slug, faqs }: Props) {
   const faqSlug = post.faq_group_slug ?? "blog";
   const F = (className: string) => <div className={className} />;
+  const formattedFaqs = formatFaq(faqs);
 
   return (
     <>
@@ -91,13 +95,8 @@ export function BlogPostInner({ post, slug }: Props) {
       </ViewportSection>
 
       <Suspense fallback={F("py-12 sm:py-16 bg-white min-h-[200px]")}>
-        <BlogPostFaqInner faqSlug={faqSlug} />
+        <FaqClient categorySlug={faqSlug} initialFaqs={formattedFaqs} />
       </Suspense>
     </>
   );
-}
-
-async function BlogPostFaqInner({ faqSlug }: { faqSlug: string }) {
-  const faqs = await getFaqsSafe({ group__slug: faqSlug, page_size: 20 });
-  return <FaqClient categorySlug={faqSlug} initialFaqs={faqs} />;
 }

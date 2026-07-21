@@ -5,6 +5,8 @@ import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { ReviewPublic } from "@/api/services/review.service";
 import type { Review } from "@/api/types/review.types";
 import Image from "next/image";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 const PER_VIEW = 4;
 
@@ -90,6 +92,7 @@ export function TestimonialsSection({ initialReviews, svgUrl }: { initialReviews
 
   const loading = reviews.length === 0;
   const max = Math.max(0, reviews.length - PER_VIEW);
+  const track = useTrackAction();
 
   return (
     <section className="bg-[#f8fafc] py-16 sm:py-28 border-t border-[#e2e8f0]" aria-label="Customer testimonials">
@@ -119,11 +122,11 @@ export function TestimonialsSection({ initialReviews, svgUrl }: { initialReviews
 
           {/* Nav buttons — desktop only */}
           <div className="hidden sm:flex items-center gap-2">
-            <button onClick={() => setIdx((v) => Math.max(0, v - 1))} disabled={idx === 0} aria-label="Previous"
+            <button onClick={() => { setIdx((v) => Math.max(0, v - 1)); track(Events.REVIEW_CLICK, { direction: "prev" }); }} disabled={idx === 0} aria-label="Previous"
               className="size-10 rounded-xl bg-[#f1f5f9] border border-[#e2e8f0] grid place-items-center text-[#475569] hover:bg-[#1d4ed8] hover:text-white hover:border-[#1d4ed8] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed">
               <ChevronLeft className="size-4" />
             </button>
-            <button onClick={() => setIdx((v) => Math.min(max, v + 1))} disabled={idx >= max} aria-label="Next"
+            <button onClick={() => { setIdx((v) => Math.min(max, v + 1)); track(Events.REVIEW_CLICK, { direction: "next" }); }} disabled={idx >= max} aria-label="Next"
               className="size-10 rounded-xl bg-[#1d4ed8] border border-[#1d4ed8] grid place-items-center text-white hover:bg-[#1e40af] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed">
               <ChevronRight className="size-4" />
             </button>

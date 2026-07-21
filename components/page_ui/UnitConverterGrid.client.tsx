@@ -46,6 +46,53 @@ const UnitConverterGrid = ({ tapeSvgUrl, buildingSvgUrl }: { tapeSvgUrl?: string
 
   const hasMore = items.length < totalCount;
 
+  if (initialLoading) {
+    return (
+      <section className="bg-white py-16 sm:py-24">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center gap-6 mb-12">
+            <Image
+              src={tapeSvgUrl || "/video-gif/tape.svg"}
+              alt="" aria-hidden="true"
+              width={90} height={110}
+              className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0" style={{ height: "auto" }}
+              unoptimized
+            />
+            <div className="text-center shrink-0">
+              <div className="inline-flex items-center gap-3 mb-2">
+                <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+                <p className="text-[10px] font-bold tracking-[0.26em] uppercase text-[#cd2028]">Conversions</p>
+                <span className="block w-5 h-px bg-[#cd2028]" aria-hidden="true" />
+              </div>
+              <h2 className="font-display font-bold text-[#0f2557] text-2xl sm:text-3xl tracking-tight">
+                Unit Conversions
+              </h2>
+              <p className="mt-2 text-[13.5px] text-[#64748b] max-w-[440px] leading-relaxed">
+                Select a conversion type to get started with accurate, real-time unit calculations.
+              </p>
+            </div>
+            <Image
+              src={tapeSvgUrl || "/video-gif/tape.svg"}
+              alt="" aria-hidden="true"
+              width={90} height={110}
+              className="hidden sm:block w-[70px] lg:w-[90px] h-auto object-contain shrink-0 scale-x-[-1]" style={{ height: "auto" }}
+              unoptimized
+            />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[18px]">
+            {Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+              <div key={i} className="flex flex-col bg-white rounded-xl border border-light-gray/40 overflow-hidden p-5 space-y-3">
+                <div className="size-12 rounded-xl bg-light-gray/30 animate-pulse mx-auto" />
+                <div className="h-4 w-3/4 rounded bg-light-gray/30 animate-pulse mx-auto" />
+                <div className="h-3 w-1/2 rounded bg-light-gray/20 animate-pulse mx-auto" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="bg-white py-16 sm:py-24">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -102,15 +149,12 @@ const UnitConverterGrid = ({ tapeSvgUrl, buildingSvgUrl }: { tapeSvgUrl?: string
           </div>
         )}
 
-        {initialLoading && (
-          <p className="text-center text-[#64748b] py-20">Loading converters…</p>
-        )}
-        {!initialLoading && items.length === 0 && (
+        {items.length === 0 && (
           <p className="text-center text-[#64748b] py-20">No unit converters found.</p>
         )}
 
         {/* Building.svg — decorative footer illustration */}
-        {!initialLoading && items.length > 0 && (
+        {items.length > 0 && (
           <div className="mt-16 pt-10 border-t border-[#e2e8f0] flex flex-col items-center gap-3">
             <Image
               src={buildingSvgUrl || "/video-gif/Building.svg"}

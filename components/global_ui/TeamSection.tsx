@@ -3,7 +3,7 @@ import { getSocialIcon } from "@/lib/social-icons";
 import type { TeamMember } from "@/api/types/team.types";
 import Image from "next/image";
 
-export function TeamSection({ members, svgUrl }: { members: TeamMember[]; svgUrl?: string }) {
+export function TeamSection({ members = [], svgUrl }: { members?: TeamMember[]; svgUrl?: string }) {
   if (members.length === 0) return null;
 
   return (

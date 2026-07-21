@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import { DesignShowcaseSection } from "@/components/page_ui/DesignShowcaseSection";
-import { getFaqsSafe } from "@/api/services/faq.service";
 import type { Page, PageSvgItem } from "@/api/types/page.types";
+import type { FaqItem } from "@/api/types/faq.types";
 import { getSvgUrl } from "@/lib/svg-utils";
 
 const Design3DShowcase = dynamic(() => import("@/components/page_ui/Design3DShowcase").then(m => ({ default: m.Design3DShowcase })));
@@ -12,18 +12,22 @@ const ConsultationForm = dynamic(() => import("@/components/global_ui/Consultati
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
 import ParsedContent from "@/lib/ParseContent.server";
 
+const formatFaq = (items?: FaqItem[]) => (items ?? []).map(f => ({ q: f.question?.en ?? '', a: f.answer?.en ?? '' }));
+
 interface Props {
   page: Page | null;
   modelCards: { key: string; src: string; title: string; subtitle?: string; href?: string }[];
   categories: { id: string; name: string; slug: string }[];
   svgItems?: PageSvgItem[];
+  bundle: { faqs: FaqItem[] };
 }
 
-export function DesignContent({ page, modelCards, categories, svgItems }: Props) {
+export function DesignContent({ page, modelCards, categories, svgItems, bundle }: Props) {
   const F = (className: string) => <div className={className} />;
   const bannerItems = (page?.banner_images ?? []).map((b) => ({
     id: b.id, url: b.url, alt: b.alt ?? b.title ?? "",
   }));
+  const formattedFaqs = formatFaq(bundle.faqs ?? []);
 
   return (
     <>
@@ -48,7 +52,7 @@ export function DesignContent({ page, modelCards, categories, svgItems }: Props)
       {page?.faq_group_slug && (
         <ViewportSection fallback={F("py-12 sm:py-16 bg-white min-h-[200px]")}>
           <Suspense fallback={F("py-12 sm:py-16 bg-white min-h-[200px]")}>
-            <DesignFaqInner faqGroupSlug={page.faq_group_slug} />
+            <FaqClient categorySlug={page.faq_group_slug} initialFaqs={formattedFaqs} />
           </Suspense>
         </ViewportSection>
       )}
@@ -62,9 +66,4 @@ export function DesignContent({ page, modelCards, categories, svgItems }: Props)
       )}
     </>
   );
-}
-
-async function DesignFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
-  const faqs = await getFaqsSafe({ group__slug: faqGroupSlug, page_size: 20 });
-  return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} />
 }

@@ -14,7 +14,6 @@ const year = new Date().getFullYear();
 const quickLinks = [
   { label: "Home",        href: "/" },
   { label: "About Us",    href: "/about" },
-  { label: "How We Work", href: "/how-we-work" },
   { label: "Projects",    href: "/project-details" },
   { label: "Blog",        href: "/blog" },
   { label: "Reviews",     href: "/reviews" },
@@ -36,7 +35,6 @@ const toolLinks = [
   { label: "Cost Estimator",           href: "/cost-estimation" },
   { label: "EMI Calculator",           href: "/emi-calculator" },
   { label: "Unit Converter",           href: "/unit-convert" },
-  { label: "Green Builder Calculator", href: "/green-calculator" },
 ];
 
 const legalLinks = [

@@ -1,8 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Repeat } from "lucide-react";
 import { stripHtml } from "@/lib/extractTocItems";
 import type { PublicUnitConversionItem } from "@/api/types/unit-converter.types";
+import { useTrackAction } from "@/hooks/useTrackAction";
+import { Events } from "@/lib/tracking";
 
 interface Props {
   item: PublicUnitConversionItem;
@@ -11,10 +15,12 @@ interface Props {
 export function UnitConverterCard({ item }: Props) {
   const image = item.banner_url;
   const description = item.description ? stripHtml(item.description).slice(0, 120) : null;
+  const track = useTrackAction();
 
   return (
     <Link prefetch={false}
       href={`/unit-convert/${item.slug}`}
+      onClick={() => track(Events.CONVERTER_CLICK, { slug: item.slug, title: item.title })}
       className="group flex flex-col bg-white rounded-lg border border-[#e8edf5] overflow-hidden hover:border-[#cd2028] transition-colors duration-200"
     >
       <div className="relative h-[180px] overflow-hidden bg-[#e8edf5] shrink-0">

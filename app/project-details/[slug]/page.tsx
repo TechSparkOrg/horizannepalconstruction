@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Clock3, PauseCircle, Tag, Calendar } from "lucide-react";
 import type { Project } from "@/api/types/project.types";
 import { getProjectBySlugSafe } from "@/api/services/project.service";
+import { getFaqsByGroupSlugSafe } from "@/api/services/faq.service";
 import { getProjectStatus, formatProjectDate } from "@/lib/project-status";
 import { stripHtml } from "@/lib/extractTocItems";
 import { LdJson } from "@/components/global_ui/JsonLd";
@@ -55,6 +56,11 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
   const { slug } = await params;
   const project = await getProjectBySlugSafe(slug);
   if (!project) notFound();
+
+  let faqs: import("@/api/types/faq.types").FaqItem[] = [];
+  if (project.faq_group_slug) {
+    faqs = await getFaqsByGroupSlugSafe(project.faq_group_slug);
+  }
 
   const status = getProjectStatus(project.status, project.completion);
   const StatusIcon = status.key === "completed" ? CheckCircle2 : status.key === "paused" ? PauseCircle : Clock3;
@@ -182,7 +188,7 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
           </section>
         </div>
       }>
-        <ProjectDetailContent project={project} />
+        <ProjectDetailContent project={project} faqs={faqs} />
       </Suspense>
     </>
   );

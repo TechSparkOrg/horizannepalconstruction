@@ -1,17 +1,20 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getFaqsSafe } from "@/api/services/faq.service";
 import UnitConverterWidget from "@/components/page_ui/UnitConverterWidget.client";
 import type { PublicUnitConversionDetail } from "@/api/types/unit-converter.types";
+import type { FaqItem } from "@/api/types/faq.types";
 
 const BlogContent = dynamic(() => import("@/components/page_ui/BlogContent.client"));
 const VideoEmbed = dynamic(() => import("@/components/global_ui/VideoEmbed.client"));
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
 
-export function UnitConvertDetailContent({ item }: { item: PublicUnitConversionDetail }) {
+const formatFaq = (items?: FaqItem[]) => (items ?? []).map(f => ({ q: f.question?.en ?? '', a: f.answer?.en ?? '' }));
+
+export function UnitConvertDetailContent({ item, faqs }: { item: PublicUnitConversionDetail; faqs: FaqItem[] }) {
   const F = (className: string) => <div className={className} />;
   const faqSlug = item.faq_group_slug || item.slug;
+  const formattedFaqs = formatFaq(faqs);
 
   return (
     <>
@@ -31,14 +34,9 @@ export function UnitConvertDetailContent({ item }: { item: PublicUnitConversionD
 
       <ViewportSection fallback={F("py-12 sm:py-16 bg-white min-h-[200px]")}>
         <Suspense fallback={F("py-12 sm:py-16 bg-white min-h-[200px]")}>
-          <UnitConvertDetailFaqInner faqGroupSlug={faqSlug} />
+          <FaqClient categorySlug={faqSlug} initialFaqs={formattedFaqs} title="Frequently Asked Questions" />
         </Suspense>
       </ViewportSection>
     </>
   );
-}
-
-async function UnitConvertDetailFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
-  const faqs = await getFaqsSafe({ group__slug: faqGroupSlug, page_size: 20 });
-  return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} title="Frequently Asked Questions" />;
 }

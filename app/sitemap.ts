@@ -17,10 +17,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/blog`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${SITE_URL}/faq`, changeFrequency: "weekly", priority: 0.7 },
     { url: `${SITE_URL}/design`, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${SITE_URL}/how-we-work`, changeFrequency: "monthly", priority: 0.7 },
     { url: `${SITE_URL}/cost-estimation`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE_URL}/floor-planner`, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${SITE_URL}/green-calculator`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE_URL}/building-permit`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE_URL}/vastu-shastra`, changeFrequency: "monthly", priority: 0.6 },
   ];

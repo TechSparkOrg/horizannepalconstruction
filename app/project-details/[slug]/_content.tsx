@@ -6,14 +6,16 @@ import {
   ArrowRight, PauseCircle,
   MapPin, Wallet, Calendar, CalendarCheck, CalendarClock, Box,
 } from "lucide-react";
-import { getFaqsSafe } from "@/api/services/faq.service";
 import { getProjectStatus, formatProjectDate } from "@/lib/project-status";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
 import type { Project, ProjectMilestone } from "@/api/types/project.types";
+import type { FaqItem } from "@/api/types/faq.types";
 
 import ParsedContent from "@/lib/ParseContent.server";
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
 const ModelViewerBlock = dynamic(() => import("@/components/global_ui/model-viewer"));
+
+const formatFaq = (items?: FaqItem[]) => (items ?? []).map(f => ({ q: f.question?.en ?? '', a: f.answer?.en ?? '' }));
 
 const STATUS_PILL: Record<string, string> = {
   completed: "bg-emerald-50 text-emerald-700",
@@ -50,7 +52,7 @@ function SectionHead({ index, kicker, title, sub, dark }: {
   );
 }
 
-export function ProjectDetailContent({ project }: { project: Project }) {
+export function ProjectDetailContent({ project, faqs }: { project: Project; faqs: FaqItem[] }) {
   const F = (className: string) => <div className={className} />;
   const status = getProjectStatus(project.status, project.completion);
   const gallery = project.banner_images ?? [];
@@ -59,6 +61,7 @@ export function ProjectDetailContent({ project }: { project: Project }) {
   const models = Array.from(
     new Map(milestones.filter((m) => m.model_3d_url).map((m) => [m.model_3d_url as string, m.model_3d_url as string])).values(),
   );
+  const formattedFaqs = formatFaq(faqs);
 
   const totalBudget = clients.reduce((s, c) => s + (typeof c.contract_value === "number" ? c.contract_value : 0), 0);
 
@@ -217,10 +220,10 @@ export function ProjectDetailContent({ project }: { project: Project }) {
       )}
 
       {/* ── FAQ ── */}
-      {project.faq_group_slug && (
+      {project.faq_group_slug && faqs.length > 0 && (
         <ViewportSection fallback={F("py-14 bg-[#f8fafc] min-h-[200px]")}>
           <Suspense fallback={F("py-14 bg-[#f8fafc] min-h-[200px]")}>
-            <ProjectFaq faqSlug={project.faq_group_slug} />
+            <FaqClient categorySlug={project.faq_group_slug} initialFaqs={formattedFaqs} />
           </Suspense>
         </ViewportSection>
       )}
@@ -295,10 +298,4 @@ function MilestoneItem({ m, index, last }: { m: ProjectMilestone; index: number;
       </div>
     </li>
   );
-}
-
-async function ProjectFaq({ faqSlug }: { faqSlug: string }) {
-  const faqs = await getFaqsSafe({ group__slug: faqSlug, page_size: 20 });
-  if (faqs.length === 0) return null;
-  return <FaqClient categorySlug={faqSlug} initialFaqs={faqs} />;
 }

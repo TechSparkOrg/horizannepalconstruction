@@ -2,15 +2,18 @@ import { Suspense } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getFaqsSafe } from "@/api/services/faq.service";
 import type { PublicMaterialDetail } from "@/api/types/material.types";
+import type { FaqItem } from "@/api/types/faq.types";
 
 const MaterialContent = dynamic(() => import("@/components/page_ui/MaterialDetailContent.client"));
 const VideoEmbed = dynamic(() => import("@/components/global_ui/VideoEmbed.client"));
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
 
-export function MaterialDetailContent({ item }: { item: PublicMaterialDetail }) {
+const formatFaq = (items?: FaqItem[]) => (items ?? []).map(f => ({ q: f.question?.en ?? '', a: f.answer?.en ?? '' }));
+
+export function MaterialDetailContent({ item, faqs }: { item: PublicMaterialDetail; faqs: FaqItem[] }) {
   const F = (className: string) => <div className={className} />;
+  const formattedFaqs = formatFaq(faqs);
 
   return (
     <>
@@ -73,15 +76,10 @@ export function MaterialDetailContent({ item }: { item: PublicMaterialDetail }) 
       {item.faq_group_slug && (
         <ViewportSection fallback={F("py-12 sm:py-16 bg-white min-h-[200px]")}>
           <Suspense fallback={F("py-12 sm:py-16 bg-white min-h-[200px]")}>
-            <MaterialDetailFaqInner faqGroupSlug={item.faq_group_slug} title="Frequently Asked Questions" />
+            <FaqClient categorySlug={item.faq_group_slug} initialFaqs={formattedFaqs} title="Frequently Asked Questions" />
           </Suspense>
         </ViewportSection>
       )}
     </>
   );
-}
-
-async function MaterialDetailFaqInner({ faqGroupSlug, title }: { faqGroupSlug: string; title?: string }) {
-  const faqs = await getFaqsSafe({ group__slug: faqGroupSlug, page_size: 20 });
-  return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} title={title} />;
 }

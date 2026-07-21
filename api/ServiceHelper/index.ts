@@ -9,29 +9,38 @@ export interface PaginatedResponse<T> {
   results: T[]
 }
 
-export async function apiGet<T>(path: string, timeoutMs = 5000): Promise<T> {
+const inflight = new Map<string, Promise<unknown>>()
+
+async function get<T>(path: string, timeoutMs = 5000): Promise<T> {
+  const url = `${API_BASE}${path}`
+  if (inflight.has(url)) return inflight.get(url)! as Promise<T>
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), timeoutMs)
-  try {
-    const res = await fetch(`${API_BASE}${path}`, { signal: controller.signal, cache: "no-store" })
-    clearTimeout(timeout)
-    if (!res.ok) {
-      const err = await parseApiError(res)
-      throw new ApiError(err.message, err.status, err.raw)
+  const promise = (async () => {
+    try {
+      const res = await fetch(url, { signal: controller.signal, next: { revalidate: 60 } })
+      clearTimeout(timeout)
+      if (!res.ok) {
+        const err = await parseApiError(res)
+        throw new ApiError(err.message, err.status, err.raw)
+      }
+      return res.json()
+    } catch (err) {
+      clearTimeout(timeout)
+      throw err
+    } finally {
+      inflight.delete(url)
     }
-    return res.json()
-  } catch (err) {
-    clearTimeout(timeout)
-    throw err
-  }
+  })()
+  inflight.set(url, promise)
+  return promise as Promise<T>
 }
 
-export async function apiPost<T>(path: string, body: unknown): Promise<T> {
+async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
-    cache: "no-store",
   })
   if (!res.ok) {
     const err = await parseApiError(res)
@@ -40,7 +49,7 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
   return res.json()
 }
 
-export async function apiPostFormData<T>(path: string, formData: FormData): Promise<T> {
+async function upload<T>(path: string, formData: FormData): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     method: "POST",
     body: formData,
@@ -51,3 +60,5 @@ export async function apiPostFormData<T>(path: string, formData: FormData): Prom
   }
   return res.json()
 }
+
+export const api = { get, post, upload }

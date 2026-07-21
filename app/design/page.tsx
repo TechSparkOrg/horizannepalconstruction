@@ -2,17 +2,27 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { DesignHero } from "@/components/page_ui/DesignHero";
 import { ProjectCategoriesGrid } from "@/components/page_ui/ProjectCategoriesGrid";
-import { getDesignModelsSafe } from "@/api/services/model3d.service";
-import { getCategoriesSafe } from "@/api/services/category.service";
-import { getPageBySlugSafe } from "@/api/services/page.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import { LdJson } from "@/components/global_ui/JsonLd";
 import { pageMetadataBase, breadcrumbList } from "@/lib/seo-utils";
 import { DesignContent } from "./_content";
+import type { Page } from "@/api/types/page.types";
+import type { DesignModel } from "@/api/types/model3d.types";
+import type { Category } from "@/api/types/category.types";
+import type { FaqItem } from "@/api/types/faq.types";
+
+interface DesignBundle {
+  page: Page | null;
+  models: { results: DesignModel[] };
+  categories: { results: Category[] };
+  faqs: FaqItem[];
+}
 
 const SLUG = "design"
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlugSafe(SLUG)
+  const bundle = await getPageBundle<DesignBundle>(SLUG, "design", { include: ["page", "models", "categories", "faqs"] })
+  const page = bundle.page
   const base = pageMetadataBase(page, SLUG)
   return {
     title: page?.meta_title || "Design | Horizan Nepal",
@@ -35,14 +45,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function DesignPage() {
-  const [pageData, modelsRes, categoriesRes] = await Promise.all([
-    getPageBySlugSafe(SLUG),
-    getDesignModelsSafe(),
-    getCategoriesSafe(),
-  ])
-  const categories = categoriesRes.results ?? []
+  const bundle = await getPageBundle<DesignBundle>(SLUG, "design", { include: ["page", "models", "categories", "faqs"] })
+  const pageData = bundle.page ?? null
+  const categories = bundle.categories?.results ?? []
 
-  const modelCards = (modelsRes.results ?? []).map((m) => ({
+  const modelCards = (bundle.models?.results ?? []).map((m) => ({
     key: m.id,
     src: m.url,
     title: m.title,
@@ -54,6 +61,7 @@ export default async function DesignPage() {
     <>
       <h1 className="sr-only">{pageData?.title || "Design — Horizan Nepal"}</h1>
       <LdJson data={breadcrumbList("Design", "design")} />
+      <link rel="preload" as="image" href="/video-gif/Rumble.svg" fetchPriority="high" />
       <DesignHero />
       <Suspense fallback={
         <section className="bg-[#f8fafc] pt-16 sm:pt-24 pb-0 min-h-[500px] animate-pulse">
@@ -95,7 +103,7 @@ export default async function DesignPage() {
           </div>
         </div>
       }>
-        <DesignContent page={pageData} modelCards={modelCards} categories={categories} svgItems={pageData?.svg_items} />
+        <DesignContent page={pageData} modelCards={modelCards} categories={categories} svgItems={pageData?.svg_items} bundle={bundle} />
       </Suspense>
     </>
   )

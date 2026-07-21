@@ -1,35 +1,37 @@
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { ViewportSection } from "@/components/viewport/ViewportSection";
-import { getFaqsSafe } from "@/api/services/faq.service";
 import type { Page } from "@/api/types/page.types";
 import type { BlogPost } from "@/api/types/blog.types";
 import type { Category } from "@/api/types/category.types";
+import type { FaqItem } from "@/api/types/faq.types";
 
 const BlogGrid = dynamic(() => import("@/components/page_ui/BlogGrid.client"));
 const ImageGrid = dynamic(() => import("@/components/global_ui/image-grid").then((m) => ({ default: m.ImageGrid })));
 const FaqClient = dynamic(() => import("@/components/global_ui/FaqClient"));
 import ParsedContent from "@/lib/ParseContent.server";
 
+const formatFaq = (items?: FaqItem[]) => (items ?? []).map(f => ({ q: f.question?.en ?? '', a: f.answer?.en ?? '' }));
+
 interface Props {
   page: Page | null;
   blogs: BlogPost[];
   categories: Category[];
   svgItems?: import("@/api/types/page.types").PageSvgItem[];
+  bundle: { faqs: FaqItem[] };
 }
 
-export function BlogPageContent({ page, blogs, categories }: Props) {
+export function BlogPageContent({ page, blogs, categories, bundle }: Props) {
   const F = (className: string) => <div className={className} />;
+  const formattedFaqs = formatFaq(bundle.faqs ?? []);
 
   return (
     <>
       <BlogGrid posts={blogs} categories={categories} />
 
-    
-
       <ViewportSection fallback={F("py-12 sm:py-16 bg-white min-h-[200px]")}>
         <Suspense fallback={F("py-12 sm:py-16 bg-white min-h-[200px]")}>
-          <BlogFaqInner faqGroupSlug={page?.faq_group_slug ?? "blog"} />
+          <FaqClient categorySlug={page?.faq_group_slug ?? "blog"} initialFaqs={formattedFaqs} />
         </Suspense>
       </ViewportSection>
 
@@ -42,9 +44,4 @@ export function BlogPageContent({ page, blogs, categories }: Props) {
       )}
     </>
   );
-}
-
-async function BlogFaqInner({ faqGroupSlug }: { faqGroupSlug: string }) {
-  const faqs = await getFaqsSafe({ group__slug: faqGroupSlug, page_size: 20 });
-  return <FaqClient categorySlug={faqGroupSlug} initialFaqs={faqs} />;
 }

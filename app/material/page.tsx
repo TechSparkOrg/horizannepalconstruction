@@ -2,15 +2,28 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { getPageBySlugSafe } from "@/api/services/page.service";
+import { getPageBundle } from "@/api/services/page-bundle.service";
 import { LazyPlane } from "@/components/viewport/LazyPlane";
 import { getSvgUrl } from "@/lib/svg-utils";
 import { siteUrl } from "@/lib/constants";
 import { MaterialContent } from "./_content";
+import type { Page } from "@/api/types/page.types";
+import type { PublicVendor } from "@/api/types/material.types";
+import type { PublicMaterialItem } from "@/api/types/material.types";
+import type { FaqItem } from "@/api/types/faq.types";
+
+interface MaterialBundle {
+  page: Page | null;
+  vendors: { results: PublicVendor[] };
+  materials: { results: PublicMaterialItem[]; count: number };
+  faqs: FaqItem[];
+}
+
 const SLUG = "material";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlugSafe(SLUG);
+  const bundle = await getPageBundle<MaterialBundle>(SLUG, "material", { include: ["page", "vendors", "materials", "faqs"] });
+  const page = bundle.page;
   const url = `${siteUrl}/${SLUG}`;
   return {
     title: page?.meta_title || "Construction Materials | Horizan Nepal",
@@ -28,12 +41,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MaterialPage() {
-  const page = await getPageBySlugSafe(SLUG);
+  const bundle = await getPageBundle<MaterialBundle>(SLUG, "material", { include: ["page", "vendors", "materials", "faqs"] });
+  const { page = null, vendors = { results: [] }, materials = { results: [], count: 0 }, faqs = [] } = bundle;
 
   return (
     <>
       <LazyPlane src={getSvgUrl(page?.svg_items, 1, "/video-gif/Loading-Paperplane.svg")} />
       <h1 className="sr-only">{page?.title || "Construction Materials — Horizan Nepal"}</h1>
+      <link rel="preload" as="image" href={getSvgUrl(page?.svg_items, 0, "/video-gif/road-reparing.svg")} fetchPriority="high" />
 
       {/* ── Hero ── */}
       <section className="relative w-full bg-[#0f2557] overflow-hidden min-h-[68svh] sm:min-h-[72svh]">
@@ -101,7 +116,7 @@ export default async function MaterialPage() {
       </section>
 
       <Suspense fallback={<div className="py-16 sm:py-24 bg-[#f8fafc]" style={{ minHeight: 1320 }} />}>
-        <MaterialContent page={page} svgItems={page?.svg_items} />
+        <MaterialContent page={page} svgItems={page?.svg_items} bundle={bundle} />
       </Suspense>
     </>
   );
